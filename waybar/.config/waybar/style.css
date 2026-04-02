@@ -1,0 +1,191 @@
+/* Omarchy themes provide @background and @foreground.
+   Used for text and base colors so themes still reskin the bar.
+   Pill shapes, radii, borders and transparency are hardcoded
+   since the theme system has no variables for those. */
+
+@import "../omarchy/current/theme/waybar.css";
+
+/* ─── Reset ──────────────────────────────────────────────────── */
+* {
+  background-color: transparent;
+  color: @foreground;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "SF Pro Rounded";
+  font-size: 18px;
+}
+
+/* ─── Outer bar: fully transparent, each module is its own pill ─ */
+window#waybar {
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+/* No shared section backgrounds — modules handle their own pills */
+.modules-left,
+.modules-center,
+.modules-right {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ─── Shared pill style for all modules ──────────────────────── */
+#custom-omarchy,
+#clock,
+#custom-updates,
+#custom-media,
+#workspaces,
+#custom-voxtype,
+#custom-expand-icon,
+#pulseaudio,
+#network,
+#battery,
+#tray {
+  background-color: alpha(@background, 0.75);
+  border: 1px solid alpha(@foreground, 0.07);
+  border-radius: 16px;
+  margin: 3px 3px 0 3px;
+  padding: 2px 12px;
+  min-width: 10px;
+}
+
+/* ─── LEFT: Omarchy logo ─────────────────────────────────────── */
+#custom-omarchy {
+  font-weight: bold;
+  font-size: 17px;
+  padding: 4px 10px;
+  opacity: 0.95;
+}
+
+/* ─── LEFT: Clock ────────────────────────────────────────────── */
+#clock {
+  font-size: 17px;
+  font-weight: bold;
+}
+
+/* ─── LEFT: Updates ──────────────────────────────────────────── */
+#custom-updates.up-to-date {
+  opacity: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+
+#custom-updates.has-updates {
+  color: #e0a060;
+}
+
+/* ─── LEFT: Media pill ───────────────────────────────────────── */
+/* Background color written dynamically by media.sh into media-color.css */
+#custom-media {
+  font-size: 17px;
+  font-weight: bold;
+  transition:
+    background-color 0.5s ease,
+    color 0.4s ease,
+    opacity 0.3s ease;
+}
+
+#custom-media.stopped {
+  opacity: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+
+#custom-media.paused {
+  opacity: 0.5;
+}
+
+#custom-media.playing {
+  opacity: 1;
+}
+
+/* ─── CENTER: Workspaces ─────────────────────────────────────── */
+#workspaces {
+  padding: 4px 3px;
+  border-radius: 14px;
+}
+
+#workspaces button {
+  all: initial;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  color: alpha(@foreground, 0.5);
+  background: transparent;
+  padding: 0 7px;
+  margin: 0 2px;
+  min-width: 10px;
+  min-height: 26px;
+  border-radius: 7px;
+  transition: all 0.15s ease;
+}
+
+/* Occupied: has windows open — bold and full color, no background */
+#workspaces button.occupied {
+  color: @foreground;
+}
+
+/* Active: larger pill-within-pill */
+#workspaces button.active {
+  color: @foreground;
+  background: alpha(@foreground, 0.22);
+  min-width: 34px;
+  min-height: 30px;
+  padding: 0 16px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+
+#workspaces button:hover {
+  background: alpha(@foreground, 0.13);
+  color: @foreground;
+}
+
+/* ─── RIGHT: Voxtype ─────────────────────────────────────────── */
+#custom-voxtype.recording {
+  color: #c0505a;
+}
+
+/* ─── RIGHT: Battery warning states ─────────────────────────── */
+#battery.warning {
+  color: #e0a060;
+}
+
+#battery.critical {
+  color: #c0505a;
+}
+
+/* ─── Audio ─────────────────────────── */
+#pulseaudio {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* ─── Network ─────────────────────────── */
+#network {
+  font-weight: bold;
+}
+
+/* ─── Tooltips ───────────────────────────────────────────────── */
+tooltip {
+  background: alpha(@background, 0.95);
+  font-weight: bold;
+  border: 1px solid alpha(@foreground, 0.1);
+  border-radius: 8px;
+  padding: 4px 10px;
+  color: @foreground;
+}
+
+.hidden {
+  opacity: 0;
+}

@@ -1,0 +1,163 @@
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  // "height": 40,
+
+  // LEFT: logo | clock | [weather] | media (hidden when nothing plays)
+  "modules-left": [
+    "custom/omarchy",
+    "clock",
+    "custom/updates",
+    // "custom/weather",  // ← ADD WEATHER MODULE HERE when you build it
+    "custom/media",
+  ],
+
+  // CENTER: workspaces only
+  "modules-center": ["hyprland/workspaces"],
+
+  // RIGHT: individual pills per module
+  "modules-right": [
+    "custom/voxtype",
+    "group/tray-expander",
+    "pulseaudio",
+    "network",
+    "battery",
+  ],
+
+  // ─── Module definitions ────────────────────────────────────────────────
+
+  "custom/omarchy": {
+    "format": "<span font='omarchy'>\ue900</span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space",
+  },
+
+  "clock": {
+    "format": "{:%H:%M}",
+    // "format": "{:%I:%M %p}",
+    "format-alt": "{:%A, %e %b %Y — %H:%M}",
+    "tooltip": false,
+    "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select",
+  },
+
+  // Media: invisible when nothing playing, shows artist — title with album color when active
+  "custom/media": {
+    "exec": "/home/leabua/.config/waybar/scripts/media.sh",
+    "return-type": "json",
+    "format": "{}",
+    "exec-on-event": false,
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-scroll-up": "playerctl volume 0.05+",
+    "on-scroll-down": "playerctl volume 0.05-",
+  },
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "0",
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+    },
+  },
+
+  // "custom/voxtype": {
+  //   "exec": "omarchy-voxtype-status",
+  //   "return-type": "json",
+  //   "format": "{icon}",
+  //   "format-icons": {
+  //     "idle": "",
+  //     "recording": "󰍬",
+  //     "transcribing": "󰔟",
+  //   },
+  //   "tooltip": true,
+  //   "on-click-right": "omarchy-voxtype-config",
+  //   "on-click": "omarchy-voxtype-model",
+  // },
+  //
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item",
+    },
+    "modules": ["custom/expand-icon", "tray"],
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false,
+  },
+
+  "tray": {
+    "icon-size": 12,
+    "spacing": 14,
+  },
+
+  // Shows headphone icon + volume% when headphones connected, speaker icon otherwise
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "on-click": "omarchy-launch-audio",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Volume: {volume}%",
+    "scroll-step": 5,
+    "format-icons": {
+      "headphone": " ",
+      "default": ["󰕿", "󰖀", "󰕾"],
+    },
+  },
+
+  // Shows wifi icon + network name, ethernet icon, or disconnected icon
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{essid}  {icon}",
+    "format-ethernet": "󰀂  {ipaddr}",
+    // "format-disconnected": "󰤮  No Network",
+    "format-disconnected": "No Network",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "on-click": "omarchy-launch-wifi",
+  },
+
+  // Shows battery icon + percentage at all times
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "{icon} {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-full": "󰂅 100%",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    },
+    "tooltip-format-discharging": "{power:>1.0f}W  {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑  {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10,
+    },
+  },
+}

@@ -1,0 +1,1 @@
+/home/leabua/.config/omarchy/current/theme/neovim.lua
