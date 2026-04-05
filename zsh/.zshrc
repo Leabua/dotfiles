@@ -108,6 +108,8 @@ source $ZSH/oh-my-zsh.sh
 #
 # ---- Aliases ----
 alias bt="omarchy-launch-bluetooth"
+alias dc="cd ~/dev/courses/"
+alias dp="cd ~/dev/projects/"
 alias ff="fastfetch"
 # alias localhost = "npm run dev"
 alias orphans="sudo pacman -Rns $(pacman -Qdtq)"
