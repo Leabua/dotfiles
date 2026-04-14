@@ -124,6 +124,11 @@ alias q="exit"
 alias wq="exit"
 alias y="yazi"
 
+# git commands.
+alias ga="git add ."
+alias gc="git commit -m"
+alias gp="git push"
+
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
