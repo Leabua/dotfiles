@@ -38,7 +38,7 @@
   "clock": {
     "format": "{:%H:%M}",
     // "format": "{:%I:%M %p}",
-    "format-alt": "{:%A, %e %b %Y — %H:%M}",
+    "format-alt": "{:%A, %e %b %Y - %H:%M}",
     "tooltip": false,
     "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select",
   },
