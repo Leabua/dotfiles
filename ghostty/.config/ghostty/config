@@ -5,16 +5,16 @@ config-file = ?"~/.config/omarchy/current/theme/ghostty.conf"
 font-family = "JetBrainsMono Nerd Font"
 font-style = Regular
 
-font-size = 13
+font-size = 14
 # Window
 window-theme = ghostty
-window-padding-x = 10
-window-padding-y = 14
+window-padding-x = 8
+window-padding-y = 8
 confirm-close-surface=false
 resize-overlay = never
 gtk-toolbar-style = flat
 # background-opacity = 1.0
-background-opacity = 0.9
+background-opacity = 0.8
 window-inherit-working-directory = true
 
 

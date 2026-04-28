@@ -1,5 +1,19 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
+# Initialization code that may require console input (pass# If not in tmux, start tmux: reads from and writes to the TTY.
+if [[ -z ${TMUX+X}${ZSH_SCRIPT+X}${ZSH_EXECUTION_STRING+X} ]]; then
+  exec tmux
+fi
+
+# Clone git repos that don't exist: prints and may take unpredictably long time to execute.
+if [[ ! -e ~/zsh-autosuggestions ]]; then
+  print -r -- 'installing zsh-autosuggestions ...'
+  git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ~/zsh-autosuggestions
+fi
+
+# Prints.
+# print -Pr -- 'Hello, %n. Today is %D{%A}.'
+
+# ... and so onword prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -141,6 +155,7 @@ eval "$(fzf --zsh)"
 # eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
-if [ -z "$TMUX" ]; then
-  tmux attach -t 0 2>/dev/null || tmux new-session -s 0
+
+if command -v tmux &>/dev/null && [ -z "$TMUX" ]; then
+  tmux attach 2>/dev/null || tmux new-session
 fi
