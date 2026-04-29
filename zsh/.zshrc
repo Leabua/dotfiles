@@ -1,5 +1,8 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (pass# If not in tmux, start tmux: reads from and writes to the TTY.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+
+# If not in tmux, start tmux: reads from and writes to the TTY.
 if [[ -z ${TMUX+X}${ZSH_SCRIPT+X}${ZSH_EXECUTION_STRING+X} ]]; then
   exec tmux
 fi
@@ -125,6 +128,7 @@ alias bt="omarchy-launch-bluetooth"
 alias dc="cd ~/dev/courses/"
 alias dp="cd ~/dev/projects/"
 alias ff="fastfetch"
+
 # alias localhost = "npm run dev"
 alias orphans="sudo pacman -Rns $(pacman -Qdtq)"
 alias p="python3"
@@ -146,12 +150,13 @@ alias gp="git push"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-#
+
 # ---- ZSH Enhancements ----
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 eval "$(fzf --zsh)"
+
 # eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
