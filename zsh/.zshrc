@@ -125,6 +125,7 @@ source $ZSH/oh-my-zsh.sh
 #
 # ---- Aliases ----
 alias bt="omarchy-launch-bluetooth"
+alias c="clear"
 alias dc="cd ~/dev/courses/"
 alias dp="cd ~/dev/projects/"
 alias ff="fastfetch"
