@@ -122,7 +122,7 @@ source $ZSH/oh-my-zsh.sh
 # - $ZSH_CUSTOM/aliases.zsh
 # - $ZSH_CUSTOM/macos.zsh
 # For a full list of active aliases, run `alias`.
-#
+
 # ---- Aliases ----
 alias bt="omarchy-launch-bluetooth"
 alias c="clear"
@@ -132,21 +132,17 @@ alias ff="fastfetch"
 alias orphans="sudo pacman -Rns $(pacman -Qdtq)"
 alias p="python3"
 alias py="python"
-alias timeshift_now="sudo timeshift --create --comments "Manual snapshot $(date +%Y-%m-%d_%H:%M)""
 alias tmux_kill="rm -rf ~/.local/share/tmux/resurrect/*.txt && tmux kill-server"
-alias ts_list="sudo timeshift --list"
-alias ts_restore="sudo timeshift --restore"
 alias vim="nvim"
-alias update="timeshift_now && sudo pacman -Syu"
 alias q="exit"
 alias weather="curl wttr.in"
 alias wq="exit"
 alias y="yazi"
-
 # git commands.
 alias ga="git add ."
 alias gc="git commit -m"
 alias gp="git push"
+alias gi="git add . && git commit -m"
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

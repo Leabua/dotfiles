@@ -7,14 +7,14 @@
 
 /* ─── Reset ──────────────────────────────────────────────────── */
 * {
+  font-weight: bold;
+  font-family: "SF Pro Rounded";
+  font-size: 16px;
   background-color: transparent;
   color: @foreground;
   border: none;
   border-radius: 0;
   min-height: 0;
-  font-weight: bold;
-  font-family: "SF Pro Rounded";
-  font-size: 16px;
 }
 
 /* ─── Outer bar: fully transparent, each module is its own pill ─ */
@@ -100,8 +100,6 @@ window#waybar {
   background: transparent;
   padding: 0 7px;
   margin: 0 2px;
-  min-width: 10px;
-  min-height: 26px;
   border-radius: 7px;
   transition: all 0.15s ease;
 }
@@ -110,8 +108,6 @@ window#waybar {
 #workspaces button.active {
   color: @foreground;
   background: alpha(@foreground, 0.22);
-  min-width: 34px;
-  min-height: 30px;
   padding: 0 16px;
   font-size: 13px;
   border-radius: 12px;
@@ -133,12 +129,10 @@ window#waybar {
 
 /* ─── Audio ─────────────────────────── */
 #pulseaudio {
-  font-weight: bold;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 /* ─── Network ─────────────────────────── */
 #network {
-  font-weight: bold;
 }
 
