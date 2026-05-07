@@ -26,7 +26,7 @@
   // ─── Module definitions ────────────────────────────────────────────────
 
   "custom/arch": {
-    "format": "<span font='JetBrainsMono Nerd Font'></span>",
+    "format": "<span font='JetBrainsMono Font'></span>",
     "tooltip": false
 },
 
@@ -112,7 +112,7 @@
   "network": {
     "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
     "format": "{icon}",
-    "format-wifi": "{essid}  {icon}",
+    "format-wifi": "{essid} {icon}",
     "format-ethernet": "󰀂  {ipaddr}",
     // "format-disconnected": "󰤮  No Network",
     "format-disconnected": "No Network",
