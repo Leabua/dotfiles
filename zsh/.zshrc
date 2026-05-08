@@ -34,7 +34,6 @@ source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring
 alias dc="z ~/dev/courses/"
 alias dp="z ~/dev/projects/"
 alias ff="fastfetch"
-alias orphans="sudo pacman -Rns $(pacman -Qdtq)"
 alias p="python3"
 alias py="python"
 alias tmux_kill="rm -rf ~/.local/share/tmux/resurrect/*.txt && tmux kill-server"
@@ -43,14 +42,17 @@ alias q="exit"
 alias weather="curl wttr.in"
 alias wq="exit"
 alias y="yazi"
+#
 # git commands.
 alias ga="git add ."
 alias gp="git push"
 alias gc="git add . && git commit -m"
 
+
+# Created by `pipx` on 2026-05-08 15:05:11
+export PATH="$PATH:/home/leabua/.local/bin"
+
 if [ -z "$TMUX" ]; then
   tmux attach || tmux new-session
 fi
 
-# Created by `pipx` on 2026-05-08 15:05:11
-export PATH="$PATH:/home/leabua/.local/bin"
