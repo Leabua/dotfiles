@@ -17,19 +17,14 @@
   "modules-center": ["hyprland/workspaces"],
 
   // RIGHT: individual pills per module
-  "modules-right": [
-    "pulseaudio",
-    "network",
-    "battery",
-  ],
+  "modules-right": ["pulseaudio", "network", "battery"],
 
   // ─── Module definitions ────────────────────────────────────────────────
 
   "custom/arch": {
     "format": "<span font='JetBrainsMono Font'></span>",
-    "tooltip": false
-},
-
+    "tooltip": false,
+  },
 
   "clock": {
     "format": "{:%H:%M}",

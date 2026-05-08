@@ -35,7 +35,7 @@ playerctl --follow metadata --format '{{status}}' 2>/dev/null | while read -r ST
   fi
 
   DISPLAY_TEXT="$ICON $TRUNCATED_TEXT"
-  TOOLTIP="${ARTIST}\n${TITLE}\n\nPlayer: ${PLAYER}\nStatus: ${STATUS}"
+  # TOOLTIP="${ARTIST}\n${TITLE}\n\nPlayer: ${PLAYER}\nStatus: ${STATUS}"
   CLASS=$([[ "$STATUS" == "Playing" ]] && echo "playing" || echo "paused")
 
   ESCAPED_TEXT=$(echo "$DISPLAY_TEXT" | sed 's/\\/\\\\/g; s/"/\\"/g')
