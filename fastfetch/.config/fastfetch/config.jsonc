@@ -44,7 +44,7 @@
       "format": "┌─────────────────── Uptime / Age ─────────────────┐",
       "outputColor": "magenta",
     },
-    { "type": "uptime", "key": " 󰅐  Uptime: ", "keyColor": "magenta" },
+    { "type": "uptime", "key": " 󰅐  Uptime:", "keyColor": "magenta" },
     {
       "type": "command",
       "key": " 󰃭  OS Age:",
