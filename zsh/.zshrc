@@ -21,7 +21,7 @@ compinit
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # start editing from here
 eval "$(zoxide init zsh)"
 source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
@@ -48,7 +48,7 @@ alias ga="git add ."
 alias gp="git push"
 alias gc="git add . && git commit -m"
 
-
+export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.sock
 # Created by `pipx` on 2026-05-08 15:05:11
 export PATH="$PATH:/home/leabua/.local/bin"
 
