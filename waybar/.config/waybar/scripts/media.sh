@@ -10,7 +10,7 @@ playerctl --follow metadata --format '{{status}}' 2>/dev/null | while read -r ST
   PLAYER=$(playerctl metadata --format '{{playerName}}' 2>/dev/null)
 
   if [[ "$STATUS" != "Playing" && "$STATUS" != "Paused" ]]; then
-    printf '{"text":"","class":"stopped","tooltip":""}\n'
+    printf '{"text":"","class":"stopped","tooltip":""}\n' 2>/dev/null
     continue
   fi
 
@@ -40,5 +40,5 @@ playerctl --follow metadata --format '{{status}}' 2>/dev/null | while read -r ST
   ESCAPED_TEXT=$(echo "$DISPLAY_TEXT" | sed 's/\\/\\\\/g; s/"/\\"/g')
   ESCAPED_TOOLTIP=$(echo "$TOOLTIP" | sed 's/\\/\\\\/g; s/"/\\"/g')
 
-  printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' "$ESCAPED_TEXT" "$ESCAPED_TOOLTIP" "$CLASS"
+  printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' "$ESCAPED_TEXT" "$ESCAPED_TOOLTIP" "$CLASS" 2>/dev/null
 done

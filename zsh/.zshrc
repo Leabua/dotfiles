@@ -48,3 +48,9 @@ alias ga="git add ."
 alias gp="git push"
 alias gc="git add . && git commit -m"
 
+if [ -z "$TMUX" ]; then
+  tmux attach || tmux new-session
+fi
+
+# Created by `pipx` on 2026-05-08 15:05:11
+export PATH="$PATH:/home/leabua/.local/bin"

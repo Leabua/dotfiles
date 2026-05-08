@@ -101,15 +101,16 @@ window#waybar {
   border-radius: 7px;
   transition: all 0.15s ease;
 }
-
 #workspaces button.active {
-  color: @sapphire;
+  color: @teal;
   background: alpha(@surface1, 0.8);
   padding: 0 18px;
   font-size: 13px;
   border-radius: 16px;
 }
-
+#workspaces button:not(.empty):not(.active) {
+  color: @subtext0;
+}
 #workspaces button:hover {
   background: alpha(@surface1, 0.6);
   color: @subtext1;
