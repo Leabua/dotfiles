@@ -1,7 +1,7 @@
 # Dynamic theme colors
+theme = Catppuccin Mocha
+# theme = Modus Vivendi Tinted
 
-# theme = Catppuccin Mocha
-theme = Modus Vivendi Tinted
 # Font
 font-family = "JetBrainsMono Nerd Font"
 font-style = Regular
