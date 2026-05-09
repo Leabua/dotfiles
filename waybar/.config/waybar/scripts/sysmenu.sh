@@ -87,7 +87,7 @@ case "$chosen_main" in
 *"Power")
   chosen_power=$(show_menu "$menu_power" "Power")
   case "$chosen_power" in
-  *"Hibernate"*) hyprlock && systemctl suspend ;;
+  *"Suspend"*) hyprlock && systemctl suspend ;;
   *"Reboot"*) systemctl reboot ;;
   *"Log Out"*) hyprctl dispatch exit ;;
   *"Poweroff"*) systemctl poweroff ;;
