@@ -17,12 +17,17 @@ menu_main="󰀻  Apps\n󰏓  Packages\n󱐋  Power Profiles\n󰐥  Power"
 menu_packages="󰏓  Native Apps (pacseek)\n󰖟  PWAs (Web Apps)"
 menu_pwa="󰐕  Create New PWA\n󰆴  Delete PWA"
 menu_power_profile="󰾆  Performance\n󰾅  Balanced\n󰾄  Efficient"
-menu_power="󰒲  Hibernate\n󰑓  Reboot\n󰍃  Log Out\n󰐥  Poweroff"
+menu_power="󰒲  Suspend\n󰑓  Reboot\n󰍃  Log Out\n󰐥  Poweroff"
 
 # ==============================================================================
 # Logic Tree
 # ==============================================================================
-chosen_main=$(show_menu "$menu_main" "System")
+# Add this logic check at the top of the Logic Tree section
+if [[ "$1" == "--power" ]]; then
+  chosen_main="󰐥  Power"
+else
+  chosen_main=$(show_menu "$menu_main" "System")
+fi
 
 case "$chosen_main" in
 *"Apps")
@@ -82,10 +87,10 @@ case "$chosen_main" in
 *"Power")
   chosen_power=$(show_menu "$menu_power" "Power")
   case "$chosen_power" in
-  *"Hibernate") systemctl hibernate ;;
-  *"Reboot") systemctl reboot ;;
-  *"Log Out") hyprctl dispatch exit ;;
-  *"Poweroff") systemctl poweroff ;;
+  *"Hibernate"*) hyprlock && systemctl suspend ;;
+  *"Reboot"*) systemctl reboot ;;
+  *"Log Out"*) hyprctl dispatch exit ;;
+  *"Poweroff"*) systemctl poweroff ;;
   esac
   ;;
 esac
