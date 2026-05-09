@@ -1,0 +1,17 @@
+# Core Style
+font=JetBrainsMono Nerd Font 10
+background-color=#1e1e2e
+text-color=#cdd6f4
+width=300
+height=100
+margin=10
+padding=15
+border-size=2
+border-radius=8
+
+# Colors (Catppuccin Mocha)
+border-color=#89dceb
+progress-color=over #313244
+
+[urgency=high]
+border-color=#f38ba8
