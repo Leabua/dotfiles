@@ -16,7 +16,7 @@ show_menu() {
 menu_main="󰀻  Apps\n󰏓  Packages\n󱐋  Power Profiles\n󰐥  Power"
 menu_packages="󰏓  Native Apps (pacseek)\n󰖟  PWAs (Web Apps)"
 menu_pwa="󰐕  Create New PWA\n󰆴  Delete PWA"
-menu_power_profile="󰾆  Performance\n󰾅  Balanced\n󰾄  Efficient"
+menu_power_profile="󰓅  Performance\n󰾅  Balanced\n󰾆  Efficient"
 menu_power="󰒲  Suspend\n󰑓  Reboot\n󰍃  Log Out\n󰐥  Poweroff"
 
 # ==============================================================================
@@ -68,9 +68,9 @@ case "$chosen_main" in
   e_text="Efficient"
 
   # Add italics and an indicator if it matches the current profile
-  [[ "$current_prof" == "performance" ]] && p_text="<i>󰾆  Performance *</i>" || p_text="󰾆  Performance"
+  [[ "$current_prof" == "performance" ]] && p_text="<i>󰓅  Performance *</i>" || p_text="󰓅  Performance"
   [[ "$current_prof" == "balanced" ]] && b_text="<i>󰾅  Balanced *</i>" || b_text="󰾅  Balanced"
-  [[ "$current_prof" == "power-saver" ]] && e_text="<i>󰾄  Efficient *</i>" || e_text="󰾄  Efficient"
+  [[ "$current_prof" == "power-saver" ]] && e_text="<i>󰾆  Efficient *</i>" || e_text="󰾆  Efficient"
 
   menu_power_profile="${p_text}\n${b_text}\n${e_text}"
 
@@ -87,7 +87,11 @@ case "$chosen_main" in
 *"Power")
   chosen_power=$(show_menu "$menu_power" "Power")
   case "$chosen_power" in
-  *"Suspend"*) hyprlock && systemctl suspend ;;
+  *"Suspend"*)
+    hyprlock & # The '&' sends it to the background immediately
+    sleep 0.5  # A tiny buffer to let the lock 'grab' the screen
+    systemctl suspend
+    ;;
   *"Reboot"*) systemctl reboot ;;
   *"Log Out"*) hyprctl dispatch exit ;;
   *"Poweroff"*) systemctl poweroff ;;
