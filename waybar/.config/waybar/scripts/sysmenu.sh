@@ -13,7 +13,7 @@ show_menu() {
 # ==============================================================================
 # Menu Variables
 # ==============================================================================
-menu_main="󰀻  Apps\n󰏓  Packages\n󱐋  Power Profile\n󰐥  Power"
+menu_main="󰀻  Apps\n󰏓  Packages\n󱐋  Power Profiles\n󰐥  Power"
 menu_packages="󰏓  Native Apps (pacseek)\n󰖟  PWAs (Web Apps)"
 menu_pwa="󰐕  Create New PWA\n󰆴  Delete PWA"
 menu_power_profile="󰾆  Performance\n󰾅  Balanced\n󰾄  Efficient"
@@ -53,7 +53,7 @@ case "$chosen_main" in
   esac
   ;;
 
-*"Power Profile")
+*"Power Profiles")
   # Get the current active profile from the daemon
   current_prof=$(powerprofilesctl get)
 
