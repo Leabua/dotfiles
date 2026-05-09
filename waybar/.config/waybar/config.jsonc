@@ -5,13 +5,7 @@
   "spacing": 0,
   // "height": 40,
   // LEFT: logo | clock | [weather] | media (hidden when nothing plays)
-  "modules-left": [
-    "custom/arch",
-    "clock",
-    "custom/updates",
-    // "custom/weather",  // ← ADD WEATHER MODULE HERE when you build it
-    "custom/media",
-  ],
+  "modules-left": ["custom/arch", "clock", "custom/media"],
 
   // CENTER: workspaces only
   "modules-center": ["hyprland/workspaces"],
@@ -24,6 +18,7 @@
   "custom/arch": {
     "format": "<span font='JetBrainsMono Font'></span>",
     "tooltip": false,
+    "on-click": "~/.config/waybar/scripts/sysmenu.sh",
   },
 
   "clock": {
@@ -93,8 +88,9 @@
   "pulseaudio": {
     "format": "{icon}",
     "format-muted": "󰝟",
-    "on-click": "pavucontrol",
-    "on-click-right": "pamixer -t",
+    // "on-click": "ghostty --title=wiremix-term -e wiremix",
+    "on-click": "pkill wiremix || ghostty --title=wiremix-term -e wiremix",
+    "on-click-right": "pkill bluetui || ghostty --title=bluetui-term -e bluetui",
     "tooltip-format": "Volume: {volume}%",
     "scroll-step": 5,
     "format-icons": {
@@ -109,13 +105,13 @@
     "format": "{icon}",
     "format-wifi": "{essid} {icon}",
     "format-ethernet": "󰀂  {ipaddr}",
-    // "format-disconnected": "󰤮  No Network",
     "format-disconnected": "No Network",
-    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-    "tooltip-format-disconnected": "Disconnected",
+    // "format-disconnected": "󰤮  No Network",
+    // "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    // "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    // "tooltip-format-disconnected": "Disconnected",
     "interval": 3,
-    "on-click": "ghostty -e nmtui",
+    "on-click": "pkill impala || ghostty --title=impala-term -e impala",
   },
 
   // Shows battery icon + percentage at all times

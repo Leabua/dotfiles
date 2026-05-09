@@ -59,6 +59,7 @@ window#waybar {
 }
 
 #clock {
+  padding: 4px 14px;
   color: @mauve;
 }
 
@@ -82,7 +83,7 @@ window#waybar {
   color: @overlay1;
 }
 
-/* ─── CENTER: Workspaces (Left exactly as provided) ──────────── */
+/* ─── CENTER: Workspaces ───────────────────────────────────── */
 #workspaces {
   padding: 4px 3px;
   border-radius: 16px;
@@ -109,16 +110,16 @@ window#waybar {
   border-radius: 16px;
 }
 #workspaces button:not(.empty):not(.active) {
-  color: @subtext0;
+  color: @teal;
 }
 #workspaces button:hover {
   background: alpha(@surface1, 0.6);
   color: @subtext1;
 }
 
-/* ─── RIGHT: Blue Theme ──────────────────────────────────────── */
+/* ─── RIGHT: Mauve Theme ──────────────────────────────────────── */
 #pulseaudio {
-  font-size: 18px;
+  font-size: 20px;
   color: @mauve;
 }
 

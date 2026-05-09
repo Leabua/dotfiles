@@ -7,60 +7,60 @@
 
 /* Target the main window */
 window {
- background: transparent;
+  background: transparent;
 }
 /* The main container */
 #box {
-    background-color: #1e1e2e;
-    border: 2px solid #b4befe !important;
-    border-radius: 16px !important;
-    padding: 12px;
+  background-color: #1e1e2e;
+  border: 2px solid #b4befe !important;
+  border-radius: 16px !important;
+  padding: 12px;
 }
 
 #search {
-    background-color: #313244 !important;
-    color: #cdd6f4 !important;
-    border-radius: 10px !important;
-    padding: 10px !important;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #94e2d5 !important;
+  background-color: #313244 !important;
+  color: #cdd6f4 !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #94e2d5 !important;
 }
 
 /* The Search Input */
 entry {
- background-color: @surface !important;
- color: @text !important;
- border-radius: 10px !important;
- padding: 10px !important;
- margin-bottom: 10px;
- border-bottom: 2px solid @teal !important;
+  background-color: @surface !important;
+  color: @text !important;
+  border-radius: 10px !important;
+  padding: 10px !important;
+  margin-bottom: 10px;
+  border-bottom: 2px solid @teal !important;
 }
 
 /* The List Items */
 list {
- background: transparent;
+  background: transparent;
 }
 
 row {
- padding: 8px;
- margin: 2px;
- border-radius: 8px;
- color: @text;
+  padding: 8px;
+  margin: 2px;
+  border-radius: 8px;
+  color: @text;
 }
 
 /* The Selection */
 row:selected {
- background-color: alpha(@sky, 0.2) !important;
- color: @sky !important;
- outline: 1px solid @sky;
+  background-color: alpha(@sky, 0.2) !important;
+  color: @sky !important;
+  outline: 1px solid @sky;
 }
 
 /* Fix for the text labels inside rows */
 label {
- color: @text;
+  color: @text;
 }
 
 row:selected label {
- color: @sky !important;
- font-weight: bold;
+  color: @sky !important;
+  font-weight: bold;
 }
