@@ -43,7 +43,7 @@ alias q="exit"
 alias weather="curl wttr.in"
 alias wq="exit"
 alias y="yazi"
-#
+
 # git commands.
 alias ga="git add ."
 alias gp="git push --set-upstream origin HEAD"
@@ -59,3 +59,4 @@ if [ -z "$TMUX" ]; then
   tmux attach || tmux new-session
 fi
 
+eval $(keychain --eval --quiet id_ed25519)
