@@ -1,6 +1,7 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
+# ssh-add ~/.ssh/id_ed25519 2>/dev/null
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -45,10 +46,12 @@ alias y="yazi"
 #
 # git commands.
 alias ga="git add ."
-alias gp="git push"
+alias gp="git push --set-upstream origin HEAD"
 alias gc="git add . && git commit -m"
 
+export PATH="$HOME/.dotfiles/scripts:$PATH"
 export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.sock
+
 # Created by `pipx` on 2026-05-08 15:05:11
 export PATH="$PATH:/home/leabua/.local/bin"
 
