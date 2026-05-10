@@ -17,7 +17,7 @@ menu_main="󰀻  Apps\n󰏓  Packages\n󱐋  Power Profiles\n󰐥  Power"
 menu_packages="󰏓  Native Apps (pacseek)\n󰖟  PWAs (Web Apps)"
 menu_pwa="󰐕  Create New PWA\n󰆴  Delete PWA"
 menu_power_profile="󰓅  Performance\n󰾅  Balanced\n󰾆  Efficient"
-menu_power="󰒲  Suspend\n󰑓  Reboot\n󰍃  Log Out\n󰐥  Poweroff"
+menu_power="󰒲  Suspend\n󰑓  Reboot\n󰍃  Log Out\n󰐥  Power Off"
 
 # ==============================================================================
 # Logic Tree
@@ -94,7 +94,7 @@ case "$chosen_main" in
     ;;
   *"Reboot"*) systemctl reboot ;;
   *"Log Out"*) hyprctl dispatch exit ;;
-  *"Poweroff"*) systemctl poweroff ;;
+  *"Power Off"*) systemctl poweroff ;;
   esac
   ;;
 esac
