@@ -26,17 +26,18 @@ curl -L -s -o "$icon_path" "$icon_url"
 cat <<EOF >"$file_path"
 [Desktop Entry]
 Name=$app_name
-Exec=helium --app="$app_url"
+Exec=chromium --app="$app_url"
 Icon=$icon_path
 Type=Application
 Terminal=false
 Categories=Network;WebBrowser;
-EOF
+StartupWMClass=chromium
 
+EOF
 echo ""
 echo "========================================"
 echo "Success! $app_name has been created."
 echo "Icon saved to: $icon_path"
 echo "It is now available in your Rofi launcher."
 echo "Press ANY KEY to exit."
-read -n 1 -s
+read -r -n 1 -s
