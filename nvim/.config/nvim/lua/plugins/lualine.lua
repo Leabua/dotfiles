@@ -4,29 +4,39 @@ return {
     opts = function(_, opts)
       opts.options = opts.options or {}
       opts.options.globalstatus = true
-      local theme = require("lualine.themes.auto")
-      theme.normal.c.bg = "none"
-      if theme.insert and theme.insert.c then
-        theme.insert.c.bg = "none"
+
+      -- Load the Dracula theme explicitly
+      local theme = require("lualine.themes.dracula")
+
+      -- Apply transparency to the 'c' section (the middle part) for all modes
+      local modes = { "normal", "insert", "visual", "command", "replace", "inactive" }
+      for _, mode in ipairs(modes) do
+        if theme[mode] and theme[mode].c then
+          theme[mode].c.bg = "none"
+        end
       end
-      if theme.visual and theme.visual.c then
-        theme.visual.c.bg = "none"
-      end
-      if theme.command and theme.command.c then
-        theme.command.c.bg = "none"
-      end
-      if theme.inactive and theme.inactive.c then
-        theme.inactive.c.bg = "none"
-      end
+
       opts.options.theme = theme
       return opts
     end,
     config = function(_, opts)
       require("lualine").setup(opts)
-      vim.api.nvim_set_hl(0, "StatusLine", { bg = "none" })
-      vim.api.nvim_set_hl(0, "StatusLineNC", { bg = "none" })
-      vim.api.nvim_set_hl(0, "lualine_transparent", { bg = "none" })
-      vim.api.nvim_set_hl(0, "lualine_c_normal", { bg = "none" })
+
+      -- Force highlights to remain transparent at the Neovim level
+      local groups = {
+        "StatusLine",
+        "StatusLineNC",
+        "lualine_transparent",
+        "lualine_c_normal",
+        "lualine_c_insert",
+        "lualine_c_visual",
+        "lualine_c_command",
+        "lualine_c_inactive",
+      }
+
+      for _, group in ipairs(groups) do
+        vim.api.nvim_set_hl(0, group, { bg = "none" })
+      end
     end,
   },
 }
