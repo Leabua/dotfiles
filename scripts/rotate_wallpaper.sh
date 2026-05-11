@@ -53,3 +53,4 @@ wallpaper {
     fit_mode = cover
 }
 EOF
+notify-send "Wallpaper Updated" "$(basename "$NEXT_WALLPAPER")" -i "$NEXT_WALLPAPER"
