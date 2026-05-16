@@ -15,6 +15,7 @@ zstyle :compinstall filename '/home/leabua/.zshrc'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -51,8 +52,6 @@ export PATH="$HOME/.dotfiles/scripts:$PATH"
 # Created by `pipx` on 2026-05-08 15:05:11
 export PATH="$PATH:/home/leabua/.local/bin"
 
-# ---- keychain ----
-eval $(keychain --eval --quiet id_ed25519)
 
 # ---- zsh specific plugins ----
 source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
@@ -64,3 +63,11 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 if [ -z "$TMUX" ]; then
   tmux attach || tmux new-session
 fi
+
+# pnpm
+export PNPM_HOME="/home/leabua/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

@@ -5,10 +5,10 @@ theme = Catppuccin Mocha
 # Font
 font-family = "JetBrainsMono Nerd Font"
 font-style = Regular
-font-size = 12
+font-size = 13
 
 # Window
-window-padding-y = 0
+window-padding-y = 2
 resize-overlay = never
 background-opacity = 1
 window-inherit-working-directory = true
