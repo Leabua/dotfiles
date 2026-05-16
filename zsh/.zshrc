@@ -10,11 +10,13 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 bindkey -v
-# The following lines were added by compinstall
+
+# ---- The following lines were added by compinstall ----
 zstyle :compinstall filename '/home/leabua/.zshrc'
 autoload -Uz compinit
 compinit
-# End of lines added by compinstall
+
+# ---- End of lines added by compinstall ----
 export PATH="$HOME/.npm-global/bin:$PATH"
 
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
@@ -59,15 +61,10 @@ source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# ---- makes sure that tmux opens into active session ----
-if [ -z "$TMUX" ]; then
-  tmux attach || tmux new-session
-fi
-
-# pnpm
+# ---- pnpm ----
 export PNPM_HOME="/home/leabua/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-# pnpm end
+
