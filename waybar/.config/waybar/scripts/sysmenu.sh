@@ -93,7 +93,13 @@ case "$chosen_main" in
     systemctl suspend
     ;;
   *"Reboot"*) systemctl reboot ;;
-  *"Log Out"*) hyprctl dispatch exit ;;
+  *"Log Out"*)
+    if command -v hyprshutdown >/dev/null 2>&1; then
+      hyprshutdown
+    else
+      hyprctl dispatch 'hl.dsp.exit()'
+    fi
+    ;;
   *"Power Off"*) systemctl poweroff ;;
   esac
   ;;
