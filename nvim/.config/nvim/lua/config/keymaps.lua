@@ -29,3 +29,10 @@ vim.keymap.set("n", "q?", ":", { noremap = true })
 
 -- Also disable the visual command-line window
 vim.keymap.set("v", "q:", ":", { noremap = true })
+
+-- Toggle diagnostics
+keymap.set("n", "<leader>ud", function()
+	local enabled = vim.diagnostic.is_enabled()
+	vim.diagnostic.enable(not enabled)
+	vim.notify(enabled and "Diagnostics disabled" or "Diagnostics enabled")
+end, { desc = "Toggle Diagnostics" })
