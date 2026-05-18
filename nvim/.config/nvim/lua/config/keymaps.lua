@@ -1,7 +1,3 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyLazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
--- The format is keymap.set("mode", "bind", "what vim must do")
 local keymap = vim.keymap
 keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true })
 keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true })
@@ -23,3 +19,13 @@ keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature Help" }
 -- Delete a word backwards
 keymap.set("i", "<C-h>", "<C-w>")
 keymap.set("n", "<C-h>", "bdw")
+
+--- Press <leader>d to see the full error in a pop-up
+keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+
+-- Disable the command-line window (q: and q?)
+vim.keymap.set("n", "q:", ":", { noremap = true })
+vim.keymap.set("n", "q?", ":", { noremap = true })
+
+-- Also disable the visual command-line window
+vim.keymap.set("v", "q:", ":", { noremap = true })

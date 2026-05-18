@@ -1,19 +1,18 @@
 return {
-  {
-    "stevearc/oil.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      default_file_explorer = true,
-      keymaps = {
-        ["-"] = false,
-      },
-      view_options = {
-        show_hidden = false,
-      },
-    },
-    config = function(_, opts)
-      require("oil").setup(opts)
-      vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
-    end,
-  },
+	"stevearc/oil.nvim",
+	dependencies = {
+		{ "echasnovski/mini.icons", lazy = false },
+		{ "nvim-tree/nvim-web-devicons" },
+	},
+	config = function()
+		local oil = require("oil")
+		oil.setup({
+			keymaps = {
+				["h"] = "actions.parent",
+				["l"] = "actions.select",
+			},
+		})
+		vim.keymap.set("n", "-", oil.toggle_float, {})
+	end,
+	lazy = false,
 }

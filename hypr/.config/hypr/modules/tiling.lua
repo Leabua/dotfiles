@@ -22,17 +22,17 @@ bind("SUPER + SHIFT + K", hl.dsp.window.swap({ direction = "up" }))
 bind("SUPER + SHIFT + J", hl.dsp.window.swap({ direction = "down" }))
 
 -- resize horizontal
-bind("SUPER + code:20", hl.dsp.window.resize({ x = -100, y = 0 }))
-bind("SUPER + code:21", hl.dsp.window.resize({ x = 100, y = 0 }))
+bind("SUPER + code:20", hl.dsp.window.resize({ x = -100, y = 0, relative = true }))
+bind("SUPER + code:21", hl.dsp.window.resize({ x = 100, y = 0, relative = true }))
 
 -- resize vertical
-bind("SUPER + SHIFT + code:20", hl.dsp.window.resize({ x = 0, y = -100 }))
-bind("SUPER + SHIFT + code:21", hl.dsp.window.resize({ x = 0, y = 100 }))
+bind("SUPER + SHIFT + code:20", hl.dsp.window.resize({ x = 0, y = -100, relative = true }))
+bind("SUPER + SHIFT + code:21", hl.dsp.window.resize({ x = 0, y = 100, relative = true }))
 
 -- switch workspaces
 for i = 1, 9 do
-  bind("SUPER +" .. i, hl.dsp.focus({ workspace = i }))
-  bind("SUPER + SHIFT +" .. i, hl.dsp.window.move({ workspace = i }))
+	bind("SUPER +" .. i, hl.dsp.focus({ workspace = i }))
+	bind("SUPER + SHIFT +" .. i, hl.dsp.window.move({ workspace = i }))
 end
 
 bind("SUPER + 0", hl.dsp.focus({ workspace = 10 }))
