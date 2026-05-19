@@ -50,15 +50,20 @@ return {
 		input = { enabled = true },
 		git = { enabled = true },
 		-- always scope files and grep to cwd, hidden files excluded by default
+		-- always scope files and grep to cwd, hidden files included by default
 		picker = {
 			enabled = true,
 			sources = {
+				explorer = {
+					hidden = true,
+				},
 				files = {
 					cwd = vim.fn.getcwd(),
-					hidden = false,
+					hidden = true,
 				},
 				grep = {
 					cwd = vim.fn.getcwd(),
+					hidden = true,
 				},
 			},
 		},
@@ -86,7 +91,7 @@ return {
 			desc = "Find Files (cwd)",
 		},
 		{
-			"<leader>fg",
+			"<leader>sg",
 			-- explicitly pass cwd so grep always searches from current working directory
 			function()
 				Snacks.picker.grep({ cwd = vim.fn.getcwd() })
@@ -99,6 +104,13 @@ return {
 				Snacks.explorer()
 			end,
 			desc = "File Explorer",
+		},
+		{
+			"<leader>ud",
+			function()
+				Snacks.toggle.diagnostics():toggle()
+			end,
+			desc = "Toggle Diagnostics",
 		},
 	},
 }

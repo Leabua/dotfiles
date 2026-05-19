@@ -3,55 +3,53 @@
 -----------------------
 
 hl.config({
-  general = {
-    border_size = 2,
-    gaps_in = 5,
-    gaps_out = 10,
-    col = { active_border = { colors = { "rgb(b4befe)", "rgb(94e2d5)" }, angle = 45 } },
-    resize_on_border = true,
-  },
+	general = {
+		border_size = 1,
+		gaps_in = 5,
+		gaps_out = 10,
+		-- col = { active_border = { colors = { "rgb(b4befe)", "rgb(94e2d5)" }, angle = 45 } },
+		col = { active_border = { colors = { "rgb(a6e3a1)", "rgb(89b4fa)" }, angle = 45 } },
+		resize_on_border = true,
+	},
 
-  decoration = {
-    rounding = 8,
-    rounding_power = 4,
-    active_opacity = 0.9,
-    inactive_opacity = 0.85,
+	decoration = {
+		rounding = 7,
+		rounding_power = 8,
+		active_opacity = 0.9,
+		inactive_opacity = 0.85,
 
-    blur = {
-      enabled = true,
-      size = 3,
-      noise = 0.1,
-    },
+		blur = {
+			enabled = true,
+			size = 3,
+			noise = 0.1,
+		},
 
-    shadow = {
-      enabled = false,
-    },
+		shadow = {
+			enabled = false,
+		},
+	},
 
-  },
+	animations = {
+		enabled = true,
+	},
 
-  animations = {
-    enabled = true,
-  },
+	misc = {
+		force_default_wallpaper = 0,
+		disable_hyprland_logo = true,
+		disable_splash_rendering = true,
+	},
 
-  misc = {
-    force_default_wallpaper = 0,
-    disable_hyprland_logo = true,
-    disable_splash_rendering = true,
-  },
+	master = {
+		new_status = "slave",
+		new_on_top = true,
+		orientation = "left",
+		mfact = 0.5,
+	},
 
-  master = {
-    new_status = "slave",
-    new_on_top = true,
-    orientation = "left",
-    mfact = 0.5,
-  },
-
-  -- combining the two of master and split gave me the desired effect in pre-lua
-  dwindle = {
-    force_split = 2,
-  },
-
-
+	-- combining the two of master and split gave me the desired effect in pre-lua
+	dwindle = {
+		force_split = 2,
+	},
 })
 
 hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })

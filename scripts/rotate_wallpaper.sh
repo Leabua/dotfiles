@@ -2,6 +2,7 @@
 
 WALLPAPER_DIR="$HOME/Wallpapers"
 CONFIG_FILE="$HOME/.config/hypr/hyprpaper.conf"
+HYPRLOCK_CONFIG="$HOME/.config/hypr/hyprlock.conf"
 
 shopt -s nullglob
 PICS=("$WALLPAPER_DIR"/*.{jpg,jpeg,png,gif})
@@ -42,7 +43,13 @@ if [ -n "$CURRENT_WALLPAPER" ] && [ "$CURRENT_WALLPAPER" != "$NEXT_WALLPAPER" ];
   hyprctl hyprpaper unload "$CURRENT_WALLPAPER"
 fi
 
-# --- PERSISTENCE ---
+# --- HYPRLOCK PERSISTENCE ---
+# Safely find the 'background {' block in hyprlock.conf and update the path
+if [ -f "$HYPRLOCK_CONFIG" ]; then
+  sed -i '/^[[:space:]]*background[[:space:]]*{/,/}/ s|^\([[:space:]]*path[[:space:]]*=[[:space:]]*\).*|\1'"$NEXT_WALLPAPER"'|' "$HYPRLOCK_CONFIG"
+fi
+
+# --- HYPRPAPER PERSISTENCE ---
 # Overwrite the config file using the correct block syntax so it survives a reboot
 cat <<EOF >"$CONFIG_FILE"
 splash = false
@@ -53,4 +60,5 @@ wallpaper {
     fit_mode = cover
 }
 EOF
+
 notify-send "Wallpaper Updated" "$(basename "$NEXT_WALLPAPER")" -i "$NEXT_WALLPAPER"
