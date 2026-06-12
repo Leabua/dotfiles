@@ -1,0 +1,158 @@
+@import "mocha.css";
+
+* {
+  font-weight: bold;
+  font-family: "SF Pro";
+  /* font-family: "JetBrainsMono Nerd Font"; */
+  font-size: 16;
+  background-color: transparent;
+  border: none;
+  border-radius: 0px;
+  min-height: 0px;
+}
+
+/* ─── Outer bar ─────────────────────────────────────────────── */
+window#waybar {
+  background-color: transparent;
+}
+
+/* ─── Left wrapper — transparent, no pill ───────────────────── */
+.modules-left {
+  background-color: transparent;
+}
+
+/* ─── Right wrapper pill ─────────────────────────────────────── */
+.modules-right {
+  background-color: alpha(@crust, 0.85);
+  border-radius: 16px;
+  margin: 3px 3px 0px 3px;
+  padding: 2px 4px;
+}
+
+/* ─── Center ─────────────────────────────────────────────────── */
+.modules-center {
+  color: @teal;
+  background-color: transparent;
+}
+
+/* ─── arch + clock group pill ────────────────────────────────── */
+box#left-pill {
+  background-color: alpha(@crust, 0.85);
+  border-radius: 16px;
+  margin: 3px 3px 0px 3px;
+  padding: 2px 4px;
+}
+
+/* ─── Arch icon ──────────────────────────────────────────────── */
+#custom-arch {
+  padding: 4px 6px 4px 10px;
+  opacity: 0.95;
+  color: @mauve;
+}
+
+/* ─── Clock ──────────────────────────────────────────────────── */
+#clock {
+  padding: 4px 6px 4px 10px;
+  color: @mauve;
+}
+
+/* ─── Media standalone pill ──────────────────────────────────── */
+#custom-media {
+  background-color: alpha(@crust, 0.85);
+  border-radius: 16px;
+  margin: 3px 3px 0px 3px;
+  padding: 4px 12px;
+  color: @mauve;
+  transition:
+    background-color 0.5s ease,
+    color 0.4s ease,
+    opacity 0.3s ease;
+}
+
+#custom-media.stopped {
+  opacity: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#custom-media.paused {
+  opacity: 0.5;
+  color: @overlay1;
+}
+
+/* ─── Stripping backgrounds inside right pill ────────────────── */
+#pulseaudio,
+#network,
+#battery,
+#tray {
+  background-color: transparent;
+  padding: 2px 12px;
+  min-width: 10px;
+}
+
+/* ─── CENTER: Workspaces ─────────────────────────────────────── */
+#workspaces {
+  padding: 4px 3px;
+  border-radius: 16px;
+  background-color: alpha(@crust, 0.85);
+  border: 1px solid alpha(@surface0, 0.9);
+  margin: 3px 3px 0px 3px;
+}
+
+#workspaces button {
+  all: initial;
+  font-weight: bold;
+  color: @overlay1;
+  background: transparent;
+  padding: 0 7px;
+  margin: 0 2px;
+  border-radius: 7px;
+  transition: all 0.15s ease;
+}
+
+#workspaces button.active {
+  color: @teal;
+  background: alpha(@surface1, 0.8);
+  padding: 0 18px;
+  border-radius: 16px;
+}
+
+#workspaces button:not(.empty):not(.active) {
+  color: @teal;
+}
+
+#workspaces button:hover {
+  background: alpha(@surface1, 0.6);
+  color: @subtext1;
+}
+
+/* ─── RIGHT: Colors ──────────────────────────────────────────── */
+#pulseaudio,
+#network,
+#battery {
+  color: @mauve;
+}
+
+#battery.warning {
+  color: @peach;
+}
+
+#battery.critical {
+  color: @red;
+}
+
+#network.disconnected {
+  color: @maroon;
+}
+
+#pulseaudio.muted {
+  color: @overlay0;
+}
+
+/* ─── Tighten spacing inside right pill ─────────────────────── */
+.modules-right #pulseaudio,
+.modules-right #network {
+  padding-left: 4px;
+  padding-right: 4px;
+}

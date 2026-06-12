@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+THEME="$HOME/.dotfiles/rofi/rofi/clipboard.rasi"
+CACHE="$HOME/.cache/cliphist_thumbs"
+mkdir -p "$CACHE"
+
+clip_list=$(cliphist list)
+
+if [ -z "$clip_list" ]; then
+  notify-send "Clipboard" "History is empty"
+  exit 0
+fi
+
+# 1. Build the clean list for Rofi (No IDs, No binary strings)
+rofi_input=$(echo "$clip_list" | while IFS=$'\t' read -r id content; do
+  if [[ "$content" == *"[[ binary data"* ]]; then
+    thumb="$CACHE/$id.png"
+    # Decode thumbnail if it doesn't exist
+    [ ! -f "$thumb" ] && echo -e "$id\t$content" | cliphist decode >"$thumb"
+
+    # Output clean "Image" label and icon
+    printf '  Image\0icon\x1f%s\n' "$thumb"
+  else
+    # Output pure text
+    printf '%s\n' "$content"
+  fi
+done)
+
+# 2. Run Rofi. Instead of outputting text, output the INDEX (-format 'i')
+selected_index=$(echo -en "$rofi_input" | rofi -dmenu -i -p "Clipboard" -theme "$THEME" -format 'i')
+
+# If you hit Escape, exit gracefully
+if [ -z "$selected_index" ]; then
+  exit 0
+fi
+
+# 3. Use the index to grab the exact original line from cliphist
+mapfile -t lines <<<"$clip_list"
+selected_line="${lines[$selected_index]}"
+
+# 4. Decode and copy
+echo "$selected_line" | cliphist decode | wl-copy

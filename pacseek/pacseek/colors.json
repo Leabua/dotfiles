@@ -1,0 +1,15 @@
+{
+  "Transparent": false,
+  "Accent": "89b4fa",
+  "Title": "89dceb",
+  "SearchBar": "1e1e2e",
+  "PackagelistSourceRepository": "a6e3a1",
+  "PackagelistSourceAUR": "cba6f7",
+  "PackagelistHeader": "f9e2af",
+  "SettingsFieldBackground": "1e1e2e",
+  "SettingsFieldText": "89dceb",
+  "SettingsFieldLabel": "f9e2af",
+  "SettingsDropdownNotSelected": "45475a",
+  "StylePKGBUILD": "catppuccin-mocha",
+  "Comments": "Hardcoded Mocha background to fix focus-bar issues."
+}
