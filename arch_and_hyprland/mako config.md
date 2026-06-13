@@ -1,28 +1,23 @@
 # Mako Configuration
 
 ## Overview
-Mako is a lightweight notification daemon for Wayland. It handles desktop notifications with customizable appearance and behavior.
+Lightweight Wayland notification daemon with Catppuccin Mocha styling and per-app timeout overrides.
 
-## Configuration Files
-- `~/.config/mako/config`: Main configuration file.
+## Configuration
+- **`~/.config/mako/config`**
+- Font: JetBrainsMono Nerd Font 10.
+- Colors (Catppuccin Mocha): background `#1e1e2e` (Base), text `#cdd6f4` (Text), default border `#89dceb` (Sky), progress bar `over #313244` (Surface0).
+- Notification size: 300×100, margin 10, padding 15, border 2px with 8px radius.
+- `ignore-timeout=1` — mako controls all timeouts, not applications.
+- `default-timeout=4000` — 4 seconds.
 
-## Setup Commands
-No special setup commands are required for mako beyond ensuring the package is installed and the notification daemon is running.
+### Criteria overrides
+| Match | Changes |
+|-------|---------|
+| `urgency=high` | Red border (`#f38ba8`), 10s timeout (overrides apps that send 0) |
+| `expiring=0` | Force 4s timeout on notifications that declare themselves static |
+| `app-name=Satty` | Green border (`#a6e3a1`), 2s timeout (screenshot confirmation) |
 
-## Why This Configuration
-- Mako is chosen for its simplicity, performance, and Wayland-native implementation.
-- The configuration uses the Catppuccin Mocha color scheme for visual consistency.
-- Key aspects of this configuration:
-  - Font: JetBrainsMono Nerd Font at size 10 for readability
-  - Window dimensions: 300px width, 100px height with appropriate margins and padding
-  - Border styling: 2px width, 8px radius for modern appearance
-  - Timeout behavior: Ignores application timeouts (ignore-timeout=1) with default 4-second timeout
-  - Urgency levels: High urgency notifications get extended 10-second timeout
-  - Special handling: Satty app notifications get green border and 2-second timeout for quick feedback
-- The configuration ensures consistent, attractive notifications that don't overstay their welcome while still being noticeable when important.
-
-## Installed Packages
-Mako package is required. See the native packages list for the exact version.
-
-## Usage
-Mako runs as a daemon and displays notifications automatically. Configuration is applied on restart.
+## Notes
+- The `expiring=0` rule prevents "persistent" notifications from lingering indefinitely — all notifications expire.
+- High urgency gets 10s instead of the default 4s for important alerts.

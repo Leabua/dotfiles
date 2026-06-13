@@ -1,17 +1,20 @@
 # Ghostty Configuration
 
 ## Overview
-Ghostty is a fast, feature-rich terminal emulator that uses Zig for performance. It is configured via a config file.
+Fast terminal emulator configured with Aizen Dark theme, Nerd Font support, and minimal window chrome.
 
-## Configuration Files
-- `~/.config/ghostty/config`: Main configuration file for Ghostty.
+## Configuration
+- **`~/.config/ghostty/config`**
+- Theme: `Aizen Dark` (commented-out alternatives: Ayu, Catppuccin Mocha, Modus Vivendi Tinted, Dracula).
+- Font: `IoskeleyMono Nerd Font`, Regular weight, size 13. Ligatures enabled via `font-feature = ["calt", "liga"]`. Commented alternatives: JetBrainsMono Nerd Font, Zed Mono.
+- Window: no decorations, padding-y = 2, fully opaque (`background-opacity = 1`), inherits working directory on new window.
+- `resize-overlay = never` — suppresses the resize indicator.
+- `confirm-close-surface = false` — no prompt on close.
+- Cursor: block style, no blink.
 
-## Setup Commands
-No special setup commands are required for Ghostty beyond ensuring the package is installed.
+## Key bindings
+Uses Ghostty defaults.
 
-## Why This Configuration
-- Ghostty is chosen for its performance and modern features like true color, ligatures, and efficient rendering.
-- The configuration is kept minimal, relying on defaults where appropriate, with customizations for font and appearance as needed.
-
-## Installed Packages
-Ghostty package is required. See the native packages list for the exact version.
+## Notes
+- `shell-integration-features = no-cursor,ssh-env` — disables cursor sequence integration (avoids conflicts) but keeps SSH terminfo passthrough.
+- Multiple themes and fonts are kept commented out for quick switching.

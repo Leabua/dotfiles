@@ -1,28 +1,35 @@
 # Pacseek Configuration
 
 ## Overview
-Pacseek is a terminal-based package manager frontend for Arch Linux that provides an interactive interface for searching, installing, and managing packages from both official repositories and the AUR.
+Terminal-based Arch Linux package manager frontend (official repos + AUR), using yay as the backend and a custom Catppuccin Mocha color scheme.
 
-## Configuration Files
-- `~/.config/pacseek/config.json`: Main configuration file in JSON format.
-- `~/.config/pacseek/colors.json`: Color scheme configuration.
+## Configuration
 
-## Setup Commands
-No special setup commands are required for pacseek beyond ensuring the package is installed.
+### `~/.config/pacseek/config.json`
+- **Backend**: `yay -S` for install, `yay -Rns` for uninstall, `yay` for system upgrade.
+- **AUR**: Uses `aurapi.moson.org/rpc` (faster community API), 5s timeout, 500ms search delay.
+- **Search**: `Contains` mode by package `Name`, max 500 results.
+- **Cache**: 10-minute expiry, enabled.
+- **Appearance**: Custom color scheme, `Single` border style, `Angled-No-X` glyphs, `Transparent = true`.
+- **PKGBUILD**: Shown internally via `curl | less`.
+- **News feed**: Disabled.
+- **Layout**: `LeftProportion = 4`, window layout not saved.
+- `SepDepsWithNewLine = true` — dependencies listed one per line.
+- `EnableAutoSuggest = false`, `ComputeRequiredBy = false`.
 
-## Why This Configuration
-- Pacseek is chosen for its powerful search capabilities and user-friendly interface for package management.
-- The configuration is tailored for optimal usability:
-  - **Pacman/AUR Integration**: Configured to use yay for AUR operations (`InstallCommand`: "yay -S", `UninstallCommand`: "yay -Rns", `SysUpgradeCommand`: "yay")
-  - **AUR Settings**: Uses moson's AUR RPC for faster requests with appropriate timeouts and delays
-  - **Search Behavior**: Set to "Contains" search mode searching by package name with max 500 results
-  - **Cache Management**: 10-second cache expiry with caching enabled for performance
-  - **Appearance**: Custom color scheme with single borders, transparent background, and angled glyphs
-  - **Usability Features**: Disabled news feed to reduce clutter, enabled internal PKGBUILD viewing, and separated dependencies with newlines for readability
-- The configuration makes pacseek a powerful yet clean interface for managing Arch Linux packages.
+### `~/.config/pacseek/colors.json` (Catppuccin Mocha)
+| Element | Color | Hex |
+|---------|-------|-----|
+| Accent | Blue | `#89b4fa` |
+| Title | Sky | `#89dceb` |
+| SearchBar | Base | `#1e1e2e` |
+| Repo packages | Green | `#a6e3a1` |
+| AUR packages | Mauve | `#cba6f7` |
+| Header | Yellow | `#f9e2af` |
+| PKGBUILD style | catppuccin-mocha | — |
 
-## Installed Packages
-Pacseek package is required. See the native packages list for the exact version.
+`Transparent = false` in colors.json (overrides config.json's `true`).
 
-## Usage
-Run `pacseek` in terminal to launch the interactive package manager interface.
+## Notes
+- `AurUseDifferentCommands` is false — yay handles both pacman and AUR operations uniformly.
+- The `colors.json` transparency is set to false separately from the main config's transparency flag.

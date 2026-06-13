@@ -1,20 +1,23 @@
 # Alacritty Configuration
 
 ## Overview
-Alacritty is a GPU-accelerated terminal emulator. It is configured via TOML and is set up to use a dynamic theme from the Omarchy theme system.
+GPU-accelerated terminal emulator configured with dynamic theming from Omarchy, JetBrainsMono Nerd Font, and minimal window chrome.
 
-## Configuration Files
-- `~/.config/alacritty/alacritty.toml`: Main configuration file that imports the current theme and sets basic options.
+## Configuration
+- **`~/.config/alacritty/alacritty.toml`** — Main config file.
+- `general.import` loads `~/.config/omarchy/current/theme/alacritty.toml` so the theme can be swapped centrally.
+- `env.TERM = "xterm-256color"` ensures full color support and broad terminal compatibility.
+- Font: JetBrainsMono Nerd Font at size 14 for readable code with icon glyphs.
+- Window padding `x=8, y=3` for comfortable spacing; `decorations = "None"` removes title bar for a cleaner look; `opacity = 0.9` for slight transparency.
 
-## Setup Commands
-No special setup commands are required for Alacritty beyond ensuring the package is installed.
+## Key bindings
+| Binding | Action |
+|---------|--------|
+| `Shift + Insert` | Paste |
+| `Ctrl + Insert` | Copy |
 
-## Why This Configuration
-- The configuration uses `general.import` to dynamically load the theme from Omarchy, allowing for easy theme switching.
-- Font is set to JetBrainsMono Nerd Font at size 14 for readability and icon support.
-- Window decorations are set to "None" for a clean look, with padding adjusted for comfort.
-- Opacity is set to 0.9 for slight transparency.
-- Keyboard bindings are customized for copy-paste using Shift+Insert and Ctrl+Insert.
+These mirror common terminal copy/paste conventions without occupying more standard shortcuts.
 
-## Installed Packages
-Alacritty package is required. See the native packages list for the exact version.
+## Notes
+- Theme is managed externally by Omarchy — changing the active theme automatically updates Alacritty's colors on restart.
+- No special setup commands beyond installing the `alacritty` package.

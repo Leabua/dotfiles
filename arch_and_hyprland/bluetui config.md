@@ -1,21 +1,12 @@
 # Bluetui Configuration
 
 ## Overview
-Bluetui is a terminal-based Bluetooth device manager. It provides an easy-to-use interface for managing Bluetooth devices from the command line.
+Terminal-based Bluetooth device manager.
 
-## Configuration Files
-- `~/.config/bluetui/`: Directory for bluetui configuration (if any). Bluetui typically works well with defaults.
+## Configuration
+- **`~/.config/bluetui/config.toml`** — Only one option set.
+- `esc_quit = true` — Pressing Escape exits the application instead of requiring a separate quit command or key chord.
 
-## Setup Commands
-No special setup commands are required for bluetui beyond ensuring the package is installed and Bluetooth service is running.
-
-## Why This Configuration
-- Bluetui is chosen for its simplicity and effectiveness in managing Bluetooth devices via terminal.
-- No special configuration is needed as it provides a good out-of-the-box experience.
-- The application is launched directly from the terminal or via keybindings in Hyprland.
-
-## Installed Packages
-Bluetui package is required. See the native packages list for the exact version.
-
-## Usage
-Launch bluetui from terminal or via Hyprland keybindings to manage Bluetooth devices.
+## Notes
+- Everything else uses bluetui's defaults.
+- Requires the Bluetooth service (`bluetooth.service`) to be running.

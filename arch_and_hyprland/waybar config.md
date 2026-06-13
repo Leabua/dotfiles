@@ -1,63 +1,64 @@
 # Waybar Configuration
 
 ## Overview
-Waybar is a highly customizable status bar for Wayland compositors, especially designed for Hyprland. It provides system information, application shortcuts, and more in a sleek, configurable bar.
+Wayland status bar with Catppuccin Mocha styling, semi-transparent pill modules, and rofi-driven system menu. Font: SF Pro 16px bold.
 
-## Configuration Files
-- `~/.config/waybar/config.jsonc`: Main configuration file in JSONC format (JSON with comments).
-- `~/.config/waybar/style.css`: CSS file for styling the bar.
-- `~/.config/waybar/mocha.css`: Catppuccin Mocha theme for Waybar.
-- `~/.config/waybar/scripts/`: Directory containing custom scripts for modules.
+## Configuration
 
-## Setup Commands
-No special setup commands are required for waybar beyond ensuring the package is installed.
+### `~/.config/waybar/config.jsonc`
+- `layer = "top"`, `position = "top"`, `spacing = 0`.
+- `reload_style_on_change = true`.
 
-## Why This Configuration
-- Waybar is chosen for its flexibility, performance, and integration with Hyprland.
-- The configuration is designed for a clean, informative top bar:
-  - **General Settings**:
-    - `reload_style_on_change = true`: Automatically reloads style when config files change
-    - `layer = "top"`: Places bar on top layer
-    - `position = "top"`: Bar at top of screen
-    - `spacing = 0`: No spacing between modules
-  - **Module Layout**:
-    - **Left**: Custom Arch logo, clock, media controls
-    - **Center**: Hyprland workspaces (numbers 1-0)
-    - **Right**: Pulseaudio (volume), network, battery
-  - **Module Details**:
-    - **Custom/Arch**: Shows Arch Linux logo () with JetBrainsMono font, clicks open sysmenu script
-    - **Clock**: Shows time in HH:MM format, right-click opens timezone selector, left-click shows full date
-    - **Custom/Media**: Executes media.sh script, shows JSON output, controls:
-      - Left click: play/pause
-      - Right click: next track
-      - Scroll up/down: volume +/- 5%
-    - **Hyplland/Workspaces**: Shows workspace numbers, clicking activates workspace, persistent workspaces 1-4
-    - **Group/Tray-Expander**: Holds system tray with expand/collapse animation
-      - Custom/expand-icon: Shows expand/collapse icon
-      - Tray: Icon size 12px, spacing 14px
-    - **Pulseaudio**: Shows volume icon (headphones when connected, speaker otherwise)
-      - Left click: opens wiremix (or bluetui with right click)
-      - Scroll: adjust volume
-      - Tooltip shows volume percentage
-    - **Network**: Shows connection status icon
-      - Icons for disconnected, ethernet, wifi (various strengths)
-      - Left click: opens impala
-      - Shows SSID for wifi, IP for ethernet
-    - **Battery**: Shows battery icon with percentage
-      - Icons for charging and default states
-      - Left click: opens wlogout (exit menu)
-      - Tooltip shows power draw/charge rate
-      - Warning at 20%, critical at 10%
-  - **Styling**:
-    - Uses `mocha.css` (Catppuccin Mocha) for colors
-    - Additional styling in `style.css` for specific module appearances
-  - **Scripts**:
-    - `sysmenu.sh`: Provides a system menu for power options, etc.
-    - `media.sh`: Controls media playback and returns metadata
+#### Modules-left
+**Group `left-pill`** (semi-transparent `crust` background, 16px radius):
+- `custom/arch`: Arch logo `` in JetBrainsMono, opens `sysmenu.sh` on click.
+- `clock`: `{:%H:%M}` format, right-click opens timezone selector via `omarchy-tz-select`, alt-click shows full date.
 
-## Installed Packages
-Waybar package is required. See the native packages list for the exact version.
+**`custom/media`**: Standalone pill — runs `media.sh` (event-driven playerctl output). Click toggles play/pause, right-click next track, scroll adjusts volume 5%. Hidden (opacity 0) when nothing is playing; dimmed when paused.
 
-## Usage
-Waybar starts automatically with Hyprland. It updates dynamically based on system state.
-Click on modules for various functions as described above.
+#### Modules-center
+**`hyprland/workspaces`**: Numbered icons 1–9 + 0 for workspace 10. Persistent workspaces 1–5. Active workspace gets teal color and expanded pill. Niri workspaces module present but commented out.
+
+#### Modules-right
+Semi-transparent `crust` pill containing:
+- **`pulseaudio`**: Volume icon + `{volume}%`. Click opens wiremix in floating ghostty; right-click opens bluetui. Muted state dimmed.
+- **`network`**: WiFi SSID or ethernet IP, cycling icons for signal strength. Disconnected shows "No Network" in maroon. Click opens impala.
+- **`battery`**: Charging/discharging icons + `{capacity}%`, tooltip shows power draw. Warning at 20% (peach), critical at 10% (red). Click opens wlogout.
+
+#### Unused sections
+`group/tray-expander` with `custom/expand-icon` and `tray` are defined but not included in any modules-* list (dead code).
+
+### `style.css`
+- Global: `font-family: "SF Pro"`, `font-size: 16`, `background-color: transparent`, no borders.
+- Left pill (`#left-pill`): `alpha(@crust, 0.85)`, 16px radius, mauve text.
+- Media pill (standalone): same background, fades out when stopped, dims when paused.
+- Workspaces: pill with `surface0` border, active button gets teal text + `surface1` background, hover dims.
+- Right-side modules: transparent inside the pill container, mauve text.
+- Battery warning/critical states use peach/red.
+
+### `mocha.css`
+Full Catppuccin Mocha palette variables.
+
+## Scripts
+
+### `sysmenu.sh`
+Rofi-based system menu with nested submenus:
+- **Apps** → launches rofi drun.
+- **Packages** → pacseek (ghostty) or PWA management (create/delete).
+- **Power Profiles** → `powerprofilesctl` (performance/balanced/power-saver) with active profile indicator.
+- **Power** → Suspend (lock + systemctl suspend), Reboot, Log Out (hyprshutdown or niri msg), Power Off.
+- `--power` flag jumps directly to power submenu.
+
+### `media.sh`
+Event-driven playerctl metadata display. Listens on all players via `--follow`, outputs JSON with `text`, `class` (playing/paused/stopped), truncates to 40 chars.
+
+### `pwa-builder.sh`
+Interactive terminal script that creates Chromium PWA `.desktop` files: prompts for app name, URL, icon URL, downloads the icon, writes a desktop entry.
+
+## Key bindings
+Waybar is launched on compositor start. Modules respond to mouse events as documented above.
+
+## Notes
+- This config is used under Hyprland. Under Niri, waybar is commented out in favor of Noctalia's bar.
+- `group/tray-expander` is a leftover definition — system tray is not displayed.
+- The `media.sh` script uses `playerctl --all-players --follow` for live updates without polling.

@@ -61,6 +61,7 @@ yay -S $(cat foreign_packages.txt)
 - [[hypr config]]
 - [[impala config]]
 - [[mako config]]
+- [[niri config]]
 - [[nvim config]]
 - [[pacseek config]]
 - [[rofi config]]

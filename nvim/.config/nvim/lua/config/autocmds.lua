@@ -25,3 +25,12 @@ vim.api.nvim_create_autocmd("WinEnter", {
 		end
 	end,
 })
+
+-- Highlight on yank/delete
+vim.api.nvim_create_autocmd("TextYankPost", {
+	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
+	desc = "Briefly highlight yanked or deleted text",
+	callback = function()
+		vim.highlight.on_yank({ higroup = "Visual", timeout = 200 })
+	end,
+})
