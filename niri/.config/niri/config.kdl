@@ -1,0 +1,362 @@
+// ==========================================
+// Leabua's Niri Configuration
+// Optimized for independent dual-monitor workflow
+// ==========================================
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+// -------------------
+// Environment
+// -------------------
+
+environment {
+    XCURSOR_SIZE "20"
+    XCURSOR_THEME "Bibata-Modern-Ice"
+    GDK_SCALE "1"
+}
+
+// -------------------
+// Autostart
+// -------------------
+spawn-sh-at-startup "ssh-add ~/.ssh/id_ed25519"
+spawn-at-startup "gnome-keyring-daemon" "--start" "--components=ssh,secrets,pkcs11"
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
+// [SWITCHED OFF] Waybar replaced by Noctalia
+// spawn-at-startup "waybar"
+spawn-at-startup "nm-applet"
+// [SWITCHED OFF] swww daemon — Noctalia manages wallpaper
+// spawn-at-startup "swww-daemon"
+// [SWITCHED OFF] swww wallpaper restore — Noctalia manages wallpaper
+// spawn-sh-at-startup "swww img $(cat ~/.cache/swww_current_wallpaper 2>/dev/null || echo ~/Wallpapers/your-default.jpg)"
+spawn-at-startup "hypridle"
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+spawn-at-startup "/usr/lib/polkit-kde-authentication-agent-1"
+// [NOCTALIA] Main shell — bar, launcher, lockscreen, wallpaper, notifications
+spawn-at-startup "qs" "-c" "noctalia-shell"
+
+// -------------------
+// Input Devices
+// -------------------
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            options "caps:swapescape"
+        }
+        repeat-rate 60
+        repeat-delay 300
+        numlock
+    }
+    touchpad {
+        // off
+        natural-scroll
+        scroll-factor 1.0
+        tap
+        dwt
+    }
+    mouse {
+        // Leave natural-scroll off for standard mouse behavior
+    }
+    focus-follows-mouse
+    warp-mouse-to-focus
+}
+
+// -------------------
+// Monitors / Outputs
+// -------------------
+output "HDMI-A-1" {
+    mode "1920x1080@60"
+    position x=0 y=-1080
+    scale 1.0
+}
+output "eDP-1" {
+    mode "1920x1080@60"
+    position x=0 y=0
+    scale 1.0
+}
+
+// -------------------
+// Window Decorations
+// -------------------
+window-rule {
+    match is-focused=true
+    opacity 0.90
+
+    geometry-corner-radius 6
+    clip-to-geometry true
+
+    draw-border-with-background false // this solves the color issues on focused windows
+
+    background-effect {
+      blur false
+    }
+    shadow {
+      off
+    }
+    focus-ring {
+      on
+      width 2
+      active-gradient from="#a6e3a1" to="#89b4fa" angle=45
+    }
+}
+window-rule {
+    match is-focused=false
+    opacity 0.85
+
+    geometry-corner-radius 6
+    clip-to-geometry true
+
+    background-effect {
+      blur false
+    }
+    shadow {
+      off
+    }
+}
+
+// -------------------
+// Layout & Styling
+// -------------------
+layout {
+    gaps 10
+    center-focused-column "never"
+    preset-column-widths {
+        proportion 0.5
+        proportion 1.0
+    }
+    preset-window-heights {
+        proportion 0.5
+        proportion 1.0
+    }
+    default-column-width { proportion 0.5; }
+    border {
+        off
+    }
+}
+
+
+// -------------------
+// Gestures
+// -------------------
+gestures {
+    hot-corners {
+        off
+    }
+}
+
+// -------------------
+// Cursor
+// -------------------
+cursor {
+    xcursor-theme "Bibata-Modern-Ice"
+    xcursor-size 20
+    hide-when-typing
+    hide-after-inactive-ms 10000
+}
+
+// -------------------
+// Animations
+// -------------------
+animations {
+    // slowdown 1.0
+}
+
+// -------------------
+// Keybindings
+// -------------------
+binds {
+    // -- Application Launchers --
+    Mod+Return { spawn "ghostty"; }
+
+    // [NOCTALIA] App launcher
+    Mod+Space { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    // [SWITCHED OFF] Old rofi launcher
+    // Mod+Space { spawn-sh "pkill -x rofi || rofi -show drun -theme ~/.config/rofi/config.rasi"; }
+
+    // [NOCTALIA] Session/power menu
+    Mod+Alt+Space { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
+    // [SWITCHED OFF] Old rofi sysmenu
+    // Mod+Alt+Space { spawn-sh "pkill rofi || ~/.config/waybar/scripts/sysmenu.sh"; }
+
+    // [NOCTALIA] Clipboard picker
+    Mod+Shift+V { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
+    Mod+Shift+C { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
+    // [SWITCHED OFF] Old rofi cliphist
+    // Mod+Shift+V { spawn-sh "pkill rofi || /home/leabua/.dotfiles/scripts/cliphist-rofi"; }
+    // Mod+Shift+C { spawn-sh "pkill rofi || /home/leabua/.dotfiles/scripts/cliphist-rofi"; }
+
+    Mod+Shift+O { spawn "obsidian"; }
+    Mod+Shift+F { spawn "nautilus"; }
+    Mod+Shift+B { spawn "zen-browser"; }
+
+    // [NOCTALIA] Wallpaper — random on laptop screen
+    Mod+Shift+P { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "wallpaper" "random" ; }
+    // [SWITCHED OFF] Old swww rotate script
+    // Mod+Shift+P { spawn-sh "~/.dotfiles/scripts/rotate_wallpaper.sh"; }
+
+    Mod+Shift+M { spawn-sh "/usr/bin/chromium --app-id=blgdilankhbcpipclgpdndahbehalgkh"; }
+
+    // -- System Utilities --
+    // [SWITCHED OFF] Waybar toggle — no longer relevant
+    // Mod+Shift+Space { spawn-sh "killall -SIGUSR1 waybar"; }
+
+    // [NOCTALIA] Bar toggle
+    Mod+Shift+Return { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "bar" "toggle"; }
+
+    // [NOCTALIA] Lockscreen
+    Mod+Alt+L { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
+    // [SWITCHED OFF] hyprlock — Hyprland specific
+    // Mod+Alt+L { spawn "hyprlock"; }
+
+    // [NOCTALIA] Control center
+    Mod+Alt+C { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
+
+    // [NOCTALIA] Notification history
+    Mod+Alt+N { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "notifications" "toggleHistory"; }
+
+    // [NOCTALIA] System monitor
+    Mod+Alt+M { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "systemMonitor" "toggle"; }
+
+    Print { spawn-sh "grim -g \"$(slurp)\" - | satty --filename -"; }
+    Mod+Print { spawn-sh "grim - | wl-copy && notify-send 'Screenshot' 'Monitor copied to clipboard' -i clipboard"; }
+
+    // -- Audio Controls --
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    // -- Brightness Controls --
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl -e4 -n2 set 5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl -e4 -n2 set 5%-"; }
+
+    // -- Media Controls --
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+
+    // -- Power Menu --
+    // [NOCTALIA] Hardware power button triggers session menu
+    XF86PowerOff allow-when-locked=false { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
+    // [SWITCHED OFF] Old waybar sysmenu power
+    // XF86PowerOff allow-when-locked=true { spawn-sh "~/.config/waybar/scripts/sysmenu.sh --power"; }
+
+    // -- Core Window Management --
+    Mod+W { close-window; }
+    Mod+F { fullscreen-window; }
+    Mod+O { toggle-overview; }
+    Mod+Shift+Q { quit; }
+
+    // -- Focus Navigation --
+    Mod+H { focus-column-left; }
+    Mod+L { focus-column-right; }
+    Mod+K { focus-workspace-up; }
+    Mod+J { focus-workspace-down; }
+
+    // -- Cross-Monitor Navigation --
+    Mod+Shift+K { focus-monitor-up; }
+    Mod+Shift+J { focus-monitor-down; }
+    Mod+Ctrl+K  { focus-monitor-up; }
+    Mod+Ctrl+J  { focus-monitor-down; }
+    Mod+Ctrl+H  { focus-monitor-left; }
+    Mod+Ctrl+L  { focus-monitor-right; }
+
+    // -- Move Windows / Modify Layout --
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+L { move-column-right; }
+    Mod+Comma   { consume-window-into-column; }
+    Mod+Period  { expel-window-from-column; }
+
+    // -- Move Windows Across Monitors --
+    Mod+Ctrl+Shift+K { move-window-to-monitor-up; }
+    Mod+Ctrl+Shift+J { move-window-to-monitor-down; }
+    Mod+Ctrl+Shift+H { move-window-to-monitor-left; }
+    Mod+Ctrl+Shift+L { move-window-to-monitor-right; }
+
+    // -- Resize --
+    Mod+Minus       { set-column-width "-100"; }
+    Mod+Equal       { set-column-width "+100"; }
+    Mod+Shift+Minus { set-window-height "-100"; }
+    Mod+Shift+Equal { set-window-height "+100"; }
+
+    // -- Preset Layout Toggles --
+    Mod+R       { switch-preset-column-width; }
+    Mod+T       { switch-preset-column-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+Shift+T { switch-preset-window-height; }
+
+    // -- Workspace Switching --
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+0 { focus-workspace 10; }
+
+    // -- Move Active Window to Workspace --
+    Mod+Shift+1 { move-window-to-workspace 1; }
+    Mod+Shift+2 { move-window-to-workspace 2; }
+    Mod+Shift+3 { move-window-to-workspace 3; }
+    Mod+Shift+4 { move-window-to-workspace 4; }
+    Mod+Shift+5 { move-window-to-workspace 5; }
+    Mod+Shift+6 { move-window-to-workspace 6; }
+    Mod+Shift+7 { move-window-to-workspace 7; }
+    Mod+Shift+8 { move-window-to-workspace 8; }
+    Mod+Shift+9 { move-window-to-workspace 9; }
+    Mod+Shift+0 { move-window-to-workspace 10; }
+
+    // -- Send Window to Workspace (Silent) --
+    Mod+Ctrl+Shift+1 { move-window-to-workspace 1; }
+    Mod+Ctrl+Shift+2 { move-window-to-workspace 2; }
+    Mod+Ctrl+Shift+3 { move-window-to-workspace 3; }
+    Mod+Ctrl+Shift+4 { move-window-to-workspace 4; }
+    Mod+Ctrl+Shift+5 { move-window-to-workspace 5; }
+    Mod+Ctrl+Shift+6 { move-window-to-workspace 6; }
+    Mod+Ctrl+Shift+7 { move-window-to-workspace 7; }
+    Mod+Ctrl+Shift+8 { move-window-to-workspace 8; }
+    Mod+Ctrl+Shift+9 { move-window-to-workspace 9; }
+    Mod+Ctrl+Shift+0 { move-window-to-workspace 10; }
+}
+
+// -------------------
+// Window Rules
+// -------------------
+window-rule {
+    match app-id="com.mitchellh.ghostty" title="^wiremix-term$"
+    open-floating true
+}
+window-rule {
+    match app-id="com.mitchellh.ghostty" title="^bluetui-term$"
+    open-floating true
+}
+window-rule {
+    match app-id="com.mitchellh.ghostty" title="^impala-term$"
+    open-floating true
+}
+window-rule {
+    match app-id="com.mitchellh.ghostty" title="^sysmenu-tui$"
+    open-floating true
+}
+window-rule {
+    match app-id="^localsend$"
+    open-floating true
+}
+window-rule {
+    match app-id="^org.gnome.NautilusPreviewer$"
+    open-floating true
+}
+// Prevent Apple Music PWA from stealing focus on launch
+window-rule {
+    match app-id="^chrome-blgdilankhbcpipclgpdndahbehalgkh-Default$"
+    open-focused false
+}
+

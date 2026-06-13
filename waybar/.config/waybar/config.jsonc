@@ -1,0 +1,163 @@
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "modules-left": [
+    "group/left-pill",
+    "custom/media"
+  ],
+  "modules-center": [
+    "hyprland/workspaces"
+    // ,"niri/workspaces"
+  ],
+  "modules-right": [
+    "pulseaudio",
+    "network",
+    "battery"
+  ],
+  "group/left-pill": {
+    "orientation": "inherit",
+    "modules": [
+      "custom/arch",
+      "clock"
+    ]
+  },
+  "custom/arch": {
+    "format": "<span font='JetBrainsMono Font'></span>",
+    "tooltip": false,
+    "on-click": "~/.config/waybar/scripts/sysmenu.sh"
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "format-alt": "{:%A, %e %b %Y - %H:%M}",
+    "tooltip": false,
+    "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select"
+  },
+  "custom/media": {
+    "exec": "/home/leabua/.config/waybar/scripts/media.sh",
+    "return-type": "json",
+    "format": "{}",
+    "exec-on-event": false,
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-scroll-up": "playerctl volume 0.05+",
+    "on-scroll-down": "playerctl volume 0.05-"
+  },
+  "niri/workspaces": {
+    "format": "{icon}",
+    "on-click": "activate"
+  },
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "on-click": "activate",
+    "format-icons": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "0"
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": [
+      "custom/expand-icon",
+      "tray"
+    ]
+  },
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 14
+  },
+  "pulseaudio": {
+    "format": "{icon}  {volume}%",
+    "format-muted": "󰝟",
+    "on-click": "pkill wiremix || ghostty --title=wiremix-term -e wiremix",
+    "on-click-right": "pkill bluetui || ghostty --title=bluetui-term -e bluetui",
+    "scroll-step": 5,
+    "format-icons": {
+      "headphone": " ",
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    }
+  },
+  "network": {
+    "format-icons": [
+      "󰤯 ",
+      "󰤟 ",
+      "󰤢 ",
+      "󰤥 ",
+      "󰤨 "
+    ],
+    "format": "{icon}",
+    "format-wifi": "{icon}  {essid}",
+    "format-ethernet": "󰀂  {ipaddr}",
+    "format-disconnected": "No Network",
+    "interval": 3,
+    "on-click": "pkill impala || ghostty --title=impala-term -e impala"
+  },
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "{icon} {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-full": "󰂅 100%",
+    "format-icons": {
+      "charging": [
+        "󰢜",
+        "󰂆",
+        "󰂇",
+        "󰂈",
+        "󰢝",
+        "󰂉",
+        "󰢞",
+        "󰂊",
+        "󰂋",
+        "󰂅"
+      ],
+      "default": [
+        "󰁺",
+        "󰁻",
+        "󰁼",
+        "󰁽",
+        "󰁾",
+        "󰁿",
+        "󰂀",
+        "󰂁",
+        "󰂂",
+        "󰁹"
+      ]
+    },
+    "tooltip-format-discharging": "{power:>1.0f}W  {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑  {capacity}%",
+    "interval": 5,
+    "on-click": "wlogout",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  }
+}

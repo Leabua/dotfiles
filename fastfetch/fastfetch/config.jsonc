@@ -1,0 +1,106 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "padding": {
+      "left": 2
+    }
+  },
+  "display": {
+    "separator": " "
+  },
+  "modules": [
+    {
+      "type": "custom",
+      "format": "┌──────────────────── Hardware ────────────────────┐",
+      "outputColor": "blue"
+    },
+    {
+      "type": "cpu",
+      "key": "  ",
+      "keyColor": "blue"
+    },
+    {
+      "type": "gpu",
+      "key": " 󰢮 ",
+      "keyColor": "blue"
+    },
+    {
+      "type": "disk",
+      "key": " 󰋊 ",
+      "keyColor": "blue"
+    },
+    {
+      "type": "memory",
+      "key": "  ",
+      "keyColor": "blue"
+    },
+    {
+      "type": "display",
+      "key": " 󰍹 ",
+      "keyColor": "blue"
+    },
+    {
+      "type": "custom",
+      "format": "└──────────────────────────────────────────────────┘",
+      "outputColor": "blue"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "┌──────────────────── Software ────────────────────┐",
+      "outputColor": "cyan"
+    },
+    {
+      "type": "os",
+      "key": " 󰣇 ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "wm",
+      "key": "  ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "packages",
+      "key": " 󰏖 ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "terminal",
+      "key": "  ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "terminalfont",
+      "key": " 󰛖 ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "custom",
+      "format": "└──────────────────────────────────────────────────┘",
+      "outputColor": "cyan"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "┌─────────────────── Uptime / Age ─────────────────┐",
+      "outputColor": "magenta"
+    },
+    {
+      "type": "uptime",
+      "key": " 󰅐  Uptime:",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "command",
+      "key": " 󰃭  OS Age:",
+      "keyColor": "magenta",
+      "text": "birth_install=$(stat -c %W /); echo \"$(( ($(date +%s) - birth_install) / 86400 )) days\""
+    },
+    {
+      "type": "custom",
+      "format": "└──────────────────────────────────────────────────┘",
+      "outputColor": "magenta"
+    }
+  ]
+}

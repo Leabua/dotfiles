@@ -1,0 +1,14 @@
+.DS_Store
+Thumbs.db
+*.swp
+*~
+*.pem
+*.key
+*.cert
+id_*
+*.env
+credentials*
+*.local
+*.bak
+__pycache__/
+.cache/

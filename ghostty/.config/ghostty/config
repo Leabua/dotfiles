@@ -1,0 +1,35 @@
+theme = Aizen Dark
+# theme = Ayu
+# theme = Catppuccin Mocha
+# theme = Modus Vivendi Tinted
+# theme = Dracula
+
+# Font
+# Define the font family
+
+# font-family = "JetBrainsMono Nerd Font"
+font-family = "IoskeleyMono Nerd Font"
+# font-family = "Zed Mono"
+font-style = Regular
+font-size = 13
+
+font-feature = ["calt", "liga"]
+
+# window
+window-padding-y = 2
+resize-overlay = never
+background-opacity = 1
+window-inherit-working-directory = true
+
+# cursor
+cursor-style = "block"
+cursor-style-blink = false
+# Cursor styling + SSH session terminfo
+# (all shell integration options must be passed together)
+shell-integration-features = no-cursor,ssh-env
+
+# Slowdown mouse scrolling
+mouse-scroll-multiplier = 1
+confirm-close-surface = false
+
+window-decoration = false

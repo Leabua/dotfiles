@@ -1,0 +1,48 @@
+[general]
+# Start fullscreen so you aren't distracted by background windows
+fullscreen = false
+# Use the floating hack for Hyprland compatibility
+floating-hack = true
+# Exit as soon as you hit Save or Copy to keep the system clean
+early-exit = true
+early-exit-save-as = true
+# Match your aesthetic (12px rounded corners)
+corner-roundness = 12
+initial-tool = "rectangle"
+copy-command = "wl-copy"
+annotation-size-factor = 2
+# Save to your dedicated folder
+output-filename = "/home/leabua/Pictures/Screenshots/satty-%Y-%m-%d_%H:%M:%S.png"
+# Don't clutter the drive if you only wanted a clipboard copy
+save-after-copy = false
+default-hide-toolbars = false
+# Keyboard-driven workflow
+actions-on-enter = ["save-to-clipboard", "exit"]
+actions-on-escape = ["exit"]
+no-window-decoration = true
+# Visual zoom for precise annotations
+zoom-factor = 1.1
+
+[keybinds]
+pointer = "p"
+crop = "c"
+brush = "b"
+line = "i"
+arrow = "z"
+rectangle = "r"
+ellipse = "e"
+text = "t"
+marker = "m"
+blur = "u"
+highlight = "g"
+
+[color-palette]
+# Use your Catppuccin Mocha colors for the brush palette!
+palette = [
+  "#89b4fa", # Blue
+  "#f5c2e7", # Pink
+  "#cba6f7", # Mauve
+  "#f38ba8", # Red
+  "#a6e3a1", # Green
+  "#fab387", # Peach
+]

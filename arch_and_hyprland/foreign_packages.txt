@@ -1,0 +1,17 @@
+antigravity
+apple-fonts
+ascii-image-converter-git
+ascii-image-converter-git-debug
+bibata-cursor-theme-bin
+chromium-widevine
+elephant-bin
+elephant-desktopapplications-bin
+elephant-providerlist-bin
+helium-browser-bin
+localsend-bin
+pacseek-bin
+rtl8821ce-dkms-git
+wlogout
+yay
+yay-debug
+zsh-theme-powerlevel10k
