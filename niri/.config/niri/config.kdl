@@ -169,8 +169,14 @@ animations {
 // Keybindings
 // -------------------
 binds {
+   // quickly mirror laptop to monitor using wl-mirror
+    Mod+Ctrl+M { spawn "sh" "-c" "wl-mirror  eDP-1"; }
+
     // -- Application Launchers --
     Mod+Return { spawn "ghostty"; }
+    Mod+Shift+O { spawn "obsidian"; }
+    Mod+Shift+F { spawn "nautilus"; }
+    Mod+Shift+B { spawn "zen-browser"; }
 
     // [NOCTALIA] App launcher
     Mod+Space { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
@@ -185,13 +191,7 @@ binds {
     // [NOCTALIA] Clipboard picker
     Mod+Shift+V { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
     Mod+Shift+C { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
-    // [SWITCHED OFF] Old rofi cliphist
-    // Mod+Shift+V { spawn-sh "pkill rofi || /home/leabua/.dotfiles/scripts/cliphist-rofi"; }
-    // Mod+Shift+C { spawn-sh "pkill rofi || /home/leabua/.dotfiles/scripts/cliphist-rofi"; }
 
-    Mod+Shift+O { spawn "obsidian"; }
-    Mod+Shift+F { spawn "nautilus"; }
-    Mod+Shift+B { spawn "zen-browser"; }
 
     // [NOCTALIA] Wallpaper — random on laptop screen
     Mod+Shift+P { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "wallpaper" "random" ; }
@@ -326,6 +326,7 @@ binds {
     Mod+Ctrl+Shift+9 { move-window-to-workspace 9; }
     Mod+Ctrl+Shift+0 { move-window-to-workspace 10; }
 }
+
 
 // -------------------
 // Window Rules

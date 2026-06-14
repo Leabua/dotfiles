@@ -17,8 +17,8 @@ keymap.set("x", "<leader>p", '"_dP')
 keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature Help" })
 
 -- Delete a word backwards
-keymap.set("i", "<C-BS>", "<C-w>")
-keymap.set("n", "<C-BS>", "bdw")
+vim.keymap.set("i", "<C-BS>", "<C-w>", { noremap = true })
+vim.keymap.set("n", "<C-BS>", "bved", { noremap = true })
 
 --- Press <leader>d to see the full error in a pop-up
 keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
@@ -36,3 +36,6 @@ keymap.set("n", "<leader>ud", function()
 	vim.diagnostic.enable(not enabled)
 	vim.notify(enabled and "Diagnostics disabled" or "Diagnostics enabled")
 end, { desc = "Toggle Diagnostics" })
+
+-- clears annoying search highlighting
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
