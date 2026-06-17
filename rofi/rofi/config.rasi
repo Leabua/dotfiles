@@ -3,9 +3,9 @@
 * {
     background:          @base;
     foreground:          @text;
-    selected:            @blue;
+    selected:            @teal;
     selected-text:       @base;
-    input-background:    @surface0;
+    input-background:    @base;
     placeholder-color:   @overlay0;
 }
 
@@ -16,7 +16,7 @@ configuration {
     drun-display-format: "{name}";
 
    /* Set the font globally for Rofi */
-    font:                "SF Pro Bold 11"; 
+    font:                "SF Pro Display Bold 11"; 
 
     /* Mouse Interaction & Auto-Close */
     hover-select:        true;

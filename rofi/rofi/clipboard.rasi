@@ -3,9 +3,9 @@
 * {
     background:          @base;
     foreground:          @text;
-    selected:            @blue;
+    selected:            @teal;
     selected-text:       @base;
-    input-background:    @surface0;
+    input-background:    @base;
     placeholder-color:   @overlay0;
 }
 

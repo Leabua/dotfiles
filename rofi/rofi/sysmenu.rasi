@@ -3,13 +3,13 @@
 
 * {
     /* Define the variables locally to ensure they override everything else */
-    bg-col:  #1e1e2e;
-    fg-col:  #cdd6f4;
-    sel-col: #89b4fa;
+    bg-col:  @base;
+    fg-col:  @text;
+    sel-col: @teal;
 }
 
 configuration {
-    font: "JetBrainsMono Nerd Font Bold 12";
+    font: "SF Pro Display Bold 11";
 }
   
 window {
