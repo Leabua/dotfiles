@@ -23,22 +23,22 @@ window#waybar {
 
 /* ─── Right wrapper pill ─────────────────────────────────────── */
 .modules-right {
-  background-color: alpha(@crust, 0.85);
-  border-radius: 16px;
+  background-color: alpha(@base, 0.85);
+  border-radius: 14px;
   margin: 3px 3px 0px 3px;
   padding: 2px 4px;
 }
 
 /* ─── Center ─────────────────────────────────────────────────── */
 .modules-center {
-  color: @teal;
+  color: @text;
   background-color: transparent;
 }
 
 /* ─── arch + clock group pill ────────────────────────────────── */
 box#left-pill {
-  background-color: alpha(@crust, 0.85);
-  border-radius: 16px;
+  background-color: alpha(@base, 0.85);
+  border-radius: 14px;
   margin: 3px 3px 0px 3px;
   padding: 2px 4px;
 }
@@ -47,22 +47,22 @@ box#left-pill {
 #custom-arch {
   padding: 4px 6px 4px 10px;
   opacity: 0.95;
-  color: @mauve;
+  color: @text;
 }
 
 /* ─── Clock ──────────────────────────────────────────────────── */
 #clock {
   padding: 4px 6px 4px 10px;
-  color: @mauve;
+  color: @text;
 }
 
 /* ─── Media standalone pill ──────────────────────────────────── */
 #custom-media {
-  background-color: alpha(@crust, 0.85);
-  border-radius: 16px;
+  background-color: alpha(@base, 0.85);
+  border-radius: 14px;
   margin: 3px 3px 0px 3px;
   padding: 4px 12px;
-  color: @mauve;
+  color: @text;
   transition:
     background-color 0.5s ease,
     color 0.4s ease,
@@ -93,9 +93,9 @@ box#left-pill {
 
 /* ─── CENTER: Workspaces ─────────────────────────────────────── */
 #workspaces {
+  background-color: alpha(@base, 0.85);
+  border-radius: 14px;
   padding: 4px 3px;
-  border-radius: 16px;
-  background-color: alpha(@crust, 0.85);
   border: 1px solid alpha(@surface0, 0.9);
   margin: 3px 3px 0px 3px;
 }
@@ -107,23 +107,23 @@ box#left-pill {
   background: transparent;
   padding: 0 7px;
   margin: 0 2px;
-  border-radius: 7px;
+  border-radius: 5px;
   transition: all 0.15s ease;
 }
 
 #workspaces button.active {
-  color: @teal;
+  color: @text;
   background: alpha(@surface1, 0.8);
   padding: 0 18px;
-  border-radius: 16px;
+  border-radius: 14px;
 }
 
 #workspaces button:not(.empty):not(.active) {
-  color: @teal;
+  color: @text;
 }
 
 #workspaces button:hover {
-  background: alpha(@surface1, 0.6);
+  background: alpha(@text, 0.6);
   color: @subtext1;
 }
 
@@ -131,7 +131,7 @@ box#left-pill {
 #pulseaudio,
 #network,
 #battery {
-  color: @mauve;
+  color: @text;
 }
 
 #battery.warning {
