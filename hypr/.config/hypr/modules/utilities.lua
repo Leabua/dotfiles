@@ -31,7 +31,14 @@ bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 bind("XF86PowerOff", hl.dsp.exec_cmd("~/.config/waybar/scripts/sysmenu.sh --power"), { locked = true })
 
 -- screenshots
-bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | satty --filename -'))
+-- bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | satty --filename -'))
+bind(
+	"Print",
+	hl.dsp.exec_cmd(
+		'grim -g "$(slurp)" - | wl-copy && notify-send "Screenshot" "Monitor copied to clipboard" -i clipboard'
+	)
+)
+
 bind(
 	"SUPER + Print",
 	hl.dsp.exec_cmd('grim - | wl-copy && notify-send "Screenshot" "Monitor copied to clipboard" -i clipboard')

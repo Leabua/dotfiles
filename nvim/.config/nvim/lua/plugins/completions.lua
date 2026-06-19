@@ -28,7 +28,7 @@ return {
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 				["<C-Space>"] = cmp.mapping.complete(),
 
-				-- Super-Tab behavior:
+				-- Custom Super-Tab behavior:
 				-- 1. Move down the menu if visible.
 				-- 2. Expand a snippet if typed.
 				-- 3. Jump to the next variable inside an active snippet.
@@ -52,10 +52,10 @@ return {
 					end
 				end, { "i", "s" }),
 			}),
-			-- The order here determines priority in the popup menu
+			-- Defining priority of pupup menu
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
-				{ name = "luasnip" }, -- Activate snippets in the menu
+				{ name = "luasnip" },
 				{ name = "buffer" },
 				{ name = "path" },
 			}),
