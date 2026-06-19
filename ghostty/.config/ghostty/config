@@ -10,7 +10,7 @@ theme = Aizen Dark
 # font-family = "JetBrainsMono Nerd Font"
 font-family = "IoskeleyMono Nerd Font"
 # font-family = "Zed Mono"
-font-style = Regular
+font-style = Bold
 font-size = 13
 
 font-feature = ["calt", "liga"]

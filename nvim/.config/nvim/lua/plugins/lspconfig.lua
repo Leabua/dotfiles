@@ -4,6 +4,7 @@ return {
 	dependencies = {
 		"williamboman/mason.nvim",
 		"williamboman/mason-lspconfig.nvim",
+		"hrsh7th/cmp-nvim-lsp", -- Ensures capabilities are loaded properly
 	},
 	config = function()
 		-- 1. Global Diagnostic Settings
@@ -32,18 +33,12 @@ return {
 			},
 		})
 
-		-- 3. LSP Mappings and Behavior (Runs when an LSP connects to a file)
+		-- 3. LSP Mappings and Behavior
 		vim.api.nvim_create_autocmd("LspAttach", {
 			desc = "LSP Keybindings",
 			callback = function(event)
 				local map = vim.keymap.set
 				local opts = { buffer = event.buf }
-
-				-- Disable LSP semantic colors so Tree-sitter controls themes perfectly
-				-- local client = vim.lsp.get_client_by_id(event.data.client_id)
-				-- if client then
-				-- 	client.server_capabilities.semanticTokensProvider = nil
-				-- end
 
 				-- Standard LSP actions
 				map("n", "gd", vim.lsp.buf.definition, opts)
@@ -90,8 +85,21 @@ return {
 			end,
 		})
 
-		-- 4. Native 0.11 Lua Server Configuration
+		-- 4. Get completions capabilities
+		local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+		--Arch/Quickshell QML Server
+		vim.lsp.config("qmlls", {
+			cmd = { "/usr/sbin/qmlls6" },
+			filetypes = { "qml", "qmljs" },
+			root_markers = { ".git", ".qmlls.ini", "shell.qml" },
+			capabilities = capabilities,
+		})
+		vim.lsp.enable("qmlls")
+
+		-- Lua Server override
 		vim.lsp.config("lua_ls", {
+			capabilities = capabilities,
 			settings = {
 				Lua = {
 					diagnostics = {
@@ -99,16 +107,19 @@ return {
 					},
 					workspace = {
 						checkThirdParty = false,
-						library = vim.api.nvim_get_runtime_file("", true),
 					},
 					telemetry = { enabled = false },
 				},
 			},
 		})
+		vim.lsp.enable("lua_ls")
 
-		-- 5. Automatically enable all configured servers
-		local servers = { "ts_ls", "html", "cssls", "lua_ls", "tailwindcss", "pyright" }
+		-- Setup and enable all other Mason-installed servers natively
+		local servers = { "ts_ls", "html", "cssls", "tailwindcss", "pyright" }
 		for _, server in ipairs(servers) do
+			vim.lsp.config(server, {
+				capabilities = capabilities,
+			})
 			vim.lsp.enable(server)
 		end
 	end,
