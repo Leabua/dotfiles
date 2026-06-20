@@ -5,7 +5,7 @@ import QtQuick.Layouts
 
 RowLayout {
     id: workspaceLayout
-    spacing: 6
+    spacing: 6 // space between the little circles for workspaces
 
     property color bgColor: "#1e1e1e"
     property color fgColor: "#FFFFFF"

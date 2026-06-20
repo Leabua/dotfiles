@@ -116,7 +116,7 @@ ShellRoot {
                 barLevel = 2;
             } else {
                 activePanel = panelName;
-                level2Width = col.implicitWidth + 24;
+                level2Width = colomn.implicitWidth + 24;
                 barLevel = 3;
                 isLocked = true; // interacting locks it
             }
@@ -199,14 +199,14 @@ ShellRoot {
         }
 
         Rectangle {
-            id: island
+            // id: island
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            width: global.barLevel === 3 ? Math.max(col.implicitWidth + 24, global.level2Width) : col.implicitWidth + 24
-            height: col.implicitHeight + 16
+            width: global.barLevel === 3 ? Math.max(colomn.implicitWidth + 24, global.level2Width) : colomn.implicitWidth + 24
+            height: colomn.implicitHeight + 16
             radius: 15
-            color: global.bgColor
-            clip: true
+            // color: global.bgColor
+            clip: true // this one I need to look into
 
             Behavior on width {
                 NumberAnimation {
@@ -236,16 +236,16 @@ ShellRoot {
             }
 
             Item {
-                id: contentRoot
-                anchors.fill: parent
-                anchors.margins: 8
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
+                // id: contentRoot
+                // anchors.fill: parent
+                // anchors.margins: 8
+                // anchors.leftMargin: 12
+                // anchors.rightMargin: 12
 
                 ColumnLayout {
-                    id: col
-                    anchors.fill: parent
-                    spacing: 6
+                    // id: colomn
+                    // anchors.fill: parent
+                    // spacing: 6
 
                     RowLayout {
                         id: row1

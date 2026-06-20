@@ -15,9 +15,8 @@ ShellRoot {
         property font shellFont: Qt.font({
             family: "SF Pro Display",
             letterSpacing: 1,
-            pixelSize: 15,
-            weight: Font.Bold,
-            bold: true
+            pixelSize: 14,
+            weight: 600
         })
 
         color: "transparent" // this is to make the main bar transparent
@@ -51,12 +50,14 @@ ShellRoot {
             anchors.centerIn: parent
             radius: height / 2
             color: global.bgColor
-            implicitHeight: colomn.implicitHeight + 12
-            implicitWidth: colomn.implicitWidth + 12
+            implicitHeight: contentRoot.implicitHeight + 10
+            implicitWidth: contentRoot.implicitWidth + 14
 
             Item {
                 id: contentRoot
                 anchors.centerIn: parent
+                implicitHeight: colomn.implicitHeight
+                implicitWidth: colomn.implicitWidth
                 ColumnLayout {
                     id: colomn
                     anchors.centerIn: parent
@@ -64,9 +65,12 @@ ShellRoot {
                     RowLayout {
                         id: row1
                         spacing: 6
+                        Clock {
+                            fgColor: global.fgColor
+                            textFont: global.shellFont
+                        }
                         Workspaces {
                             fgColor: global.fgColor
-                            bgColor: global.bgColor
                         }
                     }
                 }
