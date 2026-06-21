@@ -27,7 +27,7 @@ Item {
             return Globals.criticalColor;
         if (percent <= 20 && !isCharging)
             return Globals.warningColor;
-        if (percent >= 80)
+        if (percent >= 80 && isCharging)
             return Globals.healthy;
         return Globals.fgColor;
     }
