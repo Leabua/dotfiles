@@ -34,8 +34,9 @@ Singleton {
 
         JsonAdapter {
             id: jsonParser
-            property string primary: "transparent"
-            property string tertiary: "transparent"
+            //sane defaults incase matugen breaks
+            property string primary: "#FFFFFF"
+            property string tertiary: "#EEFFFF"
         }
     }
     // global timer

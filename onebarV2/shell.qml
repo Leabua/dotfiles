@@ -7,13 +7,17 @@ import qs.sysUtils
 
 // import Quickshell.Hyprland
 
-ShellRoot {
+Scope {
     Variants {
         model: Quickshell.screens
         PanelWindow { // used for bars panels and overlays
             id: shell
+
+            // in charge of making a new bar on any connected screen
             property var modelData
             screen: modelData
+            //
+
             color: "transparent" // this is to make the main bar transparent
             // makes bar go to top
             anchors {
@@ -33,20 +37,21 @@ ShellRoot {
             // WlrLayershell.exclusiveZone: 24 // Reduced further, bar will partially overlay maximized windows
             // WlrLayershell.layer: WlrLayer.Top // Ensure it renders above windows
 
-            implicitHeight: Math.max(12, island.implicitHeight)
-
-            // States of the bar -> level 1 to 3
+            // Default States of the bar -> level 1 to 3
             property int barLevel: 1
             property bool isLocked: false
 
             // get Hyprland to focus on the bar if its in level 2
             focusable: shell.barLevel > 1
 
+            implicitHeight: Math.max(12, island.implicitHeight)
+            // simple state engine will go here we basically just want to have a spring effect with no bounce that is purely just going to resize based on island.implicitHeight and implicitWidth
+
             Rectangle {
                 id: island
+                color: Globals.bgColor // literally the only time we need a bg in the main bar
                 anchors.centerIn: parent
                 radius: height / 2
-                color: Globals.bgColor
                 implicitHeight: contentRoot.implicitHeight + 10
                 implicitWidth: contentRoot.implicitWidth + 14
 
