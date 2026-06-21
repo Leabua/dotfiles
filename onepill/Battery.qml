@@ -19,8 +19,10 @@ StatusButton {
     visible: bat != null && bat.ready
 
     icon: {
-        if (bat == null || !bat.ready) return "";
-        if (bat.state === UPowerDeviceState.FullyCharged || (isCharging && percent === 100)) return "󰂅";
+        if (bat == null || !bat.ready)
+            return "";
+        if (bat.state === UPowerDeviceState.FullyCharged || (isCharging && percent === 100))
+            return "󰂅";
         let idx = Math.min(Math.floor(percent / 10), 9);
         return isCharging ? chargingIcons[idx] : defaultIcons[idx];
     }
@@ -29,10 +31,16 @@ StatusButton {
     isActive: true
 
     fgColor: {
-        if (percent <= 10 && !isCharging) return "#f38ba8";
-        if (percent <= 20 && !isCharging) return "#f9e2af";
+        if (percent <= 10 && !isCharging)
+            return "#f38ba8";
+        if (percent <= 20 && !isCharging)
+            return "#f9e2af";
         return "#FFFFFF";
     }
 
-    Behavior on fgColor { ColorAnimation { duration: 60 } }
+    Behavior on fgColor {
+        ColorAnimation {
+            duration: 60
+        }
+    }
 }
