@@ -32,8 +32,9 @@ RowLayout {
 
             visible: workspaceId <= Math.max(5, workspaceLayout.maxWorkspaceId)
 
-            implicitWidth: 12
-            implicitHeight: 12
+            // perfectCircle
+            implicitWidth: Globals.textFont.pixelSize // decrease to make more vertical
+            implicitHeight: Globals.textFont.pixelSize // decrease to make more flat
             radius: implicitHeight / 2
 
             // have different colours depending on which monitor workspace is loaded on

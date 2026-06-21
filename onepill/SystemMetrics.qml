@@ -23,8 +23,10 @@ RowLayout {
         text: "󰍛 " + root.cpuPercent + "%"
         font: root.textFont
         color: {
-            if (root.cpuPercent >= 80) return "#f38ba8";
-            if (root.cpuPercent >= 70) return "#f9e2af";
+            if (root.cpuPercent >= 80)
+                return "#f38ba8";
+            if (root.cpuPercent >= 70)
+                return "#f9e2af";
             return root.fgColor;
         }
     }
@@ -34,8 +36,10 @@ RowLayout {
         text: "󰘚 " + root.memPercent + "%"
         font: root.textFont
         color: {
-            if (root.memPercent >= 80) return "#f38ba8";
-            if (root.memPercent >= 70) return "#f9e2af";
+            if (root.memPercent >= 80)
+                return "#f38ba8";
+            if (root.memPercent >= 70)
+                return "#f9e2af";
             return root.fgColor;
         }
     }
@@ -70,11 +74,11 @@ RowLayout {
 
                         let diffIdle = idle - root.lastCpuIdle;
                         let diffTotal = total - root.lastCpuTotal;
-                        
+
                         if (root.lastCpuTotal !== 0 && diffTotal > 0) {
                             root.cpuPercent = Math.round(100 * (diffTotal - diffIdle) / diffTotal);
                         }
-                        
+
                         root.lastCpuIdle = idle;
                         root.lastCpuTotal = total;
                     } else if (line.startsWith("MemTotal:")) {

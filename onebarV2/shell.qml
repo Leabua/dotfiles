@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts // need for rowlayout and colomnLayout
 import qs // home for colours, font etc
 import qs.battery
+import qs.sysUtils
 
 // import Quickshell.Hyprland
 
@@ -64,6 +65,8 @@ ShellRoot {
                             Clock {}
                             Workspaces {}
                             BatteryIcons {}
+                            CPU {}
+                            Memory {}
                         }
                     }
                 }
