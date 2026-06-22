@@ -11,16 +11,16 @@ vim.g.colors_name = "zednight"
 -- ==========================================
 local c = {
 	bg = "NONE", -- Transparent editor
-	panel_bg = "#1e1e1e", -- Solid popups/panels
+	panel_bg = "#161616", -- Solid popups/panels
 
 	white = "#c0caf5", -- Plain text, standard variables
-	emerald = "#9ece6a", -- Strings
+	emerald = "#08bdba", -- Strings
 	teal = "#4fd6be", -- Built-in Types (string, number)
 
-	magenta = "#f7768e", -- Snacks header, numbers, booleans, regex
+	red40 = "#f7768e", -- Snacks header, numbers, booleans, regex
 	purple = "#bb9af7", -- Keywords (const, return, async)
 
-	blue_dark = "#7aa2f7", -- Functions & Methods (.replace, map)
+	blue_dark = "#78a9ff", -- Functions & Methods (.replace, map)
 	blue_light = "#7dcfff", -- Parameters, Properties, Operators
 
 	comment = "#565f89", -- Comments
@@ -40,10 +40,10 @@ local groups = {
 	FloatBorder = { fg = c.blue_light, bg = c.panel_bg },
 	Comment = { fg = c.comment, italic = true }, -- ONLY italicized item
 	String = { fg = c.emerald },
-	Number = { fg = c.magenta },
-	Boolean = { fg = c.magenta },
+	Number = { fg = c.red40 },
+	Boolean = { fg = c.red40 },
 	Visual = { bg = c.selection },
-	MatchParen = { fg = c.magenta, bg = "NONE", bold = true, underline = true },
+	MatchParen = { fg = c.red40, bg = "NONE", bold = true, underline = true },
 	CursorLine = { bg = "#1e202e" },
 
 	-- UI Popups & Snacks
@@ -57,7 +57,8 @@ local groups = {
 	SnacksBorder = { bg = c.panel_bg, fg = c.blue_light },
 	SnacksBorderFloat = { bg = c.panel_bg, fg = c.blue_light },
 	SnacksPickerMatch = { fg = c.blue_dark, bold = true },
-	SnacksDashboardHeader = { fg = c.magenta }, -- Hardcoded Magenta Header
+	SnacksDashboardHeader = { fg = c.emerald }, -- Hardcoded tokyo night Blue Header
+	-- SnacksDashboardHeader = { fg = c.red40 }, -- Hardcoded Magenta Header
 
 	OilBackground = { bg = c.panel_bg },
 	OilFloatBorder = { bg = c.panel_bg, fg = c.blue_light },
@@ -65,7 +66,8 @@ local groups = {
 	-- ==========================================
 	-- Hover Popups & Markdown Backgrounds
 	-- ==========================================
-	FloatTitle = { bg = c.panel_bg, fg = c.magenta, bold = true },
+	-- FloatTitle = { bg = c.panel_bg, fg = c.red40, bold = true },
+	FloatTitle = { bg = c.panel_bg, fg = c.emerald, bold = true },
 	LspInfoNormal = { bg = c.panel_bg, fg = c.white },
 	LspInfoBorder = { bg = c.panel_bg, fg = c.blue_light },
 
@@ -116,17 +118,17 @@ local groups = {
 	-- Variables (White)
 	Identifier = { fg = c.white },
 	["@variable"] = { fg = c.white },
-	["@variable.builtin"] = { fg = c.magenta },
+	["@variable.builtin"] = { fg = c.red40 },
 
 	-- Types & Classes (Teal)
 	Type = { fg = c.teal },
 	["@type"] = { fg = c.teal },
 	["@class"] = { fg = c.teal },
-	["@constructor"] = { fg = c.magenta },
+	["@constructor"] = { fg = c.red40 },
 	["@type.builtin"] = { fg = c.teal },
 
 	-- Regex (Magenta)
-	["@string.regexp"] = { fg = c.magenta },
+	["@string.regexp"] = { fg = c.red40 },
 
 	-- Diagnostics
 	DiagnosticError = { fg = c.error },

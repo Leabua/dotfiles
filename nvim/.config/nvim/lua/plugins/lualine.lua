@@ -5,7 +5,6 @@ return {
 			opts.options = opts.options or {}
 			opts.options.globalstatus = true
 
-			-- Load the Dracula theme explicitly
 			local theme = require("lualine.themes.dracula")
 
 			-- Apply transparency to the 'c' section (the middle part) for all modes

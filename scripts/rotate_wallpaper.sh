@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 WALLPAPER_DIR="$HOME/Wallpapers"
 STATE_FILE="$HOME/.cache/awww_current_wallpaper"
 HYPRLOCK_CONFIG="$HOME/.config/hypr/hyprlock.conf"
@@ -12,15 +11,16 @@ if [ ${#PICS[@]} -eq 0 ]; then
   exit 1
 fi
 
-# Ensure swww daemon is running
-awww-daemon &>/dev/null &
-sleep 0.5
+# Only (re)start the daemon if it isn't already running
+if ! pgrep -x awww-daemon &>/dev/null; then
+  awww-daemon &>/dev/null &
+  disown
+  sleep 0.5
+fi
 
 # Read current wallpaper from state file
 CURRENT_WALLPAPER=""
-if [ -f "$STATE_FILE" ]; then
-  CURRENT_WALLPAPER=$(cat "$STATE_FILE")
-fi
+[ -f "$STATE_FILE" ] && read -r CURRENT_WALLPAPER <"$STATE_FILE"
 
 # Find index of current wallpaper
 INDEX=-1
@@ -35,8 +35,12 @@ done
 NEXT_INDEX=$(((INDEX + 1) % ${#PICS[@]}))
 NEXT_WALLPAPER="${PICS[$NEXT_INDEX]}"
 
-# Set wallpaper via swww
-awww img "$NEXT_WALLPAPER" --transition-type fade --transition-duration 1
+# Set wallpaper via awww — no -o/--outputs flag means it targets ALL active
+# monitors by default, which is what fixes the single-monitor problem.
+if ! awww img "$NEXT_WALLPAPER" --transition-type fade --transition-duration 1; then
+  notify-send "Wallpaper" "Failed to set wallpaper via awww"
+  exit 1
+fi
 
 # Persist current wallpaper to state file
 echo "$NEXT_WALLPAPER" >"$STATE_FILE"
@@ -46,4 +50,7 @@ if [ -f "$HYPRLOCK_CONFIG" ]; then
   sed -i '/^[[:space:]]*background[[:space:]]*{/,/}/ s|^\([[:space:]]*path[[:space:]]*=[[:space:]]*\).*|\1'"$NEXT_WALLPAPER"'|' "$HYPRLOCK_CONFIG"
 fi
 
-notify-send "Wallpaper Updated" "$(basename "$NEXT_WALLPAPER")" -i "$NEXT_WALLPAPER"
+# Update quickshell bar colors
+matugen image "$NEXT_WALLPAPER"
+
+notify-send "Wallpaper Updated" "$(basename "$NEXT_WALLPAPER")"

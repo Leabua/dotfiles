@@ -6,17 +6,17 @@ hl.config({
 	general = {
 		border_size = 2,
 		gaps_in = 5,
-		gaps_out = 10,
+		gaps_out = 8,
 		-- col = { active_border = { colors = { "rgb(b4befe)", "rgb(94e2d5)" }, angle = 45 } },
-		col = { active_border = { colors = { "rgb(a6e3a1)", "rgb(89b4fa)" }, angle = 45 } },
+		col = { active_border = { colors = { "rgb(89b4fa)", "rgb(a6e3a1)" }, angle = 45 } },
 		resize_on_border = true,
 	},
 
 	decoration = {
 		rounding = 7,
 		rounding_power = 8,
-		active_opacity = 0.9,
-		inactive_opacity = 0.85,
+		active_opacity = 1,
+		inactive_opacity = 0.90,
 
 		blur = {
 			enabled = false,
@@ -61,6 +61,7 @@ hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 -- Default springs
 hl.curve("easy", { type = "spring", mass = 1, stiffness = 71.2633, dampening = 15.8273644 })
 
+-- basically the default but the lua default changed some animation bezier and I went back to the hyprlang default
 hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
 hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
 hl.animation({ leaf = "windows", enabled = true, speed = 4.79, bezier = "easeOutQuint" })
