@@ -4,6 +4,7 @@ import QtQuick.Layouts // need for rowlayout and colomnLayout
 import qs // home for colours, font etc
 import qs.battery
 import qs.sysUtils
+import Quickshell.Services.UPower
 
 // import Quickshell.Hyprland
 
@@ -70,23 +71,59 @@ Scope {
                         RowLayout {
                             id: row1
                             spacing: 6
-                            Logo {}
-                            Clock {}
-                            Workspaces {}
-                            Network {}
-                            CPU {}
-                            Memory {}
-                            Volume {}
-                            BatteryIcons {}
-                            PowerButton {}
+                            // Use shown: false to have it gone forever and true to always have it there
+                            Reveal {
+                                shown: false
+                                Logo {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 2
+                                Clock {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 1
+                                Workspaces {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 2 || memoryUsage >= 75
+                                Memory {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 3
+                                CPU {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 2
+                                Network {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 3
+                                Volume {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 3 || BatteryIcons.percent <= 20
+                                BatteryIcons {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 3
+                                PowerButton {}
+                            }
                         }
                     }
                 }
+
                 Behavior on implicitWidth {
                     NumberAnimation {
                         duration: 250
                         easing.type: Easing.OutCubic
                     }
+                }
+                MouseArea {
+                    anchors.fill: island
+                    anchors.margins: -1 // increase the clickable area a tiny bit over the visible bar
+                    cursorShape: Qt.PointingHandCursor // change pointer to pointer finger
+                    z: -1 // keep it behind the workspace-dot MouseAreas so clicking a dot still focuses that workspace if workspace clicking is on
+                    onClicked: shell.barLevel = shell.barLevel >= 3 ? 1 : shell.barLevel + 1
                 }
             }
         }

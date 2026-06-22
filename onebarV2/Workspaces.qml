@@ -46,17 +46,17 @@ RowLayout {
 
             color: isActive ? dotColor : (ws ? Qt.alpha(dotColor, 0.45) : Qt.alpha(dotColor, 0.15))
 
-            MouseArea {
-                anchors.fill: parent
-                anchors.margins: -1 // increase clickable area a tiny bit over the circles
-                cursorShape: Qt.PointingHandCursor // change pointer to pointer finger
-                onClicked: {
-                    if (Hyprland.usingLua) // fallback incase on a system using hyprland without lua so I dont have that issue from waybar where my bar refuses to click
-                        Hyprland.dispatch(`hl.dsp.focus({ workspace = ${rect.workspaceId} })`);
-                    else
-                        Hyprland.dispatch("workspace " + rect.workspaceId);
-                }
-            }
+            // MouseArea {
+            //     anchors.fill: parent
+            //     anchors.margins: -1 // increase clickable area a tiny bit over the circles
+            //     cursorShape: Qt.PointingHandCursor // change pointer to pointer finger
+            //     onClicked: {
+            //         if (Hyprland.usingLua) // fallback incase on a system using hyprland without lua so I dont have that issue from waybar where my bar refuses to click
+            //             Hyprland.dispatch(`hl.dsp.focus({ workspace = ${rect.workspaceId} })`);
+            //         else
+            //             Hyprland.dispatch("workspace " + rect.workspaceId);
+            //     }
+            // }
             Behavior on color {
                 ColorAnimation {
                     duration: 60
