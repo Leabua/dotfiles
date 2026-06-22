@@ -24,3 +24,6 @@ bind(
 		"/usr/bin/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory=Default --app-id=blgdilankhbcpipclgpdndahbehalgkh"
 	)
 )
+
+-- quickshell Bindings
+bind("SUPER + ALT+ SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle"))
