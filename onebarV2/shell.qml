@@ -72,6 +72,7 @@ Scope {
                             BatteryIcons {}
                             CPU {}
                             Memory {}
+                            Network {}
                         }
                     }
                 }

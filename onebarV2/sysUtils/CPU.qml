@@ -5,16 +5,13 @@ import qs
 
 Item {
     id: root
-    // initial cpu usage is 0, updated by cpuProc on read
     property int cpuUsage: 0
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
 
-    // dynamic sizing based on textID's implicit height/width
     implicitHeight: textID.implicitHeight
     implicitWidth: textID.implicitWidth
 
-    // using global tick from Globals.tick
     property int sharedTick: Globals.tick
     onSharedTickChanged: cpuProc.running = true
 
@@ -30,8 +27,6 @@ Item {
     Process {
         id: cpuProc
         command: ["sh", "-c", "head -1 /proc/stat"]
-
-        // attached to onread which reads all lines of output
         stdout: SplitParser {
             onRead: data => {
                 var p = data.trim().split(/\s+/);
