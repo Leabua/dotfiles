@@ -1,23 +1,44 @@
 pragma ComponentBehavior: Bound
 import Quickshell
-import QtQuick
 import Quickshell.Io
-import QtQuick.Layouts // need for rowlayout and colomnLayout
+import Quickshell.Services.Pipewire
 import qs // home for colours, font etc
+import qs.audio
 import qs.battery
 import qs.sysUtils
-import Quickshell.Hyprland
+import QtQuick
+import QtQuick.Layouts // need for rowlayout and colomnLayout
+
+// import Quickshell.Hyprland
 
 Scope {
     id: root
     // Default States of the bar -> level 1 to 3
     property int barLevel: 1
-
     IpcHandler {
         target: "cycleBarLevel"
         function cycle(): void {
             root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1;
         }
+    }
+    property bool shouldShowOsd: false
+
+    PwObjectTracker {
+        objects: [Pipewire.defaultAudioSink]
+    }
+
+    Connections {
+        target: Pipewire.defaultAudioSink?.audio
+        function onVolumeChanged() {
+            root.shouldShowOsd = true;
+            osdTimer.restart();
+        }
+    }
+
+    Timer {
+        id: osdTimer
+        interval: 1500
+        onTriggered: root.shouldShowOsd = false
     }
 
     Variants {
@@ -73,12 +94,21 @@ Scope {
                     onDoubleClicked: root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1
                 }
 
+                // bar in the middle of parent
                 Item {
                     id: contentRoot
                     anchors.centerIn: parent
                     // consider making this assignable to a bind so that we can dyanmically hide the bar with something like Super + shift + Space
                     implicitHeight: colomn.implicitHeight
                     implicitWidth: colomn.implicitWidth
+
+                    opacity: root.shouldShowOsd ? 0 : 1 // -> slider for volume
+                    Behavior on opacity {               // animation for transition
+                        NumberAnimation {
+                            duration: 150
+                        }
+                    }
+
                     ColumnLayout {
                         id: colomn
                         anchors.centerIn: parent
@@ -126,6 +156,62 @@ Scope {
                             Reveal {
                                 shown: root.barLevel >= 3
                                 PowerButton {}
+                            }
+                        }
+                    }
+                }
+                // fading volume OSD
+                Item {
+                    anchors {
+                        fill: parent
+                        leftMargin: 7
+                        rightMargin: 7
+                    }
+                    opacity: root.shouldShowOsd ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 150
+                        }
+                    }
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 8
+
+                        Text {
+                            text: {
+                                var sink = Pipewire.defaultAudioSink;
+                                if (!sink || !sink.ready)
+                                    return String.fromCodePoint(0xF0581);
+                                var v = Math.round(sink.audio.volume * 100);
+                                if (sink.audio.muted || v === 0)
+                                    return String.fromCodePoint(0xF075F);
+                                if (v < 34)
+                                    return String.fromCodePoint(0xF057F);
+                                if (v < 67)
+                                    return String.fromCodePoint(0xF0580);
+                                return String.fromCodePoint(0xF057E);
+                            }
+                            font: Globals.textFont
+                            color: Globals.fgColor
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            implicitHeight: 8
+                            radius: implicitHeight * 2
+                            color: Qt.alpha(Globals.fgColor, 0.25)
+
+                            Rectangle {
+                                anchors {
+                                    left: parent.left
+                                    top: parent.top
+                                    bottom: parent.bottom
+                                }
+                                width: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
+                                radius: parent.radius
+                                color: Globals.fgColor
                             }
                         }
                     }
