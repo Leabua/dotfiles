@@ -11,11 +11,10 @@ Item {
     property var bat: UPower.displayDevice
     property int percent: (bat != null && bat.ready) ? Math.round(bat.percentage * 100) : 0
     property bool isCharging: bat != null && bat.ready && bat.state === UPowerDeviceState.Charging
-    property bool isCritical: bat != null && bat.ready && !isCharging && percent <= 20
 
     property string icon: {
         if (bat == null || !bat.ready)
-            return "";
+            return "󰂃";
         if (bat.state === UPowerDeviceState.FullyCharged || (isCharging && percent === 100))
             return "󰂅 ";
         let idx = Math.min(Math.floor(percent / 10), 9);

@@ -19,6 +19,7 @@ Singleton {
     property int tick: 0
 
     property color bgColor: "#1a1a1a"
+    // material UI colors generated with matugen -> if issue check mutagen config and colour templates
     property alias fgColor: jsonParser.primary
     property alias fgColor2: jsonParser.tertiary
 
@@ -26,22 +27,21 @@ Singleton {
     property color warningColor: "#f9e2af" // amber
     property color criticalColor: "#f38ba8" // red
 
-    // material colors generated with matugen
     FileView {
         path: Quickshell.env("HOME") + "/.cache/quickshell/colors.json"
         watchChanges: true
         onFileChanged: reload()
 
-        JsonAdapter {
+        JsonAdapter { // qmllint disable unresolved-type
             id: jsonParser
             //sane defaults incase matugen breaks
             property string primary: "#FFFFFF"
-            property string tertiary: "#EEFFFF"
+            property string tertiary: "#EEEFFF"  // - no idea what this colour actually produces I just no it helps with debugging
         }
     }
     // global timer
     Timer {
-        interval: 5000 // 5 seconds
+        interval: 10000 // 10 seconds -> set not to low that it makes icons useless and not too high since it likely chops battery
         repeat: true // stop freezing
         running: true // keep it running
         onTriggered: root.tick++ // change event fired every {interval} seconds
