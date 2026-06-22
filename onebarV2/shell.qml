@@ -44,7 +44,7 @@ Scope {
             property bool isLocked: false
 
             // get Hyprland to focus on the bar if its in level 2
-            focusable: shell.barLevel > 1
+            // focusable: shell.barLevel > 1
 
             // need this since quickshell bar with no Height defaults to 0 and looks like it dissappears
             implicitHeight: Math.max(12, island.implicitHeight)
@@ -85,11 +85,11 @@ Scope {
                                 Workspaces {}
                             }
                             Reveal {
-                                shown: shell.barLevel >= 2
+                                shown: shell.barLevel >= 3
                                 Memory {}
                             }
                             Reveal {
-                                shown: shell.barLevel >= 2
+                                shown: shell.barLevel >= 3
                                 Network {}
                             }
                             Reveal {
@@ -118,12 +118,13 @@ Scope {
                         easing.type: Easing.OutCubic
                     }
                 }
+
                 MouseArea {
                     anchors.fill: island
                     anchors.margins: -1 // increase the clickable area a tiny bit over the visible bar
                     cursorShape: Qt.PointingHandCursor // change pointer to pointer finger
                     z: -1 // keep it behind the workspace-dot MouseAreas so clicking a dot still focuses that workspace if workspace clicking is on
-                    onClicked: shell.barLevel = shell.barLevel >= 3 ? 1 : shell.barLevel + 1
+                    onDoubleClicked: shell.barLevel = shell.barLevel >= 3 ? 1 : shell.barLevel + 1
                 }
             }
         }
