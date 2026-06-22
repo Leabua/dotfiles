@@ -85,12 +85,8 @@ Scope {
                                 Workspaces {}
                             }
                             Reveal {
-                                shown: shell.barLevel >= 2 || memoryUsage >= 75
+                                shown: shell.barLevel >= 2
                                 Memory {}
-                            }
-                            Reveal {
-                                shown: shell.barLevel >= 3
-                                CPU {}
                             }
                             Reveal {
                                 shown: shell.barLevel >= 2
@@ -98,10 +94,14 @@ Scope {
                             }
                             Reveal {
                                 shown: shell.barLevel >= 3
+                                CPU {}
+                            }
+                            Reveal {
+                                shown: shell.barLevel >= 3
                                 Volume {}
                             }
                             Reveal {
-                                shown: shell.barLevel >= 3 || BatteryIcons.percent <= 20
+                                shown: shell.barLevel >= 3
                                 BatteryIcons {}
                             }
                             Reveal {
