@@ -10,7 +10,8 @@ import qs.sysUtils
 Scope {
     Variants {
         model: Quickshell.screens
-        PanelWindow { // used for bars panels and overlays
+        // used for bars panels and overlays
+        PanelWindow { // qmllint disable uncreatable-type
             id: shell
 
             // in charge of making a new bar on any connected screen
@@ -27,7 +28,7 @@ Scope {
             }
 
             // makes it float instead of touching anything
-            margins {
+            margins { // qmllint disable unresolved-type
                 top: 6
                 left: 10
                 right: 10
@@ -44,6 +45,7 @@ Scope {
             // get Hyprland to focus on the bar if its in level 2
             focusable: shell.barLevel > 1
 
+            // need this since quickshell bar with no Height defaults to 0 and looks like it dissappears
             implicitHeight: Math.max(12, island.implicitHeight)
             // simple state engine will go here we basically just want to have a spring effect with no bounce that is purely just going to resize based on island.implicitHeight and implicitWidth
 
@@ -52,12 +54,13 @@ Scope {
                 color: Globals.bgColor // literally the only time we need a bg in the main bar
                 anchors.centerIn: parent
                 radius: height / 2
-                implicitHeight: contentRoot.implicitHeight + 10
+                implicitHeight: contentRoot.implicitHeight + 10 // basically padding of the rectangle from bar elements
                 implicitWidth: contentRoot.implicitWidth + 14
 
                 Item {
                     id: contentRoot
                     anchors.centerIn: parent
+                    // consider making this assignable to a bind so that we can dyanmically hide the bar with something like Super + shift + Space
                     implicitHeight: colomn.implicitHeight
                     implicitWidth: colomn.implicitWidth
                     ColumnLayout {
@@ -67,13 +70,22 @@ Scope {
                         RowLayout {
                             id: row1
                             spacing: 6
+                            Logo {}
                             Clock {}
                             Workspaces {}
-                            BatteryIcons {}
+                            Network {}
                             CPU {}
                             Memory {}
-                            Network {}
+                            Volume {}
+                            BatteryIcons {}
+                            PowerButton {}
                         }
+                    }
+                }
+                Behavior on implicitWidth {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutCubic
                     }
                 }
             }
