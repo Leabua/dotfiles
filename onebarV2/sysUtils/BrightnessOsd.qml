@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.defaults
 import QtQuick.Layouts
-import Quickshell.Io
 
 Item {
     id: root
@@ -23,29 +22,6 @@ Item {
         }
     }
 
-    property bool active: false
-
-    Process {
-        command: ["brightnessctl", "max"]
-        stdout: SplitParser {
-            onRead: data => root.maxBrightness = parseInt(data.trim())
-        }
-        Component.onCompleted: running = true
-    }
-
-    Process {
-        id: brightnessProc
-        command: ["brightnessctl", "get"]
-        stdout: SplitParser {
-            onRead: data => root.brightness = parseInt(data.trim())
-        }
-    }
-
-    Timer {
-        id: hideTimer
-        interval: 1500
-        onTriggered: root.active = false
-    }
     RowLayout {
         anchors.fill: parent
         spacing: Globals.spacing

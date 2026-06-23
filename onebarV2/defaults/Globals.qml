@@ -44,7 +44,7 @@ Singleton {
             id: jsonParser
             //sane defaults incase matugen breaks
             property string primary: "#FFFFFF"
-            property string tertiary: "#EEEFFF"  // - no idea what this colour actually produces I just no it helps with debugging
+            property string tertiary: "#008080"  // - no idea what this colour actually produces I just no it helps with debugging
         }
     }
     // global timer
