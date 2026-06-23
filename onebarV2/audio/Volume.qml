@@ -1,6 +1,6 @@
 import Quickshell.Services.Pipewire
 import QtQuick
-import qs
+import qs.defaults
 
 Item {
     id: root
@@ -37,7 +37,4 @@ Item {
         font: Globals.textFont
     }
     // what actually checks the vol percent changes
-    PwObjectTracker {
-        objects: root.sink
-    }
 }

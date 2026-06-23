@@ -8,7 +8,7 @@ import Quickshell.Io
 Singleton {
     id: root
     // bar font
-    property font textFont: Qt.font({
+    readonly property font textFont: Qt.font({
         family: "SF Pro Display",
         letterSpacing: 1,
         pixelSize: 15,
@@ -18,14 +18,22 @@ Singleton {
     // initial tick value
     property int tick: 0
 
-    property color bgColor: "#1a1a1a"
+    // readonly property color bgColor: "#1a1a1a"
+    readonly property color bgColor: "#000000"
     // material UI colors generated with matugen -> if issue check mutagen config and colour templates
-    property alias fgColor: jsonParser.primary
-    property alias fgColor2: jsonParser.tertiary
+    readonly property alias fgColor: jsonParser.primary
+    readonly property alias fgColor2: jsonParser.tertiary
 
-    property color healthy: "#4fd6be" // green
-    property color warningColor: "#f9e2af" // amber
-    property color criticalColor: "#f38ba8" // red
+    readonly property color healthy: "#4fd6be" // green
+    readonly property color warningColor: "#f9e2af" // amber
+    readonly property color criticalColor: "#f38ba8" // red
+
+    readonly property int spacing: 6 // spacing
+
+    readonly property int marginsTop: 6
+    readonly property int marginsLeft: 10
+    readonly property int marginsRight: 10
+    readonly property int marginsBottom: -3
 
     FileView {
         path: Quickshell.env("HOME") + "/.cache/quickshell/colors.json"

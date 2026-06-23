@@ -2,20 +2,20 @@ pragma ComponentBehavior: Bound
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
-import qs
+import qs.defaults
 
 RowLayout {
     id: workspaceLayout
-    spacing: 6
+    spacing: Globals.spacing
 
-    // defaults -> check Globals
+    // defaults -> check Globals.qml
     property color bgColor: Globals.bgColor
     property color fgColor: Globals.fgColor
     property color fgColor2: Globals.fgColor2
 
     // ids of workspaces that actually exist right now (named/special workspaces have negative ids, exclude those)
-    property var liveWorkspaceIds: Hyprland.workspaces.values.map(w => w.id).filter(id => id > 0)
-    property int maxWorkspaceId: liveWorkspaceIds.length > 0 ? Math.max(...liveWorkspaceIds) : 0
+    readonly property var liveWorkspaceIds: Hyprland.workspaces.values.map(w => w.id).filter(id => id > 0)
+    readonly property int maxWorkspaceId: liveWorkspaceIds.length > 0 ? Math.max(...liveWorkspaceIds) : 0
 
     Repeater {
         // make sure we always have enough delegates, even if workspaces go past 9

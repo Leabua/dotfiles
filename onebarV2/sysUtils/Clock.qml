@@ -1,6 +1,6 @@
 import Quickshell
 import QtQuick
-import qs
+import qs.defaults
 
 Item {
     id: timeTeller

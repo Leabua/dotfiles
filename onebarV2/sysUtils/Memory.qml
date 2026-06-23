@@ -1,6 +1,6 @@
-import QtQuick 2.0
+import QtQuick
 import Quickshell.Io
-import qs
+import qs.defaults
 
 Item {
     id: memoryItem

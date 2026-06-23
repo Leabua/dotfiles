@@ -1,7 +1,7 @@
-pragma ComponentBehavior: Bound
+// pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Io //for process type -> shoutout Tony on yt
-import qs
+import qs.defaults
 
 Item {
     id: root

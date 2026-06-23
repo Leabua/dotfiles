@@ -1,6 +1,6 @@
 import Quickshell.Services.UPower
 import QtQuick
-import qs
+import qs.defaults
 
 Item {
     id: batteryBtn

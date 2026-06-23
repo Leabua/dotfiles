@@ -1,6 +1,6 @@
 import Quickshell.Io
 import QtQuick
-import qs
+import qs.defaults
 
 Item {
     id: root
