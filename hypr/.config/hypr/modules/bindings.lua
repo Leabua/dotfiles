@@ -27,3 +27,5 @@ bind(
 
 -- quickshell Bindings
 bind("SUPER + ALT+ SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle"))
+
+bind("SUPER +  N", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call notifications toggle"))

@@ -36,8 +36,8 @@ local c = {
 local groups = {
 	-- Base Editor
 	Normal = { fg = c.white, bg = c.bg },
-	NormalFloat = { fg = c.white, bg = c.panel_bg },
-	FloatBorder = { fg = c.blue_light, bg = c.panel_bg },
+	NormalFloat = { fg = c.white, bg = "NONE" },
+	FloatBorder = { fg = c.blue_light, bg = "NONE" },
 	Comment = { fg = c.comment, italic = true }, -- ONLY italicized item
 	String = { fg = c.emerald },
 	Number = { fg = c.red40 },
@@ -47,29 +47,29 @@ local groups = {
 	CursorLine = { bg = "#1e202e" },
 
 	-- UI Popups & Snacks
-	Pmenu = { bg = c.panel_bg, fg = c.white },
+	Pmenu = { bg = "NONE", fg = c.white },
 	PmenuSel = { bg = c.selection, fg = "NONE" },
-	PmenuSbar = { bg = c.panel_bg },
+	PmenuSbar = { bg = "NONE" },
 	PmenuThumb = { bg = c.comment },
 
-	SnacksNormal = { bg = c.panel_bg, fg = c.white },
-	SnacksNormalFloat = { bg = c.panel_bg, fg = c.white },
-	SnacksBorder = { bg = c.panel_bg, fg = c.blue_light },
-	SnacksBorderFloat = { bg = c.panel_bg, fg = c.blue_light },
+	SnacksNormal = { bg = "NONE", fg = c.white },
+	SnacksNormalFloat = { bg = "NONE", fg = c.white },
+	SnacksBorder = { bg = "NONE", fg = c.blue_light },
+	SnacksBorderFloat = { bg = "NONE", fg = c.blue_light },
 	SnacksPickerMatch = { fg = c.blue_dark, bold = true },
 	SnacksDashboardHeader = { fg = c.emerald }, -- Hardcoded tokyo night Blue Header
 	-- SnacksDashboardHeader = { fg = c.red40 }, -- Hardcoded Magenta Header
 
-	OilBackground = { bg = c.panel_bg },
-	OilFloatBorder = { bg = c.panel_bg, fg = c.blue_light },
+	OilBackground = { bg = "NONE" },
+	OilFloatBorder = { bg = "NONE", fg = c.blue_light },
 
 	-- ==========================================
 	-- Hover Popups & Markdown Backgrounds
 	-- ==========================================
-	-- FloatTitle = { bg = c.panel_bg, fg = c.red40, bold = true },
-	FloatTitle = { bg = c.panel_bg, fg = c.emerald, bold = true },
-	LspInfoNormal = { bg = c.panel_bg, fg = c.white },
-	LspInfoBorder = { bg = c.panel_bg, fg = c.blue_light },
+	-- FloatTitle = { bg = "NONE", fg = c.red40, bold = true },
+	FloatTitle = { bg = "NONE", fg = c.emerald, bold = true },
+	LspInfoNormal = { bg = "NONE", fg = c.white },
+	LspInfoBorder = { bg = "NONE", fg = c.blue_light },
 
 	-- Strip Treesitter from painting a highlight block over your #1e1e1e window
 	["@markup"] = { bg = "NONE", fg = c.white },

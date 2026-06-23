@@ -33,14 +33,15 @@ source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
 eval "$(zoxide init zsh)"
+
 source /usr/share/fzf/completion.zsh
 source /usr/share/fzf/key-bindings.zsh
-source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 alias bonsai="cbonsai --infinite --live"
+alias catall="find . -type f -exec tail -n +1 {} + | nvim"
 alias dc="z ~/dev/courses/"
 alias dp="z ~/dev/projects/"
 alias ff="fastfetch"

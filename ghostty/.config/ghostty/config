@@ -10,7 +10,7 @@ theme = Carbonfox
 # font-family = "IoskeleyMono Nerd Font"
 font-family = "Iosevka Nerd Font"
 font-style = Medium
-font-size = 13
+font-size = 15
 
 # window
 window-padding-y = 0
