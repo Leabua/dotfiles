@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Io // input output lib
 import Quickshell.Services.Pipewire //audio
@@ -19,11 +20,12 @@ Scope {
         model: Quickshell.screens
         // used for bars panels and overlays
         PanelWindow { // qmllint disable uncreatable-type
-            // in charge of making a new bar on any connected screen
+            // in charge of making a mirroring the bar on any display
             property var modelData
             screen: modelData
 
-            color: "transparent" // this is to make the main bar transparent
+            color: "transparent" // this is to make the main window transparent
+
             // makes bar go to top
             anchors {
                 top: true
@@ -52,6 +54,7 @@ Scope {
 
             implicitHeight: Math.max(12, island.implicitHeight)
 
+            // like a centered div with a colour and rounding
             Rectangle {
                 id: island
                 color: Globals.bgColor // literally the only time we need a bg in the main bar
@@ -99,7 +102,7 @@ Scope {
                     brightness: root.brightness
                     maxBrightness: root.maxBrightness
                 }
-
+                // in shell.qml, add alongside your existing Scope children
                 Behavior on implicitWidth {
                     NumberAnimation {
                         duration: 250
@@ -108,8 +111,15 @@ Scope {
                 }
             }
         }
+        // FloatingWindow {
+        // anchors.centerIn
+        // }
     }
 
+    LazyLoader {
+        source: "notifications/Notifications.qml"
+        active: true
+    }
     property string activeOsd: "" // "volume" | "brightness" | ""
 
     // one shared timer

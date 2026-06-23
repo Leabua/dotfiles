@@ -18,8 +18,8 @@ Singleton {
     // initial tick value
     property int tick: 0
 
-    // readonly property color bgColor: "#1a1a1a"
-    readonly property color bgColor: "#000000"
+    readonly property color bgColor: "#1a1a1a"
+    // readonly property color bgColor: "#000000"
     // material UI colors generated with matugen -> if issue check mutagen config and colour templates
     readonly property alias fgColor: jsonParser.primary
     readonly property alias fgColor2: jsonParser.tertiary
@@ -29,6 +29,8 @@ Singleton {
     readonly property color criticalColor: "#f38ba8" // red
 
     readonly property int spacing: 6 // spacing
+
+    readonly property int marginDefault: 10
 
     readonly property int marginsTop: 6
     readonly property int marginsLeft: 10

@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import qs.audio
 import qs.battery
 import qs.defaults
+import qs.power
 import qs.sysUtils
 
 RowLayout {
