@@ -12,5 +12,12 @@ Item {
         text: "󰐥 "
         color: Globals.fgColor
         font: Globals.textFont
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -1
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Globals.powerMenuOpen = !Globals.powerMenuOpen
+        }
     }
 }

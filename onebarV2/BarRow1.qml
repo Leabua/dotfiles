@@ -6,6 +6,7 @@ import qs.defaults
 import qs.power
 import qs.sysUtils
 
+// orchestrating what comes out when
 RowLayout {
     id: root
     property int barLvl
@@ -13,19 +14,27 @@ RowLayout {
     // Use shown: false to have it gone forever and true to always have it there
     Reveal {
         shown: false
-        Logo {}
+        Logo {
+            id: logo
+        }
     }
     Reveal {
         shown: root.barLvl >= 2
-        Clock {}
+        Clock {
+            id: clock
+        }
     }
     Reveal {
         shown: root.barLvl >= 1
-        Workspaces {}
+        Workspaces {
+            id: ws
+        }
     }
     Reveal {
         shown: root.barLvl >= 3
-        CPU {}
+        CPU {
+            id: cpu
+        }
     }
     Reveal {
         shown: root.barLvl >= 3 || memory.memoryUsage >= 75
@@ -35,11 +44,15 @@ RowLayout {
     }
     Reveal {
         shown: root.barLvl >= 3
-        Network {}
+        Network {
+            id: network
+        }
     }
     Reveal {
         shown: root.barLvl >= 3
-        Volume {}
+        Volume {
+            id: volume
+        }
     }
     Reveal {
         shown: root.barLvl >= 3 || (battery.percent <= 20 && !battery.isCharging) || (battery.isCharging && battery.percent >= 80)
@@ -49,6 +62,8 @@ RowLayout {
     }
     Reveal {
         shown: root.barLvl >= 3
-        PowerButton {}
+        PowerBtn {
+            id: powerBtn
+        }
     }
 }

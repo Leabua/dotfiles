@@ -1,32 +1,25 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.Io // input output lib
-import Quickshell.Services.Pipewire //audio
-import qs.audio // self explanatory
-import qs.defaults // aesthtics and animation
+import Quickshell.Io
+import Quickshell.Services.Pipewire
+import qs.audio
+import qs.defaults
 import qs.sysUtils
 import QtQuick
-import QtQuick.Layouts // need for rowlayout and colomnLayout
-
-// import Quickshell.Hyprland
 
 Scope {
     id: root
-    // Default state of the bar -> level 1 to 3
     property int barLevel: 1
 
     Variants {
         model: Quickshell.screens
-        // used for bars panels and overlays
         PanelWindow { // qmllint disable uncreatable-type
-            // in charge of making a mirroring the bar on any display
             property var modelData
             screen: modelData
 
-            color: "transparent" // this is to make the main window transparent
+            color: "transparent"
 
-            // makes bar go to top
             anchors {
                 top: true
                 left: true
@@ -40,57 +33,61 @@ Scope {
                 bottom: Globals.marginsBottom
             }
 
-            // lets me click the bar
             MouseArea {
                 anchors.fill: island
-                anchors.margins: -1 // increase the clickable area a tiny bit over the visible bar
-                cursorShape: Qt.PointingHandCursor // change arrow to pointer finger
-                z: -1 // keep it behind the workspace-dot MouseAreas so clicking a dot still focuses that workspace if workspace clicking is on if workspace clicking is on
-                onDoubleClicked: root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1 // doublelick makes it intentional
+                anchors.margins: -1
+                cursorShape: Qt.PointingHandCursor
+                z: -1
+                onDoubleClicked: root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1
             }
-            // WlrLayershell.exclusiveZone: 24 // Reduced further, bar will partially overlay maximized windows
-            // WlrLayershell.layer: WlrLayer.Top // Ensure it renders above windows
-            // property bool isLocked: false
 
-            implicitHeight: Math.max(12, island.implicitHeight)
+            implicitHeight: Math.max(1, island.implicitHeight)
 
-            // like a centered div with a colour and rounding
+            Binding {
+                target: Globals
+                property: "currentBarHeight"   // correct capital H
+                value: island.implicitHeight
+            }
+
             Rectangle {
                 id: island
-                color: Globals.bgColor // literally the only time we need a bg in the main bar
+                color: Globals.bgColor
                 anchors.centerIn: parent
-                implicitHeight: contentRoot.implicitHeight + 10 // basically padding of the rectangle from bar elements
+
+                // Drive island height from a dedicated Text that is always
+                // instantiated and always uses Globals.textFont, completely independent
+                // of RowLayout's internal visible-children calculation.
+                Text {
+                    id: heightAnchor
+                    visible: false
+                    font: Globals.textFont
+                    text: "Wg" // W = widest, g = deepest descender → reliable full line height -> otherwise hidden elements may create additional pixels causing window to shift
+                }
+
+                implicitHeight: heightAnchor.implicitHeight + 10
                 implicitWidth: contentRoot.implicitWidth + 14
                 radius: implicitHeight / 2
 
-                // this is where things are laid out
                 Item {
                     id: contentRoot
                     anchors.centerIn: parent
-                    // consider making this assignable to a bind so that we can dyanmically hide the bar with something like Super + shift + Space
                     implicitHeight: row1.implicitHeight
                     implicitWidth: row1.implicitWidth
 
-                    ColumnLayout {
-                        id: colomn
-                        anchors.centerIn: parent
-                        spacing: Globals.spacing
-
-                        BarRow1 {                           //all normal bar icons
-                            id: row1
-                            barLvl: root.barLevel
-                        }
+                    BarRow1 {
+                        id: row1
+                        barLvl: root.barLevel
                     }
 
                     opacity: root.activeOsd !== "" ? 0 : 1
 
-                    Behavior on opacity {               // animation for transition
+                    Behavior on opacity {
                         NumberAnimation {
                             duration: 150
                         }
                     }
                 }
-                // fading volume OSD
+
                 VolumeOsd {
                     sliderHeight: island.implicitHeight
                     opacity: root.activeOsd === "volume" ? 1 : 0
@@ -102,7 +99,7 @@ Scope {
                     brightness: root.brightness
                     maxBrightness: root.maxBrightness
                 }
-                // in shell.qml, add alongside your existing Scope children
+
                 Behavior on implicitWidth {
                     NumberAnimation {
                         duration: 250
@@ -111,25 +108,25 @@ Scope {
                 }
             }
         }
-        // FloatingWindow {
-        // anchors.centerIn
-        // }
     }
 
     LazyLoader {
         source: "notifications/Notifications.qml"
         active: true
     }
-    property string activeOsd: "" // "volume" | "brightness" | ""
+    LazyLoader {
+        source: "power/PowerMenu.qml"
+        active: true
+    }
 
-    // one shared timer
+    property string activeOsd: ""
+
     Timer {
         id: osdTimer
         interval: 1500
         onTriggered: root.activeOsd = ""
     }
 
-    // read max once on startup, never again
     Process {
         command: ["brightnessctl", "max"]
         stdout: SplitParser {
@@ -172,10 +169,6 @@ Scope {
         }
     }
 
-    //////////////////////////////////////////////
-    // IPC Handlers -> use these targets to set your binds in Hyprland
-    // Using something like bind("SUPER + ALT+ SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle")) - to toggle the bar state
-    //////////////////////////////////////////////
     IpcHandler {
         target: "cycleBarLevel"
         function cycle(): void {

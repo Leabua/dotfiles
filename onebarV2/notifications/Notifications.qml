@@ -81,7 +81,7 @@ Scope {
                     Layout.preferredHeight: cardLayout.implicitHeight + 20
                     radius: 8
                     color: Globals.bgColor
-                    border.width: 2
+                    border.width: Globals.borderWidth
                     border.color: card.modelData.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.fgColor
 
                     RowLayout {
@@ -90,13 +90,13 @@ Scope {
                             left: parent.left
                             right: parent.right
                             top: parent.top
-                            margins: Globals.marginDefault
+                            margins: Globals.margins
                         }
                         spacing: Globals.spacing
 
                         ColumnLayout {
                             Layout.fillWidth: true
-                            spacing: 2
+                            spacing: Globals.spacing / 3
 
                             Text {
                                 Layout.fillWidth: true
@@ -154,9 +154,9 @@ Scope {
                 right: parent.right
             }
             implicitHeight: centerCol.implicitHeight + 24
-            radius: 10
+            radius: Globals.radius
             color: Globals.bgColor
-            border.width: 2
+            border.width: Globals.borderWidth
             border.color: Globals.fgColor
 
             ColumnLayout {
@@ -165,7 +165,7 @@ Scope {
                     top: parent.top
                     left: parent.left
                     right: parent.right
-                    margins: 12
+                    margins: Globals.margins
                 }
                 spacing: Globals.spacing + 2
 
@@ -240,7 +240,7 @@ Scope {
                             implicitHeight: historyLayout.implicitHeight + 16
                             radius: 8
                             color: Globals.bgColor
-                            border.width: 2
+                            border.width: Globals.borderWidth
                             border.color: Globals.fgColor
 
                             ColumnLayout {
@@ -251,7 +251,7 @@ Scope {
                                     top: parent.top
                                     margins: 8
                                 }
-                                spacing: 2
+                                spacing: Globals.spacing
 
                                 RowLayout {
                                     Layout.fillWidth: true
@@ -281,6 +281,7 @@ Scope {
                                         font.family: Globals.textFont.family
                                         font.pixelSize: Globals.textFont.pixelSize - 1
                                         font.weight: Globals.textFont.weight + 100
+
                                         MouseArea {
                                             anchors.fill: parent
                                             anchors.margins: -4
@@ -291,7 +292,8 @@ Scope {
                                                 removeTimer.start();
                                             }
                                         }
-                                        Timer {
+
+                                        Timer { // todo
                                             id: removeTimer
                                             interval: 210 // just after the 200ms animation
                                             onTriggered: history.remove(index)

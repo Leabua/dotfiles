@@ -22,7 +22,7 @@ Item {
         opacity: 1.0 // Explicitly define opacity so we can animate it
     }
 
-    // The custom timeline that handles the fade and delay
+    // handles the fade and delay
     SequentialAnimation {
         id: toggleAnimation
 
