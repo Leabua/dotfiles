@@ -118,6 +118,10 @@ Scope {
         source: "power/PowerMenu.qml"
         active: true
     }
+    LazyLoader {
+        source: "battery/PowerProfiles.qml"
+        active: true
+    }
 
     property string activeOsd: ""
 

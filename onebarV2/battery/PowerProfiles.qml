@@ -12,15 +12,15 @@ Scope {
     property bool menuOpen: false
 
     IpcHandler {
-        target: "powerMenu"
+        target: "powerProfiles"
         function toggle(): void {
-            Globals.powerMenuOpen = !Globals.powerMenuOpen;
+            Globals.powerProfilesOpen = !Globals.powerProfilesOpen;
         }
         function show(): void {
-            Globals.powerMenuOpen = true;
+            Globals.powerProfilesOpen = true;
         }
         function hide(): void {
-            Globals.powerMenuOpen = false;
+            Globals.powerProfilesOpen = false;
         }
     }
 
@@ -28,7 +28,7 @@ Scope {
     PanelWindow { // qmllint disable uncreatable-type
         id: centerWindow
 
-        visible: Globals.powerMenuOpen // watches global state
+        visible: Globals.powerProfilesOpen // watches global state
 
         anchors {
             top: true
@@ -56,14 +56,14 @@ Scope {
         Item {
             focus: true
             Keys.onPressed: event => {
-                Globals.powerMenuOpen = false;
+                Globals.powerProfilesOpen = false;
             }
         }
 
         // this closes the menu the moment you click outside the window
         MouseArea {
             anchors.fill: parent
-            onClicked: Globals.powerMenuOpen = false
+            onClicked: Globals.powerProfilesOpen = false
         }
 
         Rectangle {
@@ -100,7 +100,7 @@ Scope {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Text {
-                        text: "  󰐥"
+                        text: "  󱐋"
                         color: Globals.fgColor
                         font.family: Globals.textFont.family
                         font.pixelSize: Globals.textFont.pixelSize + 6
@@ -108,7 +108,7 @@ Scope {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: "Power Menu"
+                        text: "Power Profiles"
                         color: Globals.fgColor
                         font.family: Globals.textFont.family
                         font.pixelSize: Globals.textFont.pixelSize + 2
@@ -122,57 +122,68 @@ Scope {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     spacing: Globals.spacing
-                    readonly property int largestButton: Math.max(suspend.contentWidth, logout.contentWidth, reboot.contentWidth, poweroff.contentWidth) + Globals.padding
+                    readonly property int largestButton: Math.max(efficient.contentWidth, balanced.contentWidth, performance.contentWidth) + Globals.padding
 
-                    // suspend
+                    // efficient
                     CenterTextBtn {
-                        id: suspend
-                        icon: "󰒲"
-                        label: "Suspend"
+                        id: efficient
+                        icon: "󰾆"
+                        label: "Efficient"
                         largestButton: buttons.largestButton
-                        runThis: ["bash", "-c", "hyprlock & sleep 0.5 && systemctl suspend"]
+                        runThis: ["powerprofilesctl", "set", "power-saver"]
+                        isActive: root.activeProfile === "power-saver"
                         onClicked: {
-                            Globals.powerMenuOpen = false;
+                            getProfileCmd.running = true;
                         }
                     }
 
-                    // logout
+                    // balanced
                     CenterTextBtn {
-                        id: logout
-                        icon: "󰍃"
-                        label: "Log Out"
+                        id: balanced
+                        icon: "󰾅"
+                        label: "Balanced"
                         largestButton: buttons.largestButton
-                        runThis: ["bash", "-c", "if command -v hyprshutdown >/dev/null 2>&1 && [[ \"$XDG_CURRENT_DESKTOP\" == \"Hyprland\" ]]; then hyprshutdown; elif [[ \"$XDG_CURRENT_DESKTOP\" == \"Hyprland\" ]]; then hyprctl dispatch exit; else niri msg action quit; fi"]
+                        runThis: ["powerprofilesctl", "set", "balanced"]
+                        isActive: root.activeProfile === "balanced"
                         onClicked: {
-                            Globals.powerMenuOpen = false;
+                            getProfileCmd.running = true;
                         }
                     }
 
-                    // reboot
+                    // performance
                     CenterTextBtn {
-                        id: reboot
-                        icon: "󰜉"
-                        label: "Reboot"
+                        id: performance
+                        icon: "󰓅"
+                        label: "Performance"
                         largestButton: buttons.largestButton
-                        runThis: ["systemctl", "reboot"]
+                        runThis: ["powerprofilesctl", "set", "performance"]
+                        isActive: root.activeProfile === "performance"
                         onClicked: {
-                            Globals.powerMenuOpen = false;
-                        }
-                    }
-
-                    // shut down
-                    CenterTextBtn {
-                        id: poweroff
-                        icon: "󰐥"
-                        label: "Power Off"
-                        largestButton: buttons.largestButton
-                        runThis: ["systemctl", "poweroff"]
-                        onClicked: {
-                            Globals.powerMenuOpen = false;
+                            getProfileCmd.running = true;
                         }
                     }
                 }
             }
         }
+    }
+
+    property string activeProfile: "balanced"
+
+    Process {
+        id: getProfileCmd
+        command: ["powerprofilesctl", "get"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.activeProfile = text.trim();
+            }
+        }
+    }
+
+    Timer {
+        interval: 2000
+        running: Globals.powerProfilesOpen
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: getProfileCmd.running = true
     }
 }

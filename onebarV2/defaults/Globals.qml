@@ -10,9 +10,11 @@ Singleton {
 
     property int currentBarHeight: 0  // track the bar height for centered second order menus else
     readonly property int hyprGaps: 3 // adjust to match the gaps of windows in hyprland so that when the bar is toggled of the 2nd order menus still sit flush with windows
+    readonly property int padding: 14
 
     //second order menus
     property bool powerMenuOpen: false
+    property bool powerProfilesOpen: false
 
     // defualt font
     readonly property font textFont: Qt.font({

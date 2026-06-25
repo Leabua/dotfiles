@@ -10,6 +10,7 @@ Rectangle {
     property string label
     property var runThis
     signal clicked
+    property bool isActive: false // keep button coloured if it is already active
 
     // feeding this upstream as the size of a whatever the content is in future
     property int contentWidth: contentCol.implicitWidth
@@ -18,7 +19,8 @@ Rectangle {
     implicitHeight: implicitWidth
 
     radius: Globals.radius
-    color: ma.containsMouse ? Globals.fgColor : "transparent"
+    // color: ma.containsMouse ? Globals.fgColor : "transparent"
+    color: isActive ? Globals.fgColor2 : (ma.containsMouse ? Globals.fgColor : "transparent")
 
     // border.width: Globals.borderWidth
     // border.color: Globals.borderColor
@@ -31,7 +33,7 @@ Rectangle {
         // icon
         Text {
             text: root.icon
-            color: ma.containsMouse ? Globals.bgColor : Globals.fgColor
+            color: root.isActive ? Globals.bgColor : (ma.containsMouse ? Globals.bgColor : Globals.fgColor)
             font.pixelSize: Globals.textFont.pixelSize + 10
             font.family: Globals.textFont.family
             Layout.alignment: Qt.AlignHCenter
@@ -40,7 +42,7 @@ Rectangle {
         // text
         Text {
             text: root.label
-            color: ma.containsMouse ? Globals.bgColor : Globals.fgColor
+            color: root.isActive ? Globals.bgColor : (ma.containsMouse ? Globals.bgColor : Globals.fgColor)
             font.pixelSize: Globals.textFont.pixelSize
             font.family: Globals.textFont.family
             Layout.alignment: Qt.AlignHCenter

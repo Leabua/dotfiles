@@ -41,4 +41,10 @@ Item {
         color: batteryBtn.displayColor
         font: Globals.textFont
     }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        onClicked: Globals.powerProfilesOpen = !Globals.powerProfilesOpen
+    }
 }
