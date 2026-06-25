@@ -162,12 +162,21 @@ Scope {
             }
         }
     }
-    PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
+
+    // todo Getting rid of the volume slider showing on startup
+    // 1. Create a boot flag and a timer to turn it off after 1.5 seconds
+    property bool isBooting: true
+    Timer {
+        interval: 1500
+        running: true
+        onTriggered: root.isBooting = false
     }
-    Connections {
-        target: Pipewire.defaultAudioSink?.audio
-        function onVolumeChanged() {
+
+    // 2. The tracking block
+    property var currentVolume: Pipewire.defaultAudioSink?.audio?.volume
+    onCurrentVolumeChanged: {
+        // 3. Only show the OSD if we are NOT booting
+        if (!isBooting && currentVolume !== undefined && root.barLevel) {
             root.activeOsd = "volume";
             osdTimer.restart();
         }
