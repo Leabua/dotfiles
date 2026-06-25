@@ -15,7 +15,7 @@ font-size = 15
 # window
 window-padding-y = 0
 resize-overlay = never
-background-opacity = 0.9
+background-opacity = 0.85
 window-inherit-working-directory = true
 
 # cursor

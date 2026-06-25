@@ -1,0 +1,66 @@
+import Quickshell.Services.Pipewire
+import QtQuick
+import QtQuick.Layouts
+import qs.defaults
+
+Item {
+    id: root
+    property int sliderHeight: parent.implicitHeight
+    anchors {
+        fill: parent
+        leftMargin: Globals.marginsLeft
+        rightMargin: Globals.marginsRight
+    }
+    visible: opacity > 0
+    Behavior on opacity {
+        NumberAnimation {
+            duration: 150
+        }
+    }
+
+    RowLayout {
+        anchors.fill: parent
+        spacing: Globals.spacing
+
+        Text {
+            text: {
+                var sink = Pipewire.defaultAudioSink;
+                if (!sink || !sink.ready)
+                    return String.fromCodePoint(0xF0581);
+                var vol = Math.round(sink.audio.volume * 100);
+                if (sink.audio.muted || vol === 0)
+                    return String.fromCodePoint(0xF075F);
+                if (vol < 34)
+                    return String.fromCodePoint(0xF057F);
+                if (vol < 67)
+                    return String.fromCodePoint(0xF0580);
+                return String.fromCodePoint(0xF057E);
+            }
+            font: Globals.textFont
+            color: Globals.fgColor
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: root.sliderHeight / 4
+            radius: root.sliderHeight
+            color: Qt.alpha(Globals.fgColor, 0.25)
+
+            Rectangle {
+                anchors {
+                    left: parent.left
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                width: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
+                radius: parent.radius
+                color: Globals.fgColor
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 150
+                    }
+                }
+            }
+        }
+    }
+}
