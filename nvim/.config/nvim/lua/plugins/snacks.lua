@@ -53,6 +53,11 @@ return {
 		-- always scope files and grep to cwd, hidden files included by default
 		picker = {
 			enabled = true,
+			win = {
+				input = {
+					keys = {},
+				},
+			},
 			sources = {
 				explorer = {
 					hidden = true,

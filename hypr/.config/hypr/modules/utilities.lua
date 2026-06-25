@@ -28,7 +28,12 @@ bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true }
 bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 -- power button
-bind("XF86PowerOff", hl.dsp.exec_cmd("~/.config/waybar/scripts/sysmenu.sh --power"), { locked = true })
+-- bind("XF86PowerOff", hl.dsp.exec_cmd("~/.config/waybar/scripts/sysmenu.sh --power"), { locked = true })
+bind(
+	"XF86PowerOff",
+	hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"),
+	{ locked = true }
+)
 
 -- screenshots
 -- bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | satty --filename -'))

@@ -32,5 +32,3 @@ vim.opt.termguicolors = true -- Enables 24-bit RGB color
 vim.opt.cursorline = true -- Highlights the current line (great for Master layout)
 vim.opt.laststatus = 3 -- Global statusline (looks much cleaner on modern rices)
 vim.opt.swapfile = false
-
-vim.cmd.colorscheme("zednight")
