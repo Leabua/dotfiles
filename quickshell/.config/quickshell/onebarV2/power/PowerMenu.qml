@@ -30,7 +30,7 @@ Scope {
     PopupWindow {
         open: Globals.powerMenuOpen
         onDismissed: Globals.powerMenuOpen = false
-        centered: true
+        hAlign: "center"
         cardTopMargin: Globals.currentBarHeight - 26
         padding: Globals.spacing
 

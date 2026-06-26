@@ -27,7 +27,7 @@ Scope {
     PopupWindow {
         open: Globals.powerProfilesOpen
         onDismissed: Globals.powerProfilesOpen = false
-        centered: true
+        hAlign: "center"
         cardTopMargin: Globals.currentBarHeight - 26
         padding: Globals.spacing
 
