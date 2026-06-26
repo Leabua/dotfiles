@@ -14,11 +14,11 @@ font-style = Medium
 font-size = 13
 
 # window
-window-padding-y = 0
+window-padding-y = 1
+window-padding-x = 4
 resize-overlay = never
 background-opacity = 0.85
 window-inherit-working-directory = true
-keybind = ctrl+shift+p=toggle_background_opacity
 
 # cursor
 cursor-style = "block"
