@@ -348,6 +348,7 @@ Scope {
                             }
                         }
                     }
+                    MenuDivider {}
                 }
             }
         }
