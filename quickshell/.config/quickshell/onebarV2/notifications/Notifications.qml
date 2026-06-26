@@ -289,7 +289,7 @@ Scope {
                                     text: model.summary
                                     color: Globals.fgColor
                                     font.family: Globals.textFont.family
-
+                                    font.pixelSize: Globals.textFont.pixelSize
                                     font.weight: Globals.textFont.weight
                                     elide: Text.ElideRight
                                 }
@@ -346,9 +346,16 @@ Scope {
                                 font.family: Globals.textFont.family
                                 font.pixelSize: Globals.textFont.pixelSize - 3
                             }
+                            Text { // blankline for spacer
+                                visible: history.count > 0
+                                text: ""
+                                color: Globals.fgColor2
+                                font.family: Globals.textFont.family
+                                font.pixelSize: Globals.spacing
+                            }
+                            MenuDivider {}
                         }
                     }
-                    MenuDivider {}
                 }
             }
         }
