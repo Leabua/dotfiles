@@ -88,7 +88,7 @@ Singleton {
     }
     // global timer
     Timer {
-        interval: 10000 // 10 seconds -> set not to low that it makes icons useless and not too high since it likely chops battery
+        interval: 10000 // 10 seconds -> set not too low that it makes icons useless and not too high since it likely chops battery
         repeat: true // stop freezing
         running: true // keep it running
         onTriggered: root.tick++ // change event fired every {interval} seconds
