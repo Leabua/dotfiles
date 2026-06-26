@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Services.Pipewire
 import qs.audio
 import qs.defaults
+import qs.launcher // installs the qs.launcher module so Launcher.qml can resolve its sibling components (SearchInput/ResultList)
 import qs.sysUtils
 import QtQuick
 
@@ -205,6 +206,10 @@ Scope {
     }
     LazyLoader {
         source: "clipboard/Clipboard.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "launcher/Launcher.qml"
         active: true
     }
 
