@@ -47,8 +47,8 @@ Scope {
 
     // incoming toast notification
     PanelWindow { // qmllint disable uncreatable-type
-        // don't show toasts while the notification center is open (they'd overlap it)
-        visible: !root.centerOpen
+
+        visible: !root.centerOpen // don't show toasts while the notification center is open (they'd overlap if otherwise)
         anchors {
             top: true
             right: true

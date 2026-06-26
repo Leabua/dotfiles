@@ -19,10 +19,9 @@ Rectangle {
     implicitHeight: contentCol.implicitHeight + Globals.padding  // height fits the content (icon + label) rather than being a big square
 
     radius: Globals.radius
-    // color: ma.containsMouse ? Globals.fgColor : "transparent"
-    color: isActive ? Globals.fgColor2 : (ma.containsMouse ? Globals.fgColor : "transparent")
+    color: isActive ? Globals.fgColor : (ma.containsMouse ? Globals.fgColor : "transparent")
 
-    // border.width: Globals.borderWidth
+    // border.width: Globals.borderWidth //-> if I ever wanted borders for buttons again
     // border.color: Globals.borderColor
 
     ColumnLayout {
