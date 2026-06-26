@@ -1,11 +1,7 @@
 ---------------
 --- Bindings---
 ---------------
-
 local bind = hl.bind
-
--- rofi
-bind("SUPER + SPACE", hl.dsp.exec_cmd(MENU))
 
 -- wallpaper switcher
 bind("SUPER + SHIFT + P", hl.dsp.exec_cmd("~/.dotfiles/scripts/rotate_wallpaper.sh"))
@@ -23,9 +19,10 @@ bind(
 )
 
 -- quickshell Bindings
-bind("SUPER + ALT+ SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle"))
-bind("SUPER +  N", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call notifications toggle"))
-bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle"))
-bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle"))
+bind("SUPER + ALT+ SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle")) -- bar levels
+bind("SUPER +  N", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call notifications toggle")) -- noti panel
+bind("SUPER + SHIFT + V", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle")) -- clipboard
+bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle")) -- clipboard secondary
+bind("SUPER + SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call launcher toggle")) -- launcher
 -- hide shell bar
-bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call bar toggle"))
+bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call bar toggle")) --hide bar
