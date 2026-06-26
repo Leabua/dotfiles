@@ -33,6 +33,17 @@ Item {
         // keep the keyboard-selected row scrolled into view
         onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
 
+        // the default wheel step is tiny on a touchpad; scale it up and drive
+        // contentY directly so scrolling feels responsive (bump scrollSpeed to taste)
+        WheelHandler {
+            property real scrollSpeed: 2.5
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => {
+                const maxY = Math.max(0, view.contentHeight - view.height);
+                view.contentY = Math.max(0, Math.min(maxY, view.contentY - event.angleDelta.y * scrollSpeed));
+            }
+        }
+
         delegate: Item {
             id: row
             required property var modelData
