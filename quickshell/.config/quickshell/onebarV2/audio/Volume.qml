@@ -7,6 +7,9 @@ Item {
 
     property var sink: Pipewire.defaultAudioSink
 
+    PwObjectTracker {
+        objects: [root.sink]
+    }
     // getting some properties ready
     readonly property bool ready: sink && sink.ready
     readonly property bool muted: ready && sink.audio.muted

@@ -4,11 +4,8 @@
 
 local bind = hl.bind
 
--- hide waybar
-bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
-
 -- toggle transparency
-bind("SUPER + BACKSPACE", hl.dsp.window.set_prop({ prop = "opaque", value = "toggle" }))
+-- bind("SUPER + BACKSPACE", hl.dsp.window.set_prop({ prop = "opaque", value = "toggle" }))
 
 -- lock
 bind("SUPER + CTRL + L", hl.dsp.exec_cmd("hyprlock"))

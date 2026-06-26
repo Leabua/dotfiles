@@ -32,6 +32,11 @@ Singleton {
     readonly property color bgColor: "#1e1e1e"
     // readonly property color bgColor: "#000000"
     // readonly property color bgColor: "#1a1a1a"
+
+    // popup/menu background transparency -> lighter than the solid bar so menus feel less heavy
+    readonly property real menuTransparency: 0.9
+    readonly property color menuBg: Qt.alpha(bgColor, menuTransparency)
+
     readonly property color healthy: "#4fd6be" // green
     readonly property color warningColor: "#f9e2af" // amber
     readonly property color criticalColor: "#f38ba8" // red
@@ -54,7 +59,19 @@ Singleton {
     readonly property int borderWidth: 1
     readonly property color borderColor: fgColor
 
-    readonly property int radius: 12
+    readonly property int radius: 8 // change to 0 for no rounding
+
+    // animation durations -> anchor animations to these instead of inline numbers
+    readonly property int animFast: 80
+    readonly property int animDuration: 150
+    readonly property int animSlow: 250
+
+    // bar show/hide collapse speed -> single knob for the whole toggle animation
+    readonly property int barCollapse: 200
+
+    // icon visibility toggles -> flip to preview menus with/without icons (BarRow1 untouched)
+    readonly property bool headerIcons: true
+    readonly property bool buttonIcons: true
 
     FileView {
         path: Quickshell.env("HOME") + "/.cache/quickshell/colors.json"

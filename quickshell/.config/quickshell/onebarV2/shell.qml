@@ -11,12 +11,39 @@ import QtQuick
 Scope {
     id: root
     property int barLevel: 1
+    property bool barShown: true // toggled via the "bar" IPC handler; bar level is remembered
+
+    // the layer-shell window stays mapped during the collapse, then unmaps so the  compositor reserves zero space once hidden (and re-maps before the open anim)
+
+    property bool windowVisible: true
+
+    // both phases derive from one Globals knob -> tune the whole toggle in one place
+    readonly property int collapseShrink: Globals.barCollapse // scale phase
+    readonly property int collapseFade: Math.round(Globals.barCollapse * 0.4) // content fade phase
+
+    onBarShownChanged: {
+        if (barShown) {
+            hideWindowTimer.stop();
+            windowVisible = true; // map the window before animating open
+        } else {
+            windowVisible = true; // stay mapped through the collapse...
+            hideWindowTimer.restart(); // ...then unmap once it finishes
+        }
+    }
+
+    Timer {
+        id: hideWindowTimer
+        interval: root.collapseFade + root.collapseShrink + 30 // just after the collapse finishes
+        onTriggered: root.windowVisible = false
+    }
 
     Variants {
         model: Quickshell.screens
         PanelWindow { // qmllint disable uncreatable-type
             property var modelData
             screen: modelData
+
+            visible: root.windowVisible // unmapped once collapsed -> no reserved space
 
             color: "transparent"
 
@@ -26,6 +53,7 @@ Scope {
                 right: true
             }
 
+            // need to figure out how to disable the other error
             margins { // qmllint disable unresolved-type
                 top: Globals.marginsTop
                 left: Globals.marginsLeft
@@ -38,6 +66,7 @@ Scope {
                 anchors.margins: -1
                 cursorShape: Qt.PointingHandCursor
                 z: -1
+                enabled: root.barShown // don't cycle levels while collapsed to a dot
                 onDoubleClicked: root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1
             }
 
@@ -54,14 +83,12 @@ Scope {
                 color: Globals.bgColor
                 anchors.centerIn: parent
 
-                // Drive island height from a dedicated Text that is always
-                // instantiated and always uses Globals.textFont, completely independent
-                // of RowLayout's internal visible-children calculation.
+                // Drive island height from a dedicated Text that is always instantiated but hidden so I dont get any weird sizing issues
                 Text {
                     id: heightAnchor
                     visible: false
                     font: Globals.textFont
-                    text: "Wg" // W = widest, g = deepest descender → reliable full line height -> otherwise hidden elements may create additional pixels causing window to shift
+                    text: "Wg"
                 }
 
                 implicitHeight: heightAnchor.implicitHeight + 10
@@ -90,12 +117,14 @@ Scope {
 
                 VolumeOsd {
                     sliderHeight: island.implicitHeight
-                    opacity: root.activeOsd === "volume" ? 1 : 0
+                    opacity: (root.barShown && root.activeOsd === "volume") ? 1 : 0
+                    volPercent: root.volPercent
+                    muted: root.volMuted
                 }
                 BrightnessOsd {
                     id: brightnessOsd
                     sliderHeight: island.implicitHeight
-                    opacity: root.activeOsd === "brightness" ? 1 : 0
+                    opacity: (root.barShown && root.activeOsd === "brightness") ? 1 : 0
                     brightness: root.brightness
                     maxBrightness: root.maxBrightness
                 }
@@ -106,6 +135,58 @@ Scope {
                         easing.type: Easing.OutCubic
                     }
                 }
+
+                // ----- show/hide collapse animation (IPC: target "bar") -----
+                states: State {
+                    name: "hidden"
+                    when: !root.barShown
+                    PropertyChanges {
+                        target: island
+                        scale: 0
+                    }
+                    PropertyChanges {
+                        target: contentRoot
+                        opacity: 0
+                    }
+                }
+
+                transitions: [
+                    Transition {
+                        to: "hidden"
+                        SequentialAnimation {
+                            NumberAnimation {
+                                target: contentRoot
+                                property: "opacity"
+                                duration: root.collapseFade
+                                easing.type: Easing.InOutQuad
+                            }
+                            NumberAnimation {
+                                target: island
+                                property: "scale"
+                                duration: root.collapseShrink
+                                easing.type: Easing.InOutCubic
+                            }
+                        }
+                    },
+                    Transition {
+                        from: "hidden"
+                        SequentialAnimation {
+                            NumberAnimation {
+                                target: island
+                                property: "scale"
+                                from: 0
+                                duration: root.collapseShrink
+                                easing.type: Easing.InOutCubic
+                            }
+                            NumberAnimation {
+                                target: contentRoot
+                                property: "opacity"
+                                duration: root.collapseFade
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
+                ]
             }
         }
     }
@@ -122,12 +203,16 @@ Scope {
         source: "battery/PowerProfiles.qml"
         active: true
     }
+    LazyLoader {
+        source: "clipboard/Clipboard.qml"
+        active: true
+    }
 
     property string activeOsd: ""
 
     Timer {
         id: osdTimer
-        interval: 1500
+        interval: 1000
         onTriggered: root.activeOsd = ""
     }
 
@@ -163,29 +248,45 @@ Scope {
         }
     }
 
-    // todo Getting rid of the volume slider showing on startup
-    // 1. Create a boot flag and a timer to turn it off after 1.5 seconds
-    property bool isBooting: true
-    Timer {
-        interval: 1500
-        running: true
-        onTriggered: root.isBooting = false
+    property int volPercent: Pipewire.defaultAudioSink && Pipewire.defaultAudioSink.audio ? Math.round(Pipewire.defaultAudioSink.audio.volume * 100) : 0
+    property bool volMuted: Pipewire.defaultAudioSink && Pipewire.defaultAudioSink.audio ? Pipewire.defaultAudioSink.audio.muted : false
+
+    PwObjectTracker {
+        objects: [Pipewire.defaultAudioSink]
     }
 
-    // 2. The tracking block
-    property var currentVolume: Pipewire.defaultAudioSink?.audio?.volume
-    onCurrentVolumeChanged: {
-        // 3. Only show the OSD if we are NOT booting
-        if (!isBooting && currentVolume !== undefined && root.barLevel) {
+    Connections {
+        target: Pipewire.defaultAudioSink ? Pipewire.defaultAudioSink.audio : null
+        ignoreUnknownSignals: true
+
+        function onVolumeChanged() {
+            root.activeOsd = "volume";
+            osdTimer.restart();
+        }
+
+        function onMutedChanged() {
             root.activeOsd = "volume";
             osdTimer.restart();
         }
     }
-
     IpcHandler {
         target: "cycleBarLevel"
         function cycle(): void {
             root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1;
+        }
+    }
+
+    // toggle the whole bar visible/hidden with the collapse animation
+    IpcHandler {
+        target: "bar"
+        function toggle(): void {
+            root.barShown = !root.barShown;
+        }
+        function show(): void {
+            root.barShown = true;
+        }
+        function hide(): void {
+            root.barShown = false;
         }
     }
 }

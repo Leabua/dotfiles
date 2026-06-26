@@ -33,7 +33,7 @@ return {
 				hl.SnacksPickerInputBorder = { bg = "NONE" }
 				hl.SnacksPickerPreview = { bg = "NONE" }
 				hl.SnacksPickerPreviewBorder = { bg = "NONE" }
-				hl.SnacksDashboardHeader = { fg = c.teal }
+				hl.SnacksDashboardHeader = { fg = c.red }
 
 				-- Explorer header (bufferline offset uses this group)
 				hl.Directory = { fg = c.blue, bg = "NONE" }

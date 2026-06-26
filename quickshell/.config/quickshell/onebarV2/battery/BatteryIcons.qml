@@ -1,4 +1,5 @@
 import Quickshell.Services.UPower
+import Quickshell.Io
 import QtQuick
 import qs.defaults
 
@@ -30,6 +31,46 @@ Item {
             return Globals.healthy;
         return Globals.fgColor;
     }
+
+    // magic
+    // low-battery notifications: fire once per downward crossing while discharging, so I get warned (even fullscreen) at 20% and again at 10%
+    // -> stops the annoyance of fullscreening an app and never knowing if my battery is about to die or not
+    property bool warned20: false
+    property bool warned10: false
+
+    onPercentChanged: {
+        if (bat == null || !bat.ready)
+            return;
+
+        if (isCharging) {
+            warned20 = false;
+            warned10 = false;
+            return;
+        }
+
+        if (percent <= 10 && !warned10) {
+            warned10 = true;
+            notifyBattery("critical", "Battery critically low — plug in now");
+        } else if (percent <= 20 && !warned20) {
+            warned20 = true;
+            notifyBattery("normal", "Battery low");
+        }
+
+        // re-arm each threshold once we climb back above it
+        if (percent > 10)
+            warned10 = false;
+        if (percent > 20)
+            warned20 = false;
+    }
+
+    function notifyBattery(urgency: string, summary: string): void {
+        notifyProc.command = ["notify-send", "-a", "Battery", "-u", urgency, summary, batteryBtn.percent + "% remaining"];
+        notifyProc.running = true;
+    }
+    Process {
+        id: notifyProc
+    }
+    //end of magic
 
     visible: bat != null && bat.ready
     implicitWidth: row.implicitWidth
