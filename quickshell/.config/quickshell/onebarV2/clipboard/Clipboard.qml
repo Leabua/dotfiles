@@ -330,7 +330,7 @@ Scope {
 
                 // thin divider between list and preview (equal top/bottom gaps)
                 Rectangle {
-                    Layout.preferredWidth: Globals.borderWidth
+                    Layout.preferredWidth: Globals.borderWidth === 0 ? 1 : Globals.borderWidth // keeps the divider regardless of if we go no borders or not
                     Layout.preferredHeight: root.bodyHeight - Globals.padding * 2
                     Layout.alignment: Qt.AlignVCenter
                     Layout.leftMargin: Globals.spacing

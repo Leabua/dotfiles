@@ -188,7 +188,7 @@ Scope {
         onDismissed: root.open = false
         hAlign: "center"
         // sit just below the bar when it's shown, shift up to the top when it's hidden
-        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
+        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY + 250 : 250 // I wanted it centered in the screen but changing 250 to 0 makes it like any other centered menu
         padding: Globals.spacing
         onKeyDown: event => root.handleKey(event)
 

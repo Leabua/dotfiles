@@ -40,14 +40,14 @@ Item {
             loops: Animation.Infinite
             NumberAnimation {
                 from: 1
-                to: 0.2
-                duration: 600
+                to: 0.1
+                duration: 500
                 easing.type: Easing.InOutSine
             }
             NumberAnimation {
-                from: 0.2
+                from: 0.1
                 to: 1
-                duration: 600
+                duration: 500
                 easing.type: Easing.InOutSine
             }
         }
