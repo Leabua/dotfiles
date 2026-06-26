@@ -66,7 +66,8 @@ Item {
                 }
             }
 
-            // short colour bar on the left edge marks the active row
+            // short colour bar on the left edge marks the active row; fades with the
+            // same timing as the row tint so the two move together
             Rectangle {
                 anchors.left: parent.left
                 anchors.top: parent.top
@@ -76,7 +77,12 @@ Item {
                 width: 3
                 radius: 2
                 color: Globals.fgColor
-                visible: row.sel
+                opacity: row.sel ? 1 : 0
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Globals.animFast
+                    }
+                }
             }
 
             // icon: real app icon when resolvable, else a glyph that picks up the

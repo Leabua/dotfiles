@@ -19,6 +19,10 @@ Scope {
     // local open state, toggled via IPC (mirrors what I did in Notifications' centerOpen S/O tony on yt)
     property bool clipboardOpen: false
 
+    // single source of truth for the active row (drives both the highlight and the
+    // preview pane); hover and arrow keys both write here, same as the launcher
+    property int selectedIndex: 0
+
     // ----- sizing -----
     readonly property int listWidth: 300                              // left list / truncation width
     readonly property int previewWidth: Math.round(listWidth * 1.5)   // right preview pane, 1.5x the list
@@ -63,6 +67,53 @@ Scope {
         copyProc.running = true;
     }
 
+    // ----- selection (single source of truth, mirrors the launcher) -----
+
+    // set the active row + load its preview; the hoveredId guard dedupes the
+    // stream of hover events so we only re-decode when the row actually changes
+    function select(index: int): void {
+        if (index < 0 || index >= clipModel.count)
+            return;
+        root.selectedIndex = index;
+        const it = clipModel.get(index);
+        if (it.cid !== root.hoveredId)
+            root.loadPreview(it.cid, it.isImage);
+    }
+
+    function moveSel(delta: int): void {
+        const n = clipModel.count;
+        if (n === 0)
+            return;
+        root.select((root.selectedIndex + delta + n) % n);
+    }
+
+    function activateAt(index: int): void {
+        if (index < 0 || index >= clipModel.count)
+            return;
+        root.copyEntry(clipModel.get(index).cid);
+        root.clipboardOpen = false;
+    }
+
+    // PopupWindow forwards every keypress here; an unaccepted Escape (and an
+    // outside click) is left to PopupWindow, which closes the panel
+    function handleKey(event): void {
+        const k = event.key;
+        if (k === Qt.Key_Down || (k === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier))) {
+            root.moveSel(1);
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_Up || k === Qt.Key_Backtab || (k === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+            root.moveSel(-1);
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_Return || k === Qt.Key_Enter) {
+            root.activateAt(root.selectedIndex);
+            event.accepted = true;
+        }
+    }
+
     function clearPreview(): void {
         root.hoveredId = "";
         root.previewText = "";
@@ -70,9 +121,10 @@ Scope {
         root.previewIsImage = false;
     }
 
-    // refresh list + reset preview whenever the panel opens
+    // refresh list + reset preview/selection whenever the panel opens
     onClipboardOpenChanged: {
         if (clipboardOpen) {
+            selectedIndex = 0;
             clearPreview();
             refresh();
         }
@@ -90,8 +142,6 @@ Scope {
             onStreamFinished: {
                 clipModel.clear();
                 const lines = text.split("\n");
-                let firstId = "";
-                let firstIsImage = false;
 
                 for (const line of lines) {
                     if (line.trim() === "")
@@ -110,14 +160,10 @@ Scope {
                         preview: label,
                         isImage: isImg
                     });
-                    if (firstId === "") {
-                        firstId = id;
-                        firstIsImage = isImg;
-                    }
                 }
                 // select + preview the most recent entry by default
-                if (firstId !== "")
-                    root.loadPreview(firstId, firstIsImage);
+                if (clipModel.count > 0)
+                    root.select(0);
                 else
                     root.clearPreview();
             }
@@ -169,6 +215,7 @@ Scope {
     PopupWindow {
         open: root.clipboardOpen
         onDismissed: root.clipboardOpen = false
+        onKeyDown: event => root.handleKey(event)
 
         margins {
             top: Globals.marginsTop
@@ -227,10 +274,11 @@ Scope {
                 Layout.rightMargin: Globals.spacing
             }
 
-            // empty state - keeps the menu as small as an empty notification menu
+            // empty state - keeps the list column's width (no preview pane) so the
+            // panel doesn't shrink horizontally when there's no history
             Text {
                 visible: clipModel.count === 0
-                Layout.fillWidth: true
+                Layout.preferredWidth: root.listWidth
                 text: "No clipboard history"
                 color: Qt.alpha(Globals.fgColor, 0.4)
                 font.family: Globals.textFont.family
@@ -245,85 +293,98 @@ Scope {
                 Layout.fillWidth: true
                 spacing: Globals.spacing + 2
 
-                // left: scrollable entry list
-                Flickable {
+                // left: scrollable entry list (selection model mirrors the launcher's
+                // ResultList - selectedIndex is the single source of truth)
+                ListView {
+                    id: listView
                     Layout.preferredWidth: root.listWidth
                     Layout.preferredHeight: root.bodyHeight
-                    clip: true
-                    contentWidth: width
-                    contentHeight: listColumn.implicitHeight
+                    model: clipModel
+                    currentIndex: root.selectedIndex
+                    highlightFollowsCurrentItem: false
                     boundsBehavior: Flickable.StopAtBounds
+                    clip: true
+                    cacheBuffer: 200
+                    pixelAligned: true
+                    spacing: Globals.spacing
 
-                    ColumnLayout {
-                        id: listColumn
-                        width: parent.width
-                        spacing: Globals.spacing
+                    // keep the keyboard-selected row scrolled into view
+                    onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
 
-                        Repeater {
-                            model: clipModel
-                            delegate: Rectangle {
-                                id: entry
-                                required property string cid
-                                required property string preview
-                                required property bool isImage
+                    // bigger, smoother wheel step than the default (same as the launcher)
+                    WheelHandler {
+                        property real scrollSpeed: 2
+                        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                        onWheel: event => {
+                            const maxY = Math.max(0, listView.contentHeight - listView.height);
+                            listView.contentY = Math.max(0, Math.min(maxY, listView.contentY - event.angleDelta.y * scrollSpeed));
+                        }
+                    }
 
-                                // hovered, or the entry currently shown in the preview pane
-                                readonly property bool active: ema.containsMouse || root.hoveredId === entry.cid
+                    delegate: Rectangle {
+                        id: entry
+                        required property string cid
+                        required property string preview
+                        required property bool isImage
+                        required property int index
 
-                                Layout.fillWidth: true
-                                implicitHeight: entryText.implicitHeight + (Globals.spacing + 2) * 2
-                                radius: Globals.radius
-                                // faint tint on the active entry (matches the launcher list)
-                                color: entry.active ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
+                        readonly property bool sel: root.selectedIndex === entry.index
 
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Globals.animFast
-                                    }
-                                }
+                        width: ListView.view.width
+                        implicitHeight: entryText.implicitHeight + (Globals.spacing + 2) * 2
+                        radius: Globals.radius
+                        // faint tint on the active entry (matches the launcher list)
+                        color: entry.sel ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
 
-                                // short colour bar on the left edge of the active entry
-                                Rectangle {
-                                    anchors.left: parent.left
-                                    anchors.top: parent.top
-                                    anchors.bottom: parent.bottom
-                                    anchors.topMargin: Globals.spacing
-                                    anchors.bottomMargin: Globals.spacing
-                                    width: 3
-                                    radius: 2
-                                    color: Globals.fgColor
-                                    visible: entry.active
-                                }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Globals.animFast
+                            }
+                        }
 
-                                Text {
-                                    id: entryText
-                                    anchors {
-                                        left: parent.left
-                                        right: parent.right
-                                        verticalCenter: parent.verticalCenter
-                                        leftMargin: Globals.spacing + 8
-                                        rightMargin: Globals.spacing + 2
-                                    }
-                                    text: entry.preview
-                                    color: Globals.fgColor
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize - 1
-                                    elide: Text.ElideRight
-                                    maximumLineCount: 1
-                                }
-
-                                MouseArea {
-                                    id: ema
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onEntered: root.loadPreview(entry.cid, entry.isImage)
-                                    onClicked: {
-                                        root.copyEntry(entry.cid);
-                                        root.clipboardOpen = false;
-                                    }
+                        // short colour bar on the left edge of the active entry; fades
+                        // with the same timing as the row tint so the two move together
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.topMargin: Globals.spacing
+                            anchors.bottomMargin: Globals.spacing
+                            width: 3
+                            radius: 2
+                            color: Globals.fgColor
+                            opacity: entry.sel ? 1 : 0
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: Globals.animFast
                                 }
                             }
+                        }
+
+                        Text {
+                            id: entryText
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                verticalCenter: parent.verticalCenter
+                                leftMargin: Globals.spacing + 8
+                                rightMargin: Globals.spacing + 2
+                            }
+                            text: entry.preview
+                            color: Globals.fgColor
+                            font.family: Globals.textFont.family
+                            font.pixelSize: Globals.textFont.pixelSize - 1
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                        }
+
+                        MouseArea {
+                            id: ema
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onPositionChanged: root.select(entry.index)
+                            onClicked: root.activateAt(entry.index)
                         }
                     }
                 }
