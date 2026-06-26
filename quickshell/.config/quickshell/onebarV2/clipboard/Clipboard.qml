@@ -222,6 +222,11 @@ Scope {
                 }
             }
 
+            MenuDivider {
+                Layout.leftMargin: Globals.spacing
+                Layout.rightMargin: Globals.spacing
+            }
+
             // empty state - keeps the menu as small as an empty notification menu
             Text {
                 visible: clipModel.count === 0
@@ -262,17 +267,32 @@ Scope {
                                 required property string preview
                                 required property bool isImage
 
+                                // hovered, or the entry currently shown in the preview pane
+                                readonly property bool active: ema.containsMouse || root.hoveredId === entry.cid
+
                                 Layout.fillWidth: true
                                 implicitHeight: entryText.implicitHeight + (Globals.spacing + 2) * 2
                                 radius: Globals.radius
-                                // mirror PowerMenu's CenterTextBtn: no border, fill with fgColor
-                                // when hovered or when this is the selected (previewed) entry
-                                color: (ema.containsMouse || root.hoveredId === entry.cid) ? Globals.fgColor : "transparent"
+                                // faint tint on the active entry (matches the launcher list)
+                                color: entry.active ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
 
                                 Behavior on color {
                                     ColorAnimation {
                                         duration: Globals.animFast
                                     }
+                                }
+
+                                // short colour bar on the left edge of the active entry
+                                Rectangle {
+                                    anchors.left: parent.left
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    anchors.topMargin: Globals.spacing
+                                    anchors.bottomMargin: Globals.spacing
+                                    width: 3
+                                    radius: 2
+                                    color: Globals.fgColor
+                                    visible: entry.active
                                 }
 
                                 Text {
@@ -281,10 +301,11 @@ Scope {
                                         left: parent.left
                                         right: parent.right
                                         verticalCenter: parent.verticalCenter
-                                        margins: Globals.spacing + 2
+                                        leftMargin: Globals.spacing + 8
+                                        rightMargin: Globals.spacing + 2
                                     }
                                     text: entry.preview
-                                    color: (ema.containsMouse || root.hoveredId === entry.cid) ? Globals.bgColor : Globals.fgColor
+                                    color: Globals.fgColor
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize - 1
                                     elide: Text.ElideRight

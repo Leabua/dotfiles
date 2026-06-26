@@ -210,6 +210,8 @@ Scope {
                 }
             }
 
+            MenuDivider {}
+
             // empty state
             Text {
                 visible: history.count === 0

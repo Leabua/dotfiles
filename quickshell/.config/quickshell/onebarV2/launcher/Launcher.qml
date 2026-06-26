@@ -187,12 +187,13 @@ Scope {
         open: root.open
         onDismissed: root.open = false
         hAlign: "center"
-        cardTopMargin: Globals.currentBarHeight - 26
+        // sit just below the bar when it's shown, shift up to the top when it's hidden
+        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - 26 : 0
         padding: Globals.spacing
         onKeyDown: event => root.handleKey(event)
 
         margins {
-            top: Globals.marginsTop + Globals.currentBarHeight + Globals.hyprGaps
+            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
             left: Globals.marginsLeft
             right: Globals.marginsRight
         }
@@ -201,17 +202,39 @@ Scope {
             width: root.cardWidth
             spacing: Globals.spacing
 
+            // heading
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Globals.spacing
+
+                Text {
+                    text: "󰀻" // nf-md-apps
+                    visible: Globals.headerIcons
+                    color: Globals.fgColor
+                    font.family: Globals.textFont.family
+                    font.pixelSize: Globals.textFont.pixelSize + 2
+                    font.weight: Globals.textFont.weight
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: "App Menu"
+                    color: Globals.fgColor
+                    font.family: Globals.textFont.family
+                    font.pixelSize: Globals.textFont.pixelSize + 2
+                    font.weight: Globals.textFont.weight
+                }
+            }
+
+            MenuDivider {}
+
             SearchInput {
                 Layout.fillWidth: true
                 query: root.query
                 active: root.open
             }
 
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: Globals.borderWidth
-                color: Qt.alpha(Globals.fgColor, 0.3)
-            }
+            MenuDivider {}
 
             ResultList {
                 Layout.fillWidth: true

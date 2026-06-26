@@ -28,11 +28,12 @@ Scope {
         open: Globals.powerProfilesOpen
         onDismissed: Globals.powerProfilesOpen = false
         hAlign: "center"
-        cardTopMargin: Globals.currentBarHeight - 26
+        // sit just below the bar when it's shown, shift up to the top when it's hidden
+        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - 26 : 0
         padding: Globals.spacing
 
         margins {
-            top: Globals.marginsTop + Globals.currentBarHeight + Globals.hyprGaps // screen top + bar height + WM gaps
+            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0) // below the bar when shown, screen top when hidden
             right: Globals.marginsRight
             left: Globals.marginsLeft
         }
@@ -63,6 +64,8 @@ Scope {
                     font.weight: Globals.textFont.weight
                 }
             }
+
+            MenuDivider {}
 
             // The buttons in the row
             RowLayout {

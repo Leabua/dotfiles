@@ -79,6 +79,13 @@ Scope {
                 value: island.implicitHeight
             }
 
+            // mirror bar visibility so centered menus can shift up when it hides
+            Binding {
+                target: Globals
+                property: "barShown"
+                value: root.barShown
+            }
+
             Rectangle {
                 id: island
                 color: Globals.bgColor

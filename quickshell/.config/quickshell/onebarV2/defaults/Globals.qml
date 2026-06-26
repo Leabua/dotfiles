@@ -9,6 +9,7 @@ Singleton {
     id: root
 
     property int currentBarHeight: 0  // track the bar height for centered second order menus else
+    property bool barShown: true      // shell.qml mirrors its bar state here so centered menus can shift up when the bar is hidden
     readonly property int hyprGaps: 3 // adjust to match the gaps of windows in hyprland so that when the bar is toggled of the 2nd order menus still sit flush with windows
     readonly property int padding: 14
 

@@ -3,10 +3,10 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.defaults
 
-// Scrollable result list. Layout (38px rows, left accent bar, icon + title +
-// category) is ported from bjarneo's OmniMenu ResultList; the selection styling
-// follows our own Clipboard idiom (selected row fills with fgColor, text flips to
-// bgColor) so it feels native to onebarV2.
+// Scrollable result list. Layout (40px rows, icon + title + category) and the
+// selection styling are both from bjarneo's OmniMenu ResultList: the active row
+// gets a faint background tint plus a short colour bar on its left edge, and the
+// text stays readable (no full fgColor fill / bgColor inversion).
 //
 // `results` is a plain JS array of result objects shaped by Launcher:
 //   { kind, title, category, glyph, iconUrl, entry?/command? }
@@ -42,12 +42,12 @@ Item {
             height: 40
             readonly property bool sel: rl.selectedIndex === index
 
-            // row background: filled when selected, faint on hover
+            // row background: faint tint on the active row
             Rectangle {
                 anchors.fill: parent
                 anchors.rightMargin: 2
                 radius: Globals.radius
-                color: row.sel ? Globals.fgColor : (rowMouse.containsMouse ? Qt.alpha(Globals.fgColor, 0.15) : "transparent")
+                color: row.sel ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
                 Behavior on color {
                     ColorAnimation {
                         duration: Globals.animFast
@@ -55,16 +55,16 @@ Item {
                 }
             }
 
-            // left accent bar marks the active row
+            // short colour bar on the left edge marks the active row
             Rectangle {
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.topMargin: Globals.spacing
                 anchors.bottomMargin: Globals.spacing
-                width: 2
-                radius: 1
-                color: Globals.fgColor2
+                width: 3
+                radius: 2
+                color: Globals.fgColor
                 visible: row.sel
             }
 
@@ -96,7 +96,7 @@ Item {
                     anchors.centerIn: parent
                     visible: !iconBox.hasImg
                     text: row.modelData.glyph || "󰣆"
-                    color: row.sel ? Globals.bgColor : Globals.fgColor
+                    color: Globals.fgColor
                     font.family: Globals.textFont.family
                     font.pixelSize: Globals.textFont.pixelSize + 2
                 }
@@ -110,7 +110,7 @@ Item {
                 anchors.rightMargin: Globals.spacing
                 anchors.verticalCenter: parent.verticalCenter
                 text: row.modelData.title
-                color: row.sel ? Globals.bgColor : Globals.fgColor
+                color: Globals.fgColor
                 font.family: Globals.textFont.family
                 font.pixelSize: Globals.textFont.pixelSize
                 font.weight: Globals.textFont.weight
@@ -123,7 +123,7 @@ Item {
                 anchors.rightMargin: Globals.spacing + 8
                 anchors.verticalCenter: parent.verticalCenter
                 text: (row.modelData.category || "").toUpperCase()
-                color: row.sel ? Qt.alpha(Globals.bgColor, 0.7) : Qt.alpha(Globals.fgColor, 0.5)
+                color: Qt.alpha(Globals.fgColor, row.sel ? 0.7 : 0.45)
                 font.family: Globals.textFont.family
                 font.pixelSize: Globals.textFont.pixelSize - 4
                 font.letterSpacing: 2
