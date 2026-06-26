@@ -12,6 +12,7 @@ Singleton {
     property bool barShown: true      // shell.qml mirrors its bar state here so centered menus can shift up when the bar is hidden
     readonly property int hyprGaps: 3 // adjust to match the gaps of windows in hyprland so that when the bar is toggled of the 2nd order menus still sit flush with windows
     readonly property int padding: 14
+    readonly property int cardY: 24
 
     //second order menus
     property bool powerMenuOpen: false
@@ -57,7 +58,7 @@ Singleton {
     readonly property int marginsBottom: -3
 
     // borders
-    readonly property int borderWidth: 1
+    readonly property int borderWidth: 0
     readonly property color borderColor: fgColor
 
     readonly property int radius: 8 // change to 0 for no rounding

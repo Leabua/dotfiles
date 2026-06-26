@@ -29,7 +29,7 @@ Scope {
         onDismissed: Globals.powerProfilesOpen = false
         hAlign: "center"
         // sit just below the bar when it's shown, shift up to the top when it's hidden
-        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - 26 : 0
+        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
         padding: Globals.spacing
 
         margins {

@@ -10,7 +10,7 @@ import qs.defaults
 // Layout.rightMargin on the divider so the two stay aligned.
 Rectangle {
     Layout.fillWidth: true
-    Layout.preferredHeight: Globals.borderWidth
+    Layout.preferredHeight: Globals.borderWidth === 0 ? 1 : Globals.borderWidth // keeps the divider regardless of if we go no borders or not
     radius: Globals.borderWidth
     color: Qt.alpha(Globals.fgColor, 0.3)
 }
