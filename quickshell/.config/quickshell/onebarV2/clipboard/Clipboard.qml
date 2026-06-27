@@ -245,7 +245,7 @@ Scope {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "Clipboard Menu"
+                    text: "Clipboard"
                     color: Globals.fgColor
                     font.family: Globals.textFont.family
                     font.pixelSize: Globals.textFont.pixelSize + 2
