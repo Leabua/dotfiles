@@ -7,11 +7,6 @@ import qs.defaults
 import QtQuick
 import QtQuick.Layouts
 
-// The audio card body (lives inside AudioMenu's PopupWindow). PipeWire-backed:
-//   - output device selector + master output volume + a slider per playing app
-//   - input device selector + master input (mic) volume
-//   - bottom-left button switches the popup over to the bluetooth card
-// Switching default devices uses Pipewire.preferredDefaultAudioSink/Source.
 ColumnLayout {
     id: root
 
@@ -61,7 +56,7 @@ ColumnLayout {
 
     // keep every node we bind to alive + ready so audio.volume reads/writes work
     PwObjectTracker {
-        objects: Pipewire.nodes.values
+        objects: Globals.audioMenuOpen ? Pipewire.nodes.values : [] // only track nodes while the card is open
     }
 
     // strut that pins the whole card body to menuWidth (fillWidth children stretch to it)
@@ -175,10 +170,9 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing
-        CenterTextBtn {
-            id: btSwitch
+        ViewSwitchBtn {
             icon: String.fromCodePoint(0xF00AF) // bluetooth
-            largestButton: btSwitch.implicitHeight // icon-only -> width == height == perfect square
+            label: "Bluetooth"
             onClicked: Globals.audioMenuView = "bluetooth"
         }
         Item {

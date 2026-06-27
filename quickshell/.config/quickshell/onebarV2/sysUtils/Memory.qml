@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import Quickshell.Io
 import qs.defaults
 
@@ -8,41 +9,39 @@ Item {
     property int memoryUsage: 0
 
     // dynamic height/width based on text size
-    implicitHeight: textID.implicitHeight
-    implicitWidth: textID.implicitWidth
+    implicitHeight: row.implicitHeight
+    implicitWidth: row.implicitWidth
 
     // using global tick from Globals.tick
     property int sharedTick: Globals.tick
     onSharedTickChanged: memoryProcess.running = true
 
-    property color displayColor: {
-        if (memoryUsage > 85)
-            return Globals.criticalColor;
-        if (memoryUsage > 70)
-            return Globals.warningColor;
-        else
-            return Globals.fgColor;
-    }
     Process {
         id: memoryProcess
-        command: ["sh", "-c", "free | grep Mem"]
-        // read memory usage from free command output
-        stdout: SplitParser {
-            onRead: data => {
-                var parts = data.trim().split(/\s+/);
-                var total = parseInt(parts[1]) || 1;
-                var used = parseInt(parts[2]) || 0;
-                memoryItem.memoryUsage = Math.round((used / total) * 100);
+        command: ["cat", "/proc/meminfo"]
+        // used% from /proc/meminfo (MemTotal - MemAvailable) -> one read, no shell + pipe
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const mt = text.match(/MemTotal:\s+(\d+)/);
+                const ma = text.match(/MemAvailable:\s+(\d+)/);
+                if (mt && ma)
+                    memoryItem.memoryUsage = Math.round((parseInt(mt[1]) - parseInt(ma[1])) / parseInt(mt[1]) * 100);
             }
         }
         Component.onCompleted: running = true // avoids having to wait for the timer to fire just to get the memory to start going
     }
 
-    // what I see
-    Text {
-        id: textID
-        text: "󰘚" + " " + memoryItem.memoryUsage + "%"
-        font: Globals.textFont
-        color: Globals.fgColor
+    RowLayout {
+        id: row
+        spacing: Globals.spacing - 1// in-pair gap: icon hugs its value
+
+        BarIcon {
+            text: "󰘚"
+        }
+        Text {
+            text: memoryItem.memoryUsage + "%"
+            color: Globals.fgColor
+            font: Globals.textFont
+        }
     }
 }

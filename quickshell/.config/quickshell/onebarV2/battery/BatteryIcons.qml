@@ -1,6 +1,7 @@
 import Quickshell.Services.UPower
 import Quickshell.Io
 import QtQuick
+import QtQuick.Layouts
 import qs.defaults
 
 Item {
@@ -76,11 +77,20 @@ Item {
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
 
-    Text {
+    RowLayout {
         id: row
-        text: batteryBtn.icon + batteryBtn.percent + "%"
-        color: batteryBtn.displayColor
-        font: Globals.textFont
+        spacing: Globals.spacing - 1// in-pair gap: icon hugs its value
+
+        BarIcon {
+            text: batteryBtn.icon.trim()
+            color: batteryBtn.displayColor
+            font.pixelSize: batteryBtn.isCharging ? Globals.barIconSize : Globals.barIconSize - 6
+        }
+        Text {
+            text: batteryBtn.percent + "%"
+            color: batteryBtn.displayColor
+            font: Globals.textFont
+        }
     }
     MouseArea {
         anchors.fill: parent

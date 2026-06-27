@@ -7,10 +7,6 @@ import qs.defaults
 import QtQuick
 import QtQuick.Layouts
 
-// The bluetooth card body (replaces AudioView inside AudioMenu's PopupWindow).
-// Backed by Quickshell.Bluetooth: header on/off toggle drives the adapter,
-// the paired list connects/disconnects, the radar starts discovery and the
-// nearby list pairs. Bottom-left button switches back to the audio card.
 ColumnLayout {
     id: root
 
@@ -89,8 +85,9 @@ ColumnLayout {
             implicitHeight: Globals.textFont.pixelSize * 1.3
             radius: height / 2
             color: root.poweredOn ? Globals.fgColor : (toggleArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.5) : "transparent")
-            border.width: 1
-            border.color: Qt.alpha(Globals.fgColor, 0.4)
+            // borders off for now -> uncomment to re-enable
+            // border.width: 1
+            // border.color: Qt.alpha(Globals.fgColor, 0.4)
 
             Behavior on color {
                 ColorAnimation {
@@ -137,7 +134,7 @@ ColumnLayout {
         text: "No Bluetooth adapter found"
         color: Qt.alpha(Globals.fgColor, 0.4)
         font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize - 1
+        font.weight: Globals.textFont.weight
         horizontalAlignment: Text.AlignHCenter
     }
 
@@ -162,7 +159,10 @@ ColumnLayout {
             busy: root.deviceBusy(modelData)
             batteryAvailable: modelData ? modelData.batteryAvailable : false
             battery: modelData ? modelData.battery : 0
+            showForget: true // paired rows can be unpaired
             onActivated: root.activatePaired(modelData)
+            onForgetRequested: if (modelData)
+                modelData.forget()
         }
     }
 
@@ -187,7 +187,7 @@ ColumnLayout {
             text: String.fromCodePoint(0xF0437) // radar
             color: root.adapter && root.adapter.discovering ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.6)
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 2
+            font.pixelSize: Globals.textFont.pixelSize + 12
             font.weight: Globals.textFont.weight
 
             RotationAnimation on rotation {
@@ -238,10 +238,9 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing
-        CenterTextBtn {
-            id: audioSwitch
-            icon: String.fromCodePoint(0xF057E) // speaker
-            largestButton: audioSwitch.implicitHeight // icon-only -> width == height == perfect square
+        ViewSwitchBtn {
+            icon: String.fromCodePoint(0xF0F70) // treble clef (matches the audio menu header)
+            label: "Audio"
             onClicked: Globals.audioMenuView = "audio"
         }
         Item {

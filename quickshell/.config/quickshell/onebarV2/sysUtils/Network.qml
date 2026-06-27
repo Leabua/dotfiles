@@ -10,14 +10,14 @@ Item {
 
     property string icon: {
         if (!connected)
-            return "󰤮 ";
+            return "󰤮";
         if (strength > 80)
-            return "󰤨 ";
+            return "󰤨";
         if (strength > 60)
-            return "󰤥 ";
+            return "󰤥";
         if (strength > 40)
-            return "󰤢 ";
-        return "󰤟 ";
+            return "󰤢";
+        return "󰤟";
     }
 
     property int sharedTick: Globals.tick
@@ -44,12 +44,18 @@ Item {
         Component.onCompleted: running = true
     }
 
-    implicitHeight: textID.implicitHeight
+    implicitHeight: textID.height
     implicitWidth: textID.implicitWidth
-    Text {
+    BarIcon {
         id: textID
         text: root.icon
-        font: Globals.textFont
-        color: Globals.fgColor
+        font.pixelSize: Globals.barIconSize + 2
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -1
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Globals.wifiMenuOpen = !Globals.wifiMenuOpen
+        }
     }
 }

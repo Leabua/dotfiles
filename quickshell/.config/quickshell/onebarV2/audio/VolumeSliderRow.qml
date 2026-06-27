@@ -15,7 +15,6 @@ RowLayout {
     property real value: 0
     // dim the row + box when the source is muted
     property bool muted: false
-    // optional caption rendered faintly under nothing -> kept as tooltip-ish label via the box only
 
     // fired continuously while dragging / on click with the new 0..1 level
     signal moved(real v)
@@ -48,7 +47,7 @@ RowLayout {
             text: String.fromCodePoint(root.icon)
             color: Qt.alpha(Globals.fgColor, root.muted ? 0.35 : 1)
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 2
+            font.pixelSize: Globals.textFont.pixelSize + 4
             font.weight: Globals.textFont.weight
         }
 
@@ -66,7 +65,7 @@ RowLayout {
         id: track
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
-        implicitHeight: glyph.implicitHeight / 3
+        implicitHeight: glyph.implicitHeight / 4
         radius: height
         color: Qt.alpha(Globals.fgColor, 0.25)
 

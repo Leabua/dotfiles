@@ -14,8 +14,10 @@ Rectangle {
     property bool busy: false           // pairing / connecting in flight
     property bool batteryAvailable: false
     property real battery: 0            // 0..1
+    property bool showForget: false     // paired rows expose an unpair/forget button
 
     signal activated
+    signal forgetRequested
 
     // map BlueZ icon names onto nerd-font glyphs (falls back to the bluetooth mark)
     function glyphFor(name: string): int {
@@ -52,6 +54,7 @@ Rectangle {
 
     RowLayout {
         id: row
+        z: 1 // sit above `area` so the forget button can take its own clicks
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
@@ -120,6 +123,40 @@ Rectangle {
                 to: 360
                 duration: 1000
                 loops: Animation.Infinite
+            }
+        }
+
+        // unpair / forget (paired rows only); takes its own clicks so it doesn't
+        // also fire the row's connect/disconnect
+        Rectangle {
+            visible: root.showForget && !root.busy
+            implicitWidth: forgetGlyph.implicitWidth + Globals.spacing
+            implicitHeight: forgetGlyph.implicitHeight + Globals.spacing
+            radius: Globals.radius
+            color: forgetArea.containsMouse ? Qt.alpha(Globals.criticalColor, 0.2) : "transparent"
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Globals.animFast
+                }
+            }
+
+            Text {
+                id: forgetGlyph
+                anchors.centerIn: parent
+                text: String.fromCodePoint(0xF0A7A) // trash-can-outline
+                color: forgetArea.containsMouse ? Globals.criticalColor : Qt.alpha(Globals.fgColor, 0.6)
+                font.family: Globals.textFont.family
+                font.pixelSize: Globals.textFont.pixelSize
+                font.weight: Globals.textFont.weight
+            }
+
+            MouseArea {
+                id: forgetArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.forgetRequested()
             }
         }
     }

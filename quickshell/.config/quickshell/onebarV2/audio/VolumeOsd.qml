@@ -26,7 +26,7 @@ Item {
 
         Text {
             text: {
-                if (root.muted || root.volPercent === 0)
+                if (root.muted)
                     return String.fromCodePoint(0xF075F);
                 if (root.volPercent < 34)
                     return String.fromCodePoint(0xF057F);
@@ -34,7 +34,8 @@ Item {
                     return String.fromCodePoint(0xF0580);
                 return String.fromCodePoint(0xF057E);
             }
-            font: Globals.textFont
+            font.family: Globals.textFont.family
+            font.pixelSize: (root.volPercent < 34) ? Globals.textFont.pixelSize - 2 : Globals.textFont.pixelSize + 6
             color: Globals.fgColor
         }
 

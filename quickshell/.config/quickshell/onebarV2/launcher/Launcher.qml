@@ -212,7 +212,7 @@ Scope {
                     visible: Globals.headerIcons
                     color: Globals.fgColor
                     font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 2
+                    font.pixelSize: Globals.textFont.pixelSize + 8
                     font.weight: Globals.textFont.weight
                 }
 

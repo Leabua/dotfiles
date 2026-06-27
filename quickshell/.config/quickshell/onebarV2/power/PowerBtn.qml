@@ -4,14 +4,12 @@ import qs.defaults
 Item {
     id: root
 
-    implicitHeight: textID.implicitHeight
+    implicitHeight: textID.height
     implicitWidth: textID.implicitWidth
 
-    Text {
+    BarIcon {
         id: textID
-        text: "󰐥 "
-        color: Globals.fgColor
-        font: Globals.textFont
+        text: "󰐥"
 
         MouseArea {
             anchors.fill: parent

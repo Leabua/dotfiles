@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -48,6 +49,7 @@ Scope {
     // incoming toast notification
     PanelWindow { // qmllint disable uncreatable-type
 
+        screen: Globals.focusedScreen // toasts follow the focused monitor instead of a fixed one
         visible: !root.centerOpen // don't show toasts while the notification center is open (they'd overlap if otherwise)
         anchors {
             top: true
@@ -75,8 +77,6 @@ Scope {
                     id: card
                     required property var modelData
 
-                    // transparent wrapper is the layout item; the bordered card is an anchored child inside it. The layout drives this Item, never the
-                    // bordered rect directly -> stops the fgColor border tearing on reflow
                     Layout.fillWidth: true
                     Layout.preferredHeight: cardRect.implicitHeight
 
@@ -89,7 +89,7 @@ Scope {
 
                     Timer {
                         running: true
-                        interval: card.modelData.urgency === NotificationUrgency.Critical ? 10000 : 5000 // 10 seconds on crit and 5 seconds otherwise
+                        interval: card.modelData.urgency === NotificationUrgency.Critical ? 15000 : 5000
                         onTriggered: card.modelData.dismiss()
                     }
 
@@ -101,7 +101,7 @@ Scope {
                             top: parent.top
                         }
                         height: parent.Layout.preferredHeight
-                        implicitHeight: cardLayout.implicitHeight + 20
+                        implicitHeight: cardLayout.implicitHeight + 18
                         radius: Globals.radius
                         color: Globals.menuBg
                         border.width: Globals.borderWidth
@@ -127,7 +127,7 @@ Scope {
                                     text: card.modelData.summary
                                     color: Globals.fgColor
                                     font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize + 2
+                                    font.pixelSize: Globals.textFont.pixelSize
                                     font.weight: Globals.textFont.weight
                                     elide: Text.ElideRight
                                 }
@@ -136,6 +136,7 @@ Scope {
                                     text: card.modelData.body
                                     color: Globals.fgColor
                                     font.family: Globals.textFont.family
+                                    font.weight: Globals.textFont.weight
                                     font.pixelSize: Globals.textFont.pixelSize - 1
                                     wrapMode: Text.WordWrap
                                     visible: card.modelData.body !== ""
@@ -161,6 +162,7 @@ Scope {
         open: root.centerOpen
         onDismissed: root.centerOpen = false
         hAlign: "right"
+        screen: Globals.focusedScreen // open the center on the focused monitor
 
         margins {
             top: Globals.marginsTop
@@ -170,7 +172,7 @@ Scope {
         ColumnLayout {
             id: centerCol
             width: 360 // PopupWindow padding (Globals.margins) brings the card to ~380
-            spacing: Globals.spacing + 2
+            spacing: Globals.spacing + 1
 
             // header row
             RowLayout {
@@ -182,7 +184,7 @@ Scope {
                     visible: Globals.headerIcons
                     color: Globals.fgColor
                     font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 2
+                    font.pixelSize: Globals.textFont.pixelSize + 6
                     font.weight: Globals.textFont.weight
                 }
 
@@ -201,6 +203,8 @@ Scope {
                     color: Globals.criticalColor
                     font.family: Globals.textFont.family
                     font.pixelSize: Globals.textFont.pixelSize - 1
+                    font.weight: Globals.textFont.weight
+
                     MouseArea {
                         anchors.fill: parent
                         onClicked: history.clear()
@@ -220,6 +224,7 @@ Scope {
                 color: Qt.alpha(Globals.fgColor, 0.4)
                 font.family: Globals.textFont.family
                 font.pixelSize: Globals.textFont.pixelSize - 1
+                font.weight: Globals.textFont.weight - 100
                 horizontalAlignment: Text.AlignHCenter
             }
 
@@ -230,6 +235,13 @@ Scope {
                 delegate: Item {
                     // transparent wrapper drives the layout; the bordered card is anchored inside and clipped while removing, so it collapses smoothly on dismiss.
                     id: delegateWrapper
+                    // bind the ListModel roles as required properties (the Qt6 way) -> reaching
+                    // for the `model` context object directly throws "model is not defined"
+                    required property int index
+                    required property string summary
+                    required property string body
+                    required property string appName
+                    required property string time
                     property bool removing: false
                     Layout.fillWidth: true
                     Layout.preferredHeight: removing ? 0 : inner.implicitHeight
@@ -286,7 +298,7 @@ Scope {
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: model.summary
+                                    text: delegateWrapper.summary
                                     color: Globals.fgColor
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize
@@ -295,7 +307,7 @@ Scope {
                                 }
 
                                 Text {
-                                    text: model.time
+                                    text: delegateWrapper.time
                                     color: Globals.fgColor2
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize - 3
@@ -314,7 +326,6 @@ Scope {
                                         anchors.margins: -4
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
-                                            // future todo -> bit of lag depending on system and monitor combo -> non-urgent since I look at this once or twice but if I ever need to find the lag its somewhere here
                                             // animate out first, then remove
                                             delegateWrapper.removing = true;
                                             removeTimer.start();
@@ -323,34 +334,37 @@ Scope {
 
                                     Timer {
                                         id: removeTimer
-                                        interval: Globals.animFast + 30 // just after the collapse animation
-                                        onTriggered: history.remove(index)
+                                        interval: Globals.animFast + 30
+                                        onTriggered: history.remove(delegateWrapper.index)
                                     }
                                 }
                             }
 
                             Text {
-                                visible: model.body !== ""
-                                text: model.body
+                                visible: delegateWrapper.body !== ""
+                                text: delegateWrapper.body
                                 color: Globals.fgColor
                                 font.family: Globals.textFont.family
+                                font.weight: Globals.textFont.weight
                                 font.pixelSize: Globals.textFont.pixelSize - 1
                                 wrapMode: Text.WordWrap
                                 Layout.fillWidth: true
                             }
 
                             Text {
-                                visible: model.appName !== ""
-                                text: model.appName
+                                visible: delegateWrapper.appName !== ""
+                                text: delegateWrapper.appName
                                 color: Globals.fgColor2
                                 font.family: Globals.textFont.family
+                                font.weight: Globals.textFont.weight
                                 font.pixelSize: Globals.textFont.pixelSize - 3
                             }
                             Text { // blankline for spacer
                                 visible: history.count > 0
-                                text: ""
+                                text: " "
                                 color: Globals.fgColor2
                                 font.family: Globals.textFont.family
+                                font.weight: Globals.textFont.weight
                                 font.pixelSize: Globals.spacing
                             }
                             MenuDivider {}

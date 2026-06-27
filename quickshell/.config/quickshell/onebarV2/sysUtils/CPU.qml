@@ -1,6 +1,7 @@
 // pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell.Io //for process type -> shoutout Tony on yt
+import QtQuick.Layouts
+import Quickshell.Io
 import qs.defaults
 
 Item {
@@ -9,8 +10,8 @@ Item {
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
 
-    implicitHeight: textID.implicitHeight
-    implicitWidth: textID.implicitWidth
+    implicitHeight: row.implicitHeight
+    implicitWidth: row.implicitWidth
 
     property int sharedTick: Globals.tick
     onSharedTickChanged: cpuProc.running = true
@@ -26,7 +27,7 @@ Item {
 
     Process {
         id: cpuProc
-        command: ["sh", "-c", "head -1 /proc/stat"]
+        command: ["head", "-1", "/proc/stat"]
         stdout: SplitParser {
             onRead: data => {
                 var p = data.trim().split(/\s+/);
@@ -42,10 +43,18 @@ Item {
         Component.onCompleted: running = true
     }
 
-    Text {
-        id: textID
-        text: "󰍛 " + root.cpuUsage + "%"
-        font: Globals.textFont
-        color: root.displayColor
+    RowLayout {
+        id: row
+        spacing: Globals.spacing - 1// in-pair gap: icon hugs its value
+
+        BarIcon {
+            text: "󰍛"
+            color: root.displayColor
+        }
+        Text {
+            text: root.cpuUsage + "%"
+            color: root.displayColor
+            font: Globals.textFont
+        }
     }
 }

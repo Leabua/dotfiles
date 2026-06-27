@@ -1,5 +1,6 @@
 import Quickshell.Services.Pipewire
 import QtQuick
+import QtQuick.Layouts
 import qs.defaults
 
 Item {
@@ -10,17 +11,14 @@ Item {
     PwObjectTracker {
         objects: [root.sink]
     }
-    // getting some properties ready
+
     readonly property bool ready: sink && sink.ready
     readonly property bool muted: ready && sink.audio.muted
     readonly property int volPercent: ready ? Math.round(sink.audio.volume * 100) : 0
 
-    //need width and height for bar to dynamically calculate size
-    implicitWidth: textId.implicitWidth
-    implicitHeight: textId.implicitHeight
+    implicitWidth: row.implicitWidth
+    implicitHeight: row.implicitHeight
 
-    // how we get our icons to math
-    // using nerd font icon codes - saneAspect video on youtube
     readonly property string icon: {
         if (!ready)
             return String.fromCodePoint(0xF0581); // if not ready
@@ -32,20 +30,24 @@ Item {
             return String.fromCodePoint(0xF0580); // 34 - 66 - mid icon
         return String.fromCodePoint(0xF057E); // else high icon
     }
-    // styling the text
-    Text {
-        id: textId
-        text: root.volPercent > 67 ? root.icon + " " + root.volPercent + "%" : root.icon + root.volPercent + "%"
-        color: Globals.fgColor
-        font: Globals.textFont
+    RowLayout {
+        id: row
+        spacing: Globals.spacing - 2
 
-        // click the bar entry to open the audio/bluetooth card (no hyprland keybind -> only ever reached from the bar)
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            onClicked: Globals.audioMenuOpen = !Globals.audioMenuOpen
+        BarIcon {
+            text: root.icon
+        }
+        Text {
+            text: root.volPercent + "%"
+            color: Globals.fgColor
+            font: Globals.textFont
         }
     }
-    // what actually checks the vol percent changes
+
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        onClicked: Globals.audioMenuOpen = !Globals.audioMenuOpen
+    }
 }

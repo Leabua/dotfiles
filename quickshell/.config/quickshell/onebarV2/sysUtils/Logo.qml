@@ -8,7 +8,6 @@ Item {
 
     property string distroId: ""
 
-    // bless AI for this block
     property string icon: {
         const glyphs = {
             "arch": "󰣇",
@@ -41,7 +40,8 @@ Item {
     Text {
         id: textID
         text: root.icon
-        font: Globals.textFont
+        font.family: Globals.textFont.family
+        font.pixelSize: Globals.barIconSize
         color: Globals.fgColor
     }
 }

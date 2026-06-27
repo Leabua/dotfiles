@@ -7,6 +7,7 @@ import qs.audio
 import qs.defaults
 import qs.launcher // installs the qs.launcher module so Launcher.qml can resolve its sibling components (SearchInput/ResultList)
 import qs.sysUtils
+import qs.wifi // installs the qs.wifi module so WifiMenu.qml can resolve WifiView/WifiNetworkRow
 import QtQuick
 
 Scope {
@@ -54,7 +55,6 @@ Scope {
                 right: true
             }
 
-            // need to figure out how to disable the other error
             margins { // qmllint disable unresolved-type
                 top: Globals.marginsTop
                 left: Globals.marginsLeft
@@ -99,7 +99,7 @@ Scope {
                     text: "Wg"
                 }
 
-                implicitHeight: heightAnchor.implicitHeight + 10
+                implicitHeight: heightAnchor.implicitHeight + 8
                 implicitWidth: contentRoot.implicitWidth + 14
                 radius: implicitHeight / 2
 
@@ -213,6 +213,10 @@ Scope {
     }
     LazyLoader {
         source: "audio/AudioMenu.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "wifi/WifiMenu.qml"
         active: true
     }
     LazyLoader {

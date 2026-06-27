@@ -34,7 +34,8 @@ Item {
                     return String.fromCodePoint(0xF00DF);
                 return String.fromCodePoint(0xF00E0);
             }
-            font: Globals.textFont
+            font.family: Globals.textFont.family
+            font.pixelSize: Globals.textFont.pixelSize + 6
             color: Globals.fgColor
         }
 

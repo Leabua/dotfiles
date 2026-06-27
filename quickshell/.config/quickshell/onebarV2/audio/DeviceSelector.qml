@@ -1,11 +1,8 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.defaults
 
-// The "Output/Input device name {dropdown}" row. Tapping the row toggles an
-// inline list of the available devices for that direction; picking one emits
-// selected(node). The list collapses out of the ColumnLayout when hidden so the
-// card shrinks back to size (Layouts ignore invisible items).
 ColumnLayout {
     id: root
 
@@ -14,8 +11,8 @@ ColumnLayout {
     property var currentNode: null      // the active default node (drives the highlight)
     property string currentName: ""     // label for the collapsed header
     property var nameFor: (function (n) {
-        return "";
-    })                                  // node -> display string, supplied by the owner
+            return "";
+        })                                  // node -> display string, supplied by the owner
 
     property bool expanded: false
 
@@ -50,7 +47,7 @@ ColumnLayout {
                 text: String.fromCodePoint(root.icon)
                 color: Globals.fgColor
                 font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize + 2
+                font.pixelSize: Globals.textFont.pixelSize + 6
                 font.weight: Globals.textFont.weight
             }
 
@@ -123,7 +120,7 @@ ColumnLayout {
                         opacity: option.active ? 1 : 0
                         color: Globals.fgColor
                         font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize - 2
+                        font.pixelSize: Globals.textFont.pixelSize - 4
                         font.weight: Globals.textFont.weight
                     }
 

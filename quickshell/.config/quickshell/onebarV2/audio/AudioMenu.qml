@@ -4,12 +4,7 @@ import qs.audio
 import qs.defaults
 
 import QtQuick
-import QtQuick.Layouts
 
-// Host for the audio + bluetooth cards. One PopupWindow (anchored exactly like
-// PowerMenu / PowerProfiles, opened from the Volume entry in the bar) whose body
-// is whichever view Globals.audioMenuView selects. Opening always lands on the
-// audio card; the footer buttons flip Globals.audioMenuView to swap between them.
 Scope {
     id: root
 

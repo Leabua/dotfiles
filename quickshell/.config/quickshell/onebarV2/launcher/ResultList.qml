@@ -115,6 +115,7 @@ Item {
                     text: row.modelData.glyph || "󰣆"
                     color: Globals.fgColor
                     font.family: Globals.textFont.family
+                    font.weight: Globals.textFont.weight
                     font.pixelSize: Globals.textFont.pixelSize + 2
                 }
             }

@@ -6,11 +6,10 @@ import qs.defaults
 import qs.power
 import qs.sysUtils
 
-// orchestrating what comes out when
 RowLayout {
     id: root
     property int barLvl
-    spacing: Globals.spacing
+    spacing: Globals.spacing + 5
     // Use shown: false to have it gone forever and true to always have it there
     Reveal {
         shown: false

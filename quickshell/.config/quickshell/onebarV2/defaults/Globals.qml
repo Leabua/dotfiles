@@ -3,19 +3,34 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 
 // the single source of truth for most variables -> prevents having to think about what to use
 Singleton {
     id: root
 
+    // the ShellScreen Hyprland currently has focused -> lets toasts (and any popup that opts in) follow the active monitor instead of landing on a fixed one
+    readonly property var focusedScreen: {
+        const m = Hyprland.focusedMonitor;
+        if (!m)
+            return null;
+        for (const s of Quickshell.screens)
+            if (s.name === m.name)
+                return s;
+        return null;
+    }
+
     // default font params
     readonly property font textFont: Qt.font({
         family: "Iosevka Nerd Font, JetBrainsMono Nerd Font, SF Pro Display",
         letterSpacing: 0,
-        pixelSize: 15 // -> this is what you use to make things compact
+        pixelSize: 14 // -> this is what you use to make things compact
         ,
         weight: 700
     })
+
+    // bar entry glyphs sit a touch larger than their value text -> one knob to tune
+    readonly property int barIconSize: textFont.pixelSize + 8
 
     // orientation
     property int currentBarHeight: 0  // track the bar height for centered second order menus else
@@ -29,6 +44,7 @@ Singleton {
     property bool powerProfilesOpen: false
     property bool audioMenuOpen: false        // one popup hosts both the audio + bluetooth cards
     property string audioMenuView: "audio"    // which card is showing: "audio" | "bluetooth"
+    property bool wifiMenuOpen: false         // standalone wifi card (opened from the Network bar entry)
 
     // global initial initial tick value
     property int tick: 0

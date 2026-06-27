@@ -6,8 +6,6 @@ import qs.defaults
 
 import QtQuick
 
-// Friendly reminder to future me when I get to kanban and calendar integration -> basically jsut a wrapper util
-
 // Reusable popup chrome for the second-order menus (PowerMenu, PowerProfiles,
 // Clipboard, and the upcoming audio/bluetooth/wifi cards).
 //
