@@ -31,12 +31,6 @@ RowLayout {
     }
     Reveal {
         shown: root.barLvl >= 3
-        Network {
-            id: network
-        }
-    }
-    Reveal {
-        shown: root.barLvl >= 3
         CPU {
             id: cpu
         }
@@ -57,6 +51,12 @@ RowLayout {
         shown: root.barLvl >= 3 || (battery.percent <= 20 && !battery.isCharging) || (battery.isCharging && battery.percent >= 80)
         BatteryIcons {
             id: battery
+        }
+    }
+    Reveal {
+        shown: root.barLvl >= 3
+        Network {
+            id: network
         }
     }
     Reveal {

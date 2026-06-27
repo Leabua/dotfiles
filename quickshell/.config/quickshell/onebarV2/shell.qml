@@ -15,8 +15,6 @@ Scope {
     property int barLevel: 1
     property bool barShown: true // toggled via the "bar" IPC handler; bar level is remembered
 
-    // the layer-shell window stays mapped during the collapse, then unmaps so the  compositor reserves zero space once hidden (and re-maps before the open anim)
-
     property bool windowVisible: true
 
     // both phases derive from one Globals knob -> tune the whole toggle in one place

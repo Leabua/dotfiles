@@ -79,7 +79,7 @@ Item {
 
     RowLayout {
         id: row
-        spacing: Globals.spacing - 1// in-pair gap: icon hugs its value
+        spacing: Globals.spacing - 3// in-pair gap: icon hugs its value
 
         BarIcon {
             text: batteryBtn.icon.trim()
