@@ -136,10 +136,14 @@ Scope {
                     maxBrightness: root.maxBrightness
                 }
                 MediaOsd {
-                    opacity: (root.barShown && root.activeOsd === "media") ? 1 : 0
+                    opacity: (root.barShown && (root.activeOsd === "mediaScroll" || root.activeOsd === "mediaIcon")) ? 1 : 0
+                    mode: root.activeOsd === "mediaIcon" ? "icon" : "scroll"
+                    pulse: root.mediaPulse
                     title: root.mediaPlayer ? root.mediaPlayer.trackTitle : ""
                     artist: root.mediaPlayer ? root.mediaPlayer.trackArtist : ""
                     playing: root.mediaPlayer ? root.mediaPlayer.isPlaying : false
+                    onFinished: if (root.activeOsd === "mediaScroll")
+                        root.activeOsd = ""
                 }
 
                 Behavior on implicitWidth {
@@ -314,24 +318,49 @@ Scope {
         onTriggered: root.mediaArmed = true
     }
 
-    function flashMedia(): void {
+    // bumped on every media event -> tells MediaOsd to (re)start its animation
+    property int mediaPulse: 0
+    property double lastTrackChange: 0
+
+    // play/pause icon flash gets a fixed window; the scroll clears itself via onFinished
+    Timer {
+        id: mediaIconTimer
+        interval: 1500
+        onTriggered: if (root.activeOsd === "mediaIcon")
+            root.activeOsd = ""
+    }
+
+    // a song / player change -> marquee the full track across the bar
+    function flashTrack(): void {
         if (!root.mediaArmed || !root.mediaPlayer || !root.mediaPlayer.trackTitle)
             return;
-        root.activeOsd = "media";
-        osdTimer.restart();
+        root.lastTrackChange = Date.now();
+        root.activeOsd = "mediaScroll";
+        root.mediaPulse++;
+    }
+
+    // a play/pause toggle -> just the centred icon for a beat (skip if it rode in on a track change)
+    function flashToggle(): void {
+        if (!root.mediaArmed || !root.mediaPlayer)
+            return;
+        if (Date.now() - root.lastTrackChange < 500)
+            return;
+        root.activeOsd = "mediaIcon";
+        root.mediaPulse++;
+        mediaIconTimer.restart();
     }
 
     Connections {
         target: root.mediaPlayer
         ignoreUnknownSignals: true
         function onTrackTitleChanged() {
-            root.flashMedia();
+            root.flashTrack();
         }
         function onTrackArtistChanged() {
-            root.flashMedia();
+            root.flashTrack();
         }
         function onPlaybackStateChanged() {
-            root.flashMedia();
+            root.flashToggle();
         }
     }
 
