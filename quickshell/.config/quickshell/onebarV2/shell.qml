@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
 import qs.audio
 import qs.defaults
@@ -133,6 +134,12 @@ Scope {
                     opacity: (root.barShown && root.activeOsd === "brightness") ? 1 : 0
                     brightness: root.brightness
                     maxBrightness: root.maxBrightness
+                }
+                MediaOsd {
+                    opacity: (root.barShown && root.activeOsd === "media") ? 1 : 0
+                    title: root.mediaPlayer ? root.mediaPlayer.trackTitle : ""
+                    artist: root.mediaPlayer ? root.mediaPlayer.trackArtist : ""
+                    playing: root.mediaPlayer ? root.mediaPlayer.isPlaying : false
                 }
 
                 Behavior on implicitWidth {
@@ -287,6 +294,47 @@ Scope {
             osdTimer.restart();
         }
     }
+    // ----- media OSD: flash track + play/pause like the volume/brightness OSDs -----
+    // pick the playing MPRIS player, else the first one available
+    readonly property var mediaPlayer: {
+        const ps = Mpris.players ? Mpris.players.values : [];
+        if (!ps || ps.length === 0)
+            return null;
+        for (const p of ps)
+            if (p.isPlaying)
+                return p;
+        return ps[0];
+    }
+
+    // don't flash the OSD for the property values that settle in on launch/reload
+    property bool mediaArmed: false
+    Timer {
+        interval: 1500
+        running: true
+        onTriggered: root.mediaArmed = true
+    }
+
+    function flashMedia(): void {
+        if (!root.mediaArmed || !root.mediaPlayer || !root.mediaPlayer.trackTitle)
+            return;
+        root.activeOsd = "media";
+        osdTimer.restart();
+    }
+
+    Connections {
+        target: root.mediaPlayer
+        ignoreUnknownSignals: true
+        function onTrackTitleChanged() {
+            root.flashMedia();
+        }
+        function onTrackArtistChanged() {
+            root.flashMedia();
+        }
+        function onPlaybackStateChanged() {
+            root.flashMedia();
+        }
+    }
+
     IpcHandler {
         target: "cycleBarLevel"
         function cycle(): void {
