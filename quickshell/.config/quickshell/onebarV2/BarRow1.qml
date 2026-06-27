@@ -9,7 +9,7 @@ import qs.sysUtils
 RowLayout {
     id: root
     property int barLvl
-    spacing: Globals.spacing + 5
+    spacing: Globals.spacing + 4
     // Use shown: false to have it gone forever and true to always have it there
     Reveal {
         shown: false
