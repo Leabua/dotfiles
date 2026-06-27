@@ -1,16 +1,12 @@
 import QtQuick
 import qs.defaults
 
-// Transient now-playing readout with two modes, driven by shell.qml:
-//   "scroll" -> a song/player change: the full "title · artist" marquees across the bar once.
-//   "icon"   -> a play/pause toggle: just the play/pause glyph, centred, for a beat.
-// `pulse` is bumped by shell.qml to (re)trigger the animation; scroll emits finished().
+// Transient now-playing readout: on a song change, the full "title · artist" marquees
+// across the bar once, then clears itself (shell.qml bumps `pulse` to (re)trigger it).
 Item {
     id: root
     property string title: ""
     property string artist: ""
-    property bool playing: false
-    property string mode: "icon"   // "icon" | "scroll"
     property int pulse: 0
     signal finished
 
@@ -29,20 +25,8 @@ Item {
 
     readonly property string fullText: artist.length ? (title + "   ·   " + artist) : title
 
-    // ----- play / pause icon (centred) -----
-    Text {
-        anchors.centerIn: parent
-        visible: root.mode === "icon"
-        text: root.playing ? String.fromCodePoint(0xF040A) : String.fromCodePoint(0xF03E4)
-        font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize + 8
-        color: Globals.fgColor
-    }
-
-    // ----- scrolling track -----
     Text {
         id: marquee
-        visible: root.mode === "scroll"
         anchors.verticalCenter: parent.verticalCenter
         text: root.fullText
         font: Globals.textFont
@@ -62,8 +46,7 @@ Item {
     }
 
     function play(): void {
-        if (root.mode === "scroll")
-            scrollAnim.restart();
+        scrollAnim.restart();
     }
 
     onPulseChanged: play()

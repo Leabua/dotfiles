@@ -136,13 +136,11 @@ Scope {
                     maxBrightness: root.maxBrightness
                 }
                 MediaOsd {
-                    opacity: (root.barShown && (root.activeOsd === "mediaScroll" || root.activeOsd === "mediaIcon")) ? 1 : 0
-                    mode: root.activeOsd === "mediaIcon" ? "icon" : "scroll"
+                    opacity: (root.barShown && root.activeOsd === "media") ? 1 : 0
                     pulse: root.mediaPulse
-                    title: root.mediaPlayer ? root.mediaPlayer.trackTitle : ""
-                    artist: root.mediaPlayer ? root.mediaPlayer.trackArtist : ""
-                    playing: root.mediaPlayer ? root.mediaPlayer.isPlaying : false
-                    onFinished: if (root.activeOsd === "mediaScroll")
+                    title: root.activeMediaPlayer ? root.activeMediaPlayer.trackTitle : ""
+                    artist: root.activeMediaPlayer ? root.activeMediaPlayer.trackArtist : ""
+                    onFinished: if (root.activeOsd === "media")
                         root.activeOsd = ""
                 }
 
@@ -298,19 +296,14 @@ Scope {
             osdTimer.restart();
         }
     }
-    // ----- media OSD: flash track + play/pause like the volume/brightness OSDs -----
-    // pick the playing MPRIS player, else the first one available
-    readonly property var mediaPlayer: {
-        const ps = Mpris.players ? Mpris.players.values : [];
-        if (!ps || ps.length === 0)
-            return null;
-        for (const p of ps)
-            if (p.isPlaying)
-                return p;
-        return ps[0];
-    }
+    // ----- media OSD: marquee the track whenever a song changes -----
+    // we watch every MPRIS player and react to whichever one's track actually changes,
+    // so changing a song in (say) the Apple Music tab surfaces that track, not a
+    // background YouTube video that didn't change.
+    property var activeMediaPlayer: null
+    property int mediaPulse: 0 // bumped per change -> tells MediaOsd to (re)start its scroll
 
-    // don't flash the OSD for the property values that settle in on launch/reload
+    // don't flash for the values that settle in on launch/reload
     property bool mediaArmed: false
     Timer {
         interval: 1500
@@ -318,49 +311,28 @@ Scope {
         onTriggered: root.mediaArmed = true
     }
 
-    // bumped on every media event -> tells MediaOsd to (re)start its animation
-    property int mediaPulse: 0
-    property double lastTrackChange: 0
-
-    // play/pause icon flash gets a fixed window; the scroll clears itself via onFinished
-    Timer {
-        id: mediaIconTimer
-        interval: 1500
-        onTriggered: if (root.activeOsd === "mediaIcon")
-            root.activeOsd = ""
-    }
-
-    // a song / player change -> marquee the full track across the bar
-    function flashTrack(): void {
-        if (!root.mediaArmed || !root.mediaPlayer || !root.mediaPlayer.trackTitle)
+    function flashTrack(player): void {
+        if (!root.mediaArmed || !player || !player.trackTitle)
             return;
-        root.lastTrackChange = Date.now();
-        root.activeOsd = "mediaScroll";
+        root.activeMediaPlayer = player;
+        root.activeOsd = "media";
         root.mediaPulse++;
     }
 
-    // a play/pause toggle -> just the centred icon for a beat (skip if it rode in on a track change)
-    function flashToggle(): void {
-        if (!root.mediaArmed || !root.mediaPlayer)
-            return;
-        if (Date.now() - root.lastTrackChange < 500)
-            return;
-        root.activeOsd = "mediaIcon";
-        root.mediaPulse++;
-        mediaIconTimer.restart();
-    }
-
-    Connections {
-        target: root.mediaPlayer
-        ignoreUnknownSignals: true
-        function onTrackTitleChanged() {
-            root.flashTrack();
-        }
-        function onTrackArtistChanged() {
-            root.flashTrack();
-        }
-        function onPlaybackStateChanged() {
-            root.flashToggle();
+    // one watcher per player; fires only when that player's title/artist pair changes
+    Instantiator {
+        model: Mpris.players
+        delegate: QtObject {
+            id: watcher
+            required property var modelData
+            readonly property string key: (modelData && modelData.trackTitle ? modelData.trackTitle : "") + "" + (modelData && modelData.trackArtist ? modelData.trackArtist : "")
+            property string lastKey: ""
+            onKeyChanged: {
+                if (key === lastKey || key === "")
+                    return;
+                lastKey = key;
+                root.flashTrack(modelData);
+            }
         }
     }
 
