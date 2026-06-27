@@ -99,5 +99,9 @@ sudo pacman -S brightnessctl
 ## Dotfiles (GNU Stow)
 ```
 cd ~/.dotfiles
-stow alacritty bluetui btop fastfetch ghostty hypr impala mako matugen niri nvim pacseek quickshell rofi satty tmux walker waybar wiremix yazi zsh
+stow alacritty bluetui btop fastfetch ghostty hypr impala mako matugen niri nvim pacseek quickshell rofi satty tmux walker waybar wiremix yazi zsh 
+
+or 
+
+stow . -> if you want everything at once
 ```

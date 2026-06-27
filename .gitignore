@@ -12,3 +12,48 @@ credentials*
 *.bak
 __pycache__/
 .cache/
+
+# Environment files
+.envrc
+.env.local
+.env.production
+.env.development
+
+# Certificate/keystore formats
+*.p12
+*.pfx
+*.p7b
+*.cer
+*.crt
+*.der
+
+# VPN configs
+*.ovpn
+
+# Credential files
+.netrc
+.git-credentials
+.npmrc
+.yarnrc
+.yarnrc.yml
+.pypirc
+.docker/config.json
+.gcloud/
+.aws/
+.azure/
+
+# OS files
+Desktop.ini
+*.lnk
+
+# IDE/editor
+.idea/
+.vscode/
+*.sublime-*
+*.project
+*.classpath
+
+# Secrets/keys in other formats
+*secret*
+*password*
+*.token
