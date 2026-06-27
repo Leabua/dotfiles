@@ -43,5 +43,7 @@ bind(
 
 bind(
 	"SUPER + Print",
-	hl.dsp.exec_cmd('grim - | wl-copy && notify-send "Screenshot" "Monitor copied to clipboard" -i clipboard')
+	hl.dsp.exec_cmd(
+		'grim -o "$(hyprctl monitors -j | jq -r ".[] | select(.focused) | .name")" - | wl-copy && notify-send "Screenshot" "Monitor copied to clipboard" -i clipboard'
+	)
 )
