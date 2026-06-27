@@ -13,3 +13,7 @@ contrast = 0.6
 input_path = '~/.config/matugen/templates/quickshellTemplate.json'
 output_path = '~/.cache/quickshell/colors.json'
 
+[templates.hyprlock]
+input_path = '~/.config/matugen/templates/hyprlockTemplate.conf'
+output_path = '~/.cache/hypr/hyprlock-colors.conf'
+
