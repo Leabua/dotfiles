@@ -70,7 +70,7 @@ Scope {
 
             MenuDivider {}
 
-            // The buttons in the row
+            // The buttons in the row -> todo squish these buttons a bit
             RowLayout {
                 id: buttons
                 Layout.fillHeight: true
