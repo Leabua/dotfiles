@@ -1,0 +1,15 @@
+[config]
+version_check = false
+fallback_color = "#ffffff"
+
+# options include lightness, darkeness, saturation, less-saturation, value, closest-to-fallback 
+prefer = "saturation"
+
+caching = true
+contrast = 0.6
+
+
+[templates.quickshell]
+input_path = '~/.config/matugen/templates/quickshellTemplate.json'
+output_path = '~/.cache/quickshell/colors.json'
+
