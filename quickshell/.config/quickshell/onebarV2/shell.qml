@@ -212,6 +212,10 @@ Scope {
         active: true
     }
     LazyLoader {
+        source: "audio/AudioMenu.qml"
+        active: true
+    }
+    LazyLoader {
         source: "clipboard/Clipboard.qml"
         active: true
     }

@@ -32,6 +32,12 @@ RowLayout {
     }
     Reveal {
         shown: root.barLvl >= 3
+        Network {
+            id: network
+        }
+    }
+    Reveal {
+        shown: root.barLvl >= 3
         CPU {
             id: cpu
         }
@@ -40,12 +46,6 @@ RowLayout {
         shown: root.barLvl >= 3 || memory.memoryUsage >= 75
         Memory {
             id: memory
-        }
-    }
-    Reveal {
-        shown: root.barLvl >= 3
-        Network {
-            id: network
         }
     }
     Reveal {

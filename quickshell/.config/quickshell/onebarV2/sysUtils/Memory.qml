@@ -41,7 +41,7 @@ Item {
     // what I see
     Text {
         id: textID
-        text: "󰘚 " + memoryItem.memoryUsage + "%"
+        text: "󰘚" + " " + memoryItem.memoryUsage + "%"
         font: Globals.textFont
         color: Globals.fgColor
     }

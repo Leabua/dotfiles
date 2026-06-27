@@ -10,9 +10,8 @@ Singleton {
 
     // default font params
     readonly property font textFont: Qt.font({
-        family: "SF Pro Display" // Apple Font may need to be downloaded off AUR -> plays nicely with icons
-        ,
-        letterSpacing: 1,
+        family: "Iosevka Nerd Font, JetBrainsMono Nerd Font, SF Pro Display",
+        letterSpacing: 0,
         pixelSize: 15 // -> this is what you use to make things compact
         ,
         weight: 700
@@ -28,6 +27,8 @@ Singleton {
     property bool barShown: true      // shell.qml mirrors its bar state here so centered menus can shift up when the bar is hidden
     property bool powerMenuOpen: false
     property bool powerProfilesOpen: false
+    property bool audioMenuOpen: false        // one popup hosts both the audio + bluetooth cards
+    property string audioMenuView: "audio"    // which card is showing: "audio" | "bluetooth"
 
     // global initial initial tick value
     property int tick: 0

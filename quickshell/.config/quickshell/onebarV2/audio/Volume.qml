@@ -38,6 +38,14 @@ Item {
         text: root.icon + " " + root.volPercent + "%"
         color: Globals.fgColor
         font: Globals.textFont
+
+        // click the bar entry to open the audio/bluetooth card (no hyprland keybind -> only ever reached from the bar)
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -1
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Globals.audioMenuOpen = !Globals.audioMenuOpen
+        }
     }
     // what actually checks the vol percent changes
 }

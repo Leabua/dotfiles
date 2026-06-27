@@ -99,6 +99,21 @@ PanelWindow { // qmllint disable uncreatable-type
         implicitWidth: contentHolder.childrenRect.width + root.padding * 2
         implicitHeight: contentHolder.childrenRect.height + root.padding * 2
 
+        // smooth the size change when a menu swaps its body (e.g. audio <-> bluetooth);
+        // menus that keep a fixed size while open never trigger this
+        Behavior on implicitWidth {
+            NumberAnimation {
+                duration: Globals.animDuration
+                easing.type: Easing.OutCubic
+            }
+        }
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration: Globals.animDuration
+                easing.type: Easing.OutCubic
+            }
+        }
+
         color: Globals.menuBg
         radius: Globals.radius
         border.width: Globals.borderWidth

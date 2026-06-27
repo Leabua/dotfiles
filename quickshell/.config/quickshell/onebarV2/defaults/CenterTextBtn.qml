@@ -8,7 +8,7 @@ Rectangle {
     property int largestButton
     property string icon
     property string label
-    property var runThis
+    property var runThis: [] // empty by default -> view-switch buttons carry no command
     signal clicked
     property bool isActive: false // keep button coloured if it is already active
 
@@ -39,9 +39,10 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        // text
+        // text -> dropped (excluded from the layout) when empty so the button can be icon-only
         Text {
             text: root.label
+            visible: root.label !== ""
             color: root.isActive ? Globals.bgColor : (ma.containsMouse ? Globals.bgColor : Globals.fgColor)
             font.pixelSize: Globals.textFont.pixelSize
             font.family: Globals.textFont.family
@@ -60,7 +61,8 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
         onClicked: {
-            commandProcess.running = true;
+            if (root.runThis && root.runThis.length > 0) // some buttons only switch views and have no command
+                commandProcess.running = true;
             root.clicked();
         }
     }
