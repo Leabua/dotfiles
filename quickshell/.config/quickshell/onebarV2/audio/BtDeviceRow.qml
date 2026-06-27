@@ -65,7 +65,7 @@ Rectangle {
             implicitHeight: glyph.implicitHeight + Globals.spacing * 2
             radius: Globals.radius
             color: root.connected ? Globals.fgColor : "transparent"
-            border.width: 1
+            // border.width: 1
             border.color: Qt.alpha(Globals.fgColor, 0.3)
 
             Behavior on color {

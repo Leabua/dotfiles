@@ -33,7 +33,7 @@ RowLayout {
         implicitHeight: glyph.implicitHeight + Globals.spacing * 2
         radius: Globals.radius
         color: boxArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
-        border.width: 1
+        border.width: 0
         border.color: Qt.alpha(Globals.fgColor, root.muted ? 0.2 : 0.3)
 
         Behavior on color {

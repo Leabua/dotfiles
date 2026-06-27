@@ -35,7 +35,7 @@ Item {
     // styling the text
     Text {
         id: textId
-        text: root.icon + " " + root.volPercent + "%"
+        text: root.volPercent > 67 ? root.icon + " " + root.volPercent + "%" : root.icon + root.volPercent + "%"
         color: Globals.fgColor
         font: Globals.textFont
 

@@ -74,7 +74,7 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         Text {
-            text: "  " + String.fromCodePoint(0xF0F88) // treble clef
+            text: String.fromCodePoint(0xF0F70) // treble clef
             visible: Globals.headerIcons
             color: Globals.fgColor
             font.family: Globals.textFont.family
@@ -141,6 +141,8 @@ ColumnLayout {
         }
     }
 
+    MenuDivider {}
+
     // ----- input -----
     DeviceSelector {
         Layout.fillWidth: true
@@ -169,7 +171,6 @@ ColumnLayout {
                 root.source.audio.muted = !root.source.audio.muted;
         }
     }
-
     // ----- footer: switch to the bluetooth card -----
     RowLayout {
         Layout.fillWidth: true

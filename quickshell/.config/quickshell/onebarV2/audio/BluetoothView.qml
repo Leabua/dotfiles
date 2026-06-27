@@ -63,7 +63,7 @@ ColumnLayout {
         spacing: Globals.spacing
 
         Text {
-            text: "  " + String.fromCodePoint(root.poweredOn ? 0xF00AF : 0xF00B2) // bluetooth / bluetooth-off
+            text: String.fromCodePoint(root.poweredOn ? 0xF00AF : 0xF00B2) // bluetooth / bluetooth-off
             visible: Globals.headerIcons
             color: Globals.fgColor
             font.family: Globals.textFont.family

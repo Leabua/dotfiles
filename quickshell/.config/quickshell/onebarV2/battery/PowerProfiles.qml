@@ -48,7 +48,7 @@ Scope {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Text {
-                    text: "  󱐋"
+                    text: " 󱐋"
                     visible: Globals.headerIcons
                     color: Globals.fgColor
                     font.family: Globals.textFont.family
