@@ -8,11 +8,11 @@ bind("SUPER + P", hl.dsp.exec_cmd("~/.dotfiles/scripts/rotate_wallpaper.sh"))
 
 -- generics
 bind("SUPER + Return", hl.dsp.exec_cmd(TERMINAL))
-bind("SUPER +  O", hl.dsp.exec_cmd("obsidian"))
+bind("SUPER + SHIFT + O", hl.dsp.exec_cmd("obsidian"))
 bind("SUPER + SHIFT + F", hl.dsp.exec_cmd(FILEMANAGER))
 bind("SUPER +  B", hl.dsp.exec_cmd(BROWSER))
 bind(
-	"SUPER + SHIFT + M",
+	"SUPER + M",
 	hl.dsp.exec_cmd(
 		"/usr/bin/chromium --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory=Default --app-id=blgdilankhbcpipclgpdndahbehalgkh"
 	)
