@@ -25,8 +25,8 @@ return {
 				natural_order = "fast",
 				case_insensitive = true,
 				sort = {
-					{ "type", "desc" },
-					{ "name", "desc" },
+					{ "type", "asc" },
+					{ "name", "asc" },
 				},
 			},
 			keymaps = {

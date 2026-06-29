@@ -60,8 +60,28 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-		opts = {
-			theme = "tokyonight",
-		},
+		opts = function()
+			local theme = require("lualine.themes.seoul256")
+			-- local theme = require("lualine.themes.palenight")
+			for _, mode in pairs(theme) do
+				if mode.b then
+					mode.b.bg = "NONE"
+				end
+				if mode.c then
+					mode.c.bg = "NONE"
+				end
+			end
+			return {
+				options = {
+					theme = theme,
+					section_separators = { left = "\u{e0b1}", right = "\u{e0b3}" },
+				},
+				sections = {
+					-- keep the filled triangle caps on the coloured end sections
+					lualine_a = { { "mode", separator = { right = "\u{e0b0}" } } },
+					lualine_z = { { "location", separator = { left = "\u{e0b2}" } } },
+				},
+			}
+		end,
 	},
 }
