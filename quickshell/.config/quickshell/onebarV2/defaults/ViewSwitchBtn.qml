@@ -2,11 +2,7 @@ import qs.defaults
 import QtQuick
 import QtQuick.Layouts
 
-// Compact horizontal [icon + label] button -> a single clickable box used by the
-// audio/bluetooth cards to switch between each other. Smaller font than
-// CenterTextBtn (which stacks icon-over-label and is sized for the power-menu
-// grid). Mirrors CenterTextBtn's hover treatment: fills fgColor and inverts its
-// content on hover.
+// Compact horizontal [icon + label] button 
 Rectangle {
     id: root
 

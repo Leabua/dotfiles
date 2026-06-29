@@ -18,7 +18,6 @@ RowLayout {
     readonly property int maxWorkspaceId: liveWorkspaceIds.length > 0 ? Math.max(...liveWorkspaceIds) : 0
 
     Repeater {
-        // make sure we always have enough delegates, even if workspaces go past 9
 
         model: Math.max(9, workspaceLayout.maxWorkspaceId) // this part is more a thing of not calculating every workspace but I figure that using "model: 10" works too
 
@@ -37,7 +36,6 @@ RowLayout {
             implicitHeight: Globals.textFont.pixelSize // decrease to make more flat
             radius: implicitHeight / 2
 
-            // have different colours depending on which monitor workspace is loaded on
             property color dotColor: {
                 if (!ws || !ws.monitor)
                     return workspaceLayout.fgColor;

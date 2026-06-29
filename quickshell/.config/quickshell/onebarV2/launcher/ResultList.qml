@@ -85,8 +85,7 @@ Item {
                 }
             }
 
-            // icon: real app icon when resolvable, else a glyph that picks up the
-            // selection colours
+            // icon: real app icon when resolvable, else a glyph that picks up the selection colours
             Item {
                 id: iconBox
                 anchors.left: parent.left

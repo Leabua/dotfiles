@@ -6,36 +6,35 @@ import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
 import qs.audio
 import qs.defaults
-import qs.launcher // installs the qs.launcher module so Launcher.qml can resolve its sibling components (SearchInput/ResultList)
-import qs.reminders // installs the qs.reminders module so Reminders.qml can resolve its sibling EditField
+import qs.launcher
+import qs.reminders
 import qs.sysUtils
-import qs.wifi // installs the qs.wifi module so WifiMenu.qml can resolve WifiView/WifiNetworkRow
+import qs.wifi
 import QtQuick
 
 Scope {
     id: root
     property int barLevel: 1
-    property bool barShown: true // toggled via the "bar" IPC handler; bar level is remembered
+    property bool barShown: true
 
     property bool windowVisible: true
 
-    // both phases derive from one Globals knob -> tune the whole toggle in one place
     readonly property int collapseShrink: Globals.barCollapse // scale phase
     readonly property int collapseFade: Math.round(Globals.barCollapse * 0.4) // content fade phase
 
     onBarShownChanged: {
         if (barShown) {
             hideWindowTimer.stop();
-            windowVisible = true; // map the window before animating open
+            windowVisible = true;
         } else {
-            windowVisible = true; // stay mapped through the collapse...
-            hideWindowTimer.restart(); // ...then unmap once it finishes
+            windowVisible = true;
+            hideWindowTimer.restart();
         }
     }
 
     Timer {
         id: hideWindowTimer
-        interval: root.collapseFade + root.collapseShrink + 30 // just after the collapse finishes
+        interval: root.collapseFade + root.collapseShrink + 30
         onTriggered: root.windowVisible = false
     }
 
@@ -45,7 +44,7 @@ Scope {
             property var modelData
             screen: modelData
 
-            visible: root.windowVisible // unmapped once collapsed -> no reserved space
+            visible: root.windowVisible
 
             color: "transparent"
 
@@ -55,7 +54,7 @@ Scope {
                 right: true
             }
 
-            margins { // qmllint disable unresolved-type
+            margins {
                 top: Globals.marginsTop
                 left: Globals.marginsLeft
                 right: Globals.marginsRight
@@ -67,7 +66,7 @@ Scope {
                 anchors.margins: -1
                 cursorShape: Qt.PointingHandCursor
                 z: -1
-                enabled: root.barShown // don't cycle levels while collapsed to a dot
+                enabled: root.barShown
                 onDoubleClicked: root.barLevel = root.barLevel >= 3 ? 1 : root.barLevel + 1
             }
 
@@ -75,11 +74,10 @@ Scope {
 
             Binding {
                 target: Globals
-                property: "currentBarHeight"   // correct capital H
+                property: "currentBarHeight"
                 value: island.implicitHeight
             }
 
-            // mirror bar visibility so centered menus can shift up when it hides
             Binding {
                 target: Globals
                 property: "barShown"
@@ -310,9 +308,8 @@ Scope {
     // so changing a song in (say) the Apple Music tab surfaces that track, not a
     // background YouTube video that didn't change.
     property var activeMediaPlayer: null
-    property int mediaPulse: 0 // bumped per change -> tells MediaOsd to (re)start its scroll
+    property int mediaPulse: 0
 
-    // don't flash for the values that settle in on launch/reload
     property bool mediaArmed: false
     Timer {
         interval: 1500
@@ -328,7 +325,6 @@ Scope {
         root.mediaPulse++;
     }
 
-    // one watcher per player; fires only when that player's title/artist pair changes
     Instantiator {
         model: Mpris.players
         delegate: QtObject {

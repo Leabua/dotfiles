@@ -7,7 +7,7 @@ import qs.defaults
 import QtQuick
 
 // Reusable popup chrome for the second-order menus (PowerMenu, PowerProfiles,
-// Clipboard, and the upcoming audio/bluetooth/wifi cards).
+// Clipboard, and the audio/bluetooth/wifi cards).
 //
 // Provides: a full-screen transparent layer-shell window that grabs keyboard
 // focus, closes on Escape or on a click outside the card, forwards every other
@@ -40,8 +40,7 @@ PanelWindow { // qmllint disable uncreatable-type
     property bool open: false
     signal dismissed
 
-    // every key press is forwarded here; accept the event to consume it, otherwise
-    // an unaccepted Escape dismisses the popup
+    // every key press is forwarded here; accept the event to consume it, otherwise an unaccepted Escape dismisses the popup
     signal keyDown(var event)
 
     // card x-placement against the window: "left" | "center" | "right"
@@ -97,8 +96,7 @@ PanelWindow { // qmllint disable uncreatable-type
         implicitWidth: contentHolder.childrenRect.width + root.padding * 2
         implicitHeight: contentHolder.childrenRect.height + root.padding * 2
 
-        // smooth the size change when a menu swaps its body (e.g. audio <-> bluetooth);
-        // menus that keep a fixed size while open never trigger this
+        // smooth the size change when a menu swaps its body (e.g. audio <-> bluetooth); menus that keep a fixed size while open never trigger this
         Behavior on implicitWidth {
             NumberAnimation {
                 duration: Globals.animDuration

@@ -137,8 +137,7 @@ ColumnLayout {
             actionProc.command = ["nmcli", "device", "wifi", "connect", net.ssid];
             actionProc.running = true;
         } else if (net.enterprise) {
-            // 802.1X PEAP/MSCHAPv2 (the eduroam default at most institutions):
-            // add the profile carrying the credentials, then bring it up
+            // 802.1X PEAP/MSCHAPv2 (the eduroam default at most institutions): add the profile carrying the credentials, then bring it up
             enterpriseProc.ssid = net.ssid;
             enterpriseProc.command = ["nmcli", "connection", "add", "type", "wifi", "con-name", net.ssid, "ssid", net.ssid, "wifi-sec.key-mgmt", "wpa-eap", "802-1x.eap", "peap", "802-1x.phase2-auth", "mschapv2", "802-1x.identity", root.usernameText, "802-1x.password", root.passwordText];
             enterpriseProc.running = true;
@@ -172,7 +171,7 @@ ColumnLayout {
         }
         const net = root.expandedNewSecured();
         if (!net)
-            return; // nothing to type into -> leave keys for PopupWindow
+            return;
 
         if (k === Qt.Key_Return || k === Qt.Key_Enter) {
             root.connectNew(net);
@@ -272,22 +271,21 @@ ColumnLayout {
     }
 
     // manual rescan -> re-list once it settles (the "Scanning not allowed" error
-    // when triggered too often is harmless; we just re-read the cached results)
     Process {
         id: rescanProc
         command: ["nmcli", "device", "wifi", "rescan"]
-        onExited: refreshTimer.restart()
+        onExited: (exitCode, exitStatus) => refreshTimer.restart()
     }
 
     Process {
         id: radioToggleProc
-        onExited: refreshTimer.restart()
+        onExited: (exitCode, exitStatus) => refreshTimer.restart()
     }
 
     // up / down / delete / connect; clears the spinner + refreshes on completion
     Process {
         id: actionProc
-        onExited: {
+        onExited: (exitCode, exitStatus) => {
             root.connectingKey = "";
             refreshTimer.restart();
         }
@@ -297,21 +295,19 @@ ColumnLayout {
     Process {
         id: enterpriseProc
         property string ssid: ""
-        onExited: {
+        onExited: (exitCode, exitStatus) => {
             upProc.command = ["nmcli", "connection", "up", "id", enterpriseProc.ssid];
             upProc.running = true;
         }
     }
     Process {
         id: upProc
-        onExited: {
+        onExited: (exitCode, exitStatus) => {
             root.connectingKey = "";
             refreshTimer.restart();
         }
     }
 
-    // nmcli wifi rescan exits near-instantly, so the radar can't key its spin off
-    // the process; hold a fixed scanning window (like bluetooth's discovering flag)
     property bool scanning: false
     Timer {
         id: scanWatchdog

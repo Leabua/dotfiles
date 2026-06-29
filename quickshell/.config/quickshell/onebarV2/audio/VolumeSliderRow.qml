@@ -2,10 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import qs.defaults
 
-// One [icon box] + [draggable volume slider] row, reused for the master
-// output/input volumes and for every per-application stream in the audio card.
-// The owner binds `value` to the node's audio.volume and writes it back in
-// onMoved; clicking the icon box toggles mute via iconClicked().
 RowLayout {
     id: root
 

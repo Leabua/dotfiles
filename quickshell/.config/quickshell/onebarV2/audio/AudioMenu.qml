@@ -44,8 +44,8 @@ Scope {
             left: Globals.marginsLeft
         }
 
-        // only the active card is instantiated, so it owns its own service bindings
-        // and the card resizes cleanly between the two
+        // only the active card is instantiated, so it owns its own service bindings and the card resizes cleanly between the two
+
         Loader {
             sourceComponent: Globals.audioMenuView === "bluetooth" ? bluetoothComponent : audioComponent
         }

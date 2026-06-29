@@ -4,9 +4,7 @@ import qs.defaults
 // A display-only text field for the reminders editor. There is no Qt TextInput:
 // the Reminders PopupWindow owns exclusive keyboard focus and feeds keystrokes in
 // (the same manual-keyboard model the launcher + clipboard use), so this is purely
-// a surface showing the current draft text, a greyed placeholder while empty, a
-// blinking caret on the active field, and a thin underline marking focus. The
-// placeholder is dropped the instant the field gains focus or any text is typed.
+// a surface showing the current draft text. 
 Item {
     id: field
 

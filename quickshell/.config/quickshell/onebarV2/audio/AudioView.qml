@@ -69,7 +69,8 @@ ColumnLayout {
     // device/profile API, so we surface the *other* available output profiles via
     // pactl and switch the card profile on selection (what pavucontrol's Config
     // tab does), then route the default sink to the node it creates.
-    property var profileOutputs: [] // synthetic DeviceSelector entries, see parseCards()
+
+    property var profileOutputs: [] 
     property string pendingSinkName: "" // sink we expect to appear after a profile switch
 
     // "output:hdmi-stereo+input:analog-stereo" -> "hdmi-stereo"
@@ -134,8 +135,6 @@ ColumnLayout {
         onExited: root.refreshCards() // the switched-to profile drops out of the list
     }
 
-    // parse `pactl list cards` -> the available output profiles each card *isn't*
-    // currently in, deduped to one stereo entry per output (analog / HDMI)
     Process {
         id: cardsProc
         command: ["pactl", "list", "cards"]
@@ -147,7 +146,7 @@ ColumnLayout {
     function parseCards(text: string): void {
         const out = [];
         let card = "", path = "", active = "", inProfiles = false;
-        let profs = []; // { name, desc, avail } for the current card
+        let profs = []; 
 
         const flush = () => {
             if (!card)
@@ -319,7 +318,7 @@ ColumnLayout {
     VolumeSliderRow {
         Layout.fillWidth: true
         visible: root.source && root.source.ready
-        icon: (root.source && root.source.audio && (root.source.audio.muted || root.source.audio.volume <= 0)) ? 0xF036D : 0xF036C // mic off / mic
+        icon: (root.source && root.source.audio && (root.source.audio.muted || root.source.audio.volume <= 0)) ? 0xF036D : 0xF036C 
         value: root.source && root.source.audio ? root.source.audio.volume : 0
         muted: root.source && root.source.audio ? root.source.audio.muted : false
         onMoved: v => {
@@ -331,7 +330,7 @@ ColumnLayout {
                 root.source.audio.muted = !root.source.audio.muted;
         }
     }
-    // ----- footer: switch to the bluetooth card (toggle hugs the right edge) -----
+    //  footer: switch to the bluetooth card (toggle hugs the right edge) 
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing

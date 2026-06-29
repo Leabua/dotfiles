@@ -32,10 +32,6 @@ Item {
         return Globals.fgColor;
     }
 
-    // low-battery warnings live in battery/BatteryWarnings.qml (a single LazyLoader
-    // in shell.qml) so the notification fires once, not once per screen -> this
-    // component is purely the per-screen bar glyph + percentage now.
-
     visible: bat != null && bat.ready
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight

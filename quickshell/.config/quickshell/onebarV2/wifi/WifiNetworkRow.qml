@@ -4,12 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import qs.defaults
 
-// One wifi network row: a clickable header ([signal icon] SSID [status]) that
-// expands inline to its actions. Known networks expand to Connect/Disconnect plus
-// Forget; new networks expand to a password (and a username, for enterprise/eduroam)
-// entry plus Connect. Keyboard text is owned by WifiView (PopupWindow forwards keys)
-// and fed back here via passwordText/usernameText - this row only displays + emits
-// intent, mirroring how BtDeviceRow stays presentational.
 ColumnLayout {
     id: root
 
@@ -278,9 +272,6 @@ ColumnLayout {
         implicitHeight: fieldRow.implicitHeight + Globals.spacing
         radius: Globals.radius
         color: Qt.alpha(Globals.fgColor, field.focused ? 0.14 : 0.07)
-        // borders off for now -> uncomment to re-enable (focus is still shown by the fill + caret)
-        // border.width: field.focused ? 1 : 0
-        // border.color: Qt.alpha(Globals.fgColor, 0.4)
 
         Behavior on color {
             ColorAnimation {

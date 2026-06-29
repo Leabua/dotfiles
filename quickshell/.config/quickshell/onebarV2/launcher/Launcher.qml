@@ -9,15 +9,10 @@ import "data/Score.js" as Score
 import QtQuick
 import QtQuick.Layouts
 
-// Omni-style command palette / app launcher, ported from bjarneo/quickshell's
-// OmniMenu into our patterns: PopupWindow chrome, Globals tokens, an IpcHandler
-// toggle, and the manual-query keyboard model (PopupWindow forwards keys via
-// keyDown -> we build `query` from event.text, no Qt TextField).
-//
-// Toggle from a WM keybind with:  qs ipc call launcher toggle
+// Omni-style command palette / app launcher, ported from bjarneo/quickshelldots <- github
+
 Scope {
     id: root
-
     property bool open: false
     property string query: ""
     property int selectedIndex: 0

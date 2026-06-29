@@ -49,7 +49,7 @@ Scope {
     // incoming toast notification
     PanelWindow { // qmllint disable uncreatable-type
 
-        screen: Globals.focusedScreen // toasts follow the focused monitor instead of a fixed one
+        screen: Globals.focusedScreen 
         visible: !root.centerOpen // don't show toasts while the notification center is open (they'd overlap if otherwise)
         anchors {
             top: true
@@ -156,8 +156,6 @@ Scope {
     }
 
     // notification center
-    // PopupWindow provides the full-screen catcher, Escape-to-close and
-    // outside-click dismissal; the card is anchored top-right via hAlign.
     PopupWindow {
         open: root.centerOpen
         onDismissed: root.centerOpen = false
@@ -235,8 +233,6 @@ Scope {
                 delegate: Item {
                     // transparent wrapper drives the layout; the bordered card is anchored inside and clipped while removing, so it collapses smoothly on dismiss.
                     id: delegateWrapper
-                    // bind the ListModel roles as required properties (the Qt6 way) -> reaching
-                    // for the `model` context object directly throws "model is not defined"
                     required property int index
                     required property string summary
                     required property string body
@@ -272,8 +268,6 @@ Scope {
                         height: parent.Layout.preferredHeight
                         implicitHeight: historyLayout.implicitHeight + Globals.spacing * 2
                         radius: Globals.radius
-                        // transparent so the panel's translucency shows through uniformly
-                        // (border alone defines the card)
                         color: "transparent"
                         border.width: Globals.borderWidth
                         border.color: Globals.fgColor

@@ -24,8 +24,6 @@ Scope {
     }
 
     // Power Menu Dropdown
-    // PopupWindow just being the wrapper I use to make a window that floats has the property of click outside to close and keyboard press to close.
-    // Prevents repeating a tonne of boilerplate every singe time
 
     PopupWindow {
         open: Globals.powerMenuOpen
@@ -69,7 +67,6 @@ Scope {
             }
 
             MenuDivider {}
-
             // The buttons in the row -> todo squish these buttons a bit
             RowLayout {
                 id: buttons

@@ -9,22 +9,6 @@ import QtQuick
 import QtQuick.Layouts
 
 // Reminders / kanban panel.
-//
-// Positioning + chrome mirror the notification center (top-right, ~360 wide,
-// translucent menuBg, borderless cards split by hairline dividers). No bar entry,
-// so it is opened over IPC:  qs ipc call reminders toggle
-//
-// Two buckets of active reminders ("Priority" and "When you have the time"); cards
-// drag to reorder within a bucket or across the divider to switch bucket. The open
-// circle marks a card done -> it moves to the Completed view (reached via the
-// right-hand toggle, like the audio/bluetooth swap). A completed item is title-only
-// + struck through; tapping its check returns it as an incomplete item, and anything
-// completed for more than a week is pruned.
-//
-// All three lists are mirrored to an Obsidian-flavoured markdown file (Obsidian
-// Tasks syntax) so the same list is editable inside the vault. Loaded once on
-// startup (cat), written back debounced (FileView.setText). Icons use quoted
-// \u{...} escapes so a reformatter can never strip them into bare tokens.
 Scope {
     id: root
 
@@ -58,7 +42,7 @@ Scope {
         id: laterModel
     }
     ListModel {
-        id: completedModel // rows: { title, completedAt }
+      id: completedModel 
     }
 
     function modelFor(bucket: string): var {
@@ -141,8 +125,6 @@ Scope {
         root.editField = order[(i + delta + order.length) % order.length];
     }
 
-    // PopupWindow forwards every keypress here; while editing we build the drafts,
-    // otherwise an unaccepted Escape is left for PopupWindow to close the panel
     function handleKey(event): void {
         if (!root.editing)
             return;
@@ -256,14 +238,14 @@ Scope {
         root.scheduleSave();
     }
 
-    // ----- 1-week auto prune of completed items -----
+    // ----- 2-week auto prune of completed items -----
     function pruneCompleted(): void {
         const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - 7);
+        cutoff.setDate(cutoff.getDate() - 14);
         const cut = Qt.formatDateTime(cutoff, "yyyy-MM-dd");
         for (let i = completedModel.count - 1; i >= 0; i--) {
             const d = completedModel.get(i).completedAt;
-            if (!d || d < cut) // YYYY-MM-DD compares lexicographically
+            if (!d || d < cut) 
                 completedModel.remove(i);
         }
     }
@@ -299,7 +281,7 @@ Scope {
                 continue;
             let s = "- [x] **" + it3.title + "**";
             if (it3.completedAt && it3.completedAt.length)
-                s += " ✅ " + it3.completedAt; // Obsidian Tasks completion glyph
+                s += " ✅ " + it3.completedAt; 
             out += s + "\n";
         }
         return out;
@@ -405,8 +387,6 @@ Scope {
         onTriggered: root.saveNow()
     }
 
-    // read once on startup; cat keeps us off FileView.text() and copes with a
-    // not-yet-existing file (empty stdout -> empty lists; created on first save)
     Process {
         id: loadProc
         command: ["cat", root.filePath]
@@ -470,8 +450,6 @@ Scope {
             right: Globals.marginsRight
         }
 
-        // only the shown view is instantiated, so the card resizes cleanly between
-        // the reminders list and the completed list (PopupWindow animates the size)
         Loader {
             sourceComponent: root.view === "completed" ? completedComponent : activeComponent
         }
@@ -704,15 +682,12 @@ Scope {
                 }
             }
 
-            // floating layer the dragged card reparents into so it can roam across
-            // both lists and the divider between them
             Item {
                 id: dragLayer
                 anchors.fill: col
                 z: 999
             }
 
-            // ----- reminder card delegate (shared by both lists) -----
             Component {
                 id: cardComponent
 
@@ -728,7 +703,6 @@ Scope {
                     readonly property bool isEditing: root.editing && root.editBucket === bucket && root.editIndex === wrapper.index
 
                     width: ownerList ? ownerList.width : root.panelWidth
-                    // card body + equal gap on either side of the hairline divider
                     implicitHeight: holder.implicitHeight + root.cardGap * 2 + 1
                     height: implicitHeight
                     z: holderMa.drag.active ? 1000 : 1
@@ -741,8 +715,6 @@ Scope {
                         implicitHeight: contentRow.implicitHeight + root.cardPadV * 2
                         height: implicitHeight
 
-                        // while dragging: float above both lists, anchors dropped so
-                        // drag can move it freely; reverts (snaps home) on release
                         states: State {
                             when: holderMa.drag.active
                             ParentChange {
@@ -954,7 +926,6 @@ Scope {
                             }
                         }
 
-                        // drag + tap-to-edit; sits behind the circle/field hit areas
                         MouseArea {
                             id: holderMa
                             anchors.fill: parent

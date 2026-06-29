@@ -1,11 +1,7 @@
 import QtQuick
 import qs.defaults
 
-// Search row: the current query (or a placeholder when empty) and a blinking
-// caret riding the end of the text. No magnifier glyph - the heading above the
-// search row carries the menu icon. There is no Qt TextField either; Launcher
-// owns keyboard focus via PopupWindow and feeds `query` in directly, so this is a
-// pure display surface (same approach bjarneo's OmniMenu uses).
+// Search row: the current query (or a placeholder when empty) and a blinking caret riding the end of the text. 
 Item {
     id: input
 

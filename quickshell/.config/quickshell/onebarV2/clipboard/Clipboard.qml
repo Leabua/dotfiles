@@ -13,14 +13,14 @@ import QtQuick.Layouts
 //   cliphist decode <id>    -> full text (stdout) or raw image bytes
 //   cliphist wipe           -> clear all
 // Styling mirrors the notification center; window chrome comes from PopupWindow.
+
 Scope {
     id: root
 
     // local open state, toggled via IPC (mirrors Notifications' centerOpen)
     property bool clipboardOpen: false
 
-    // single source of truth for the active row (drives both the highlight and the
-    // preview pane); hover and arrow keys both write here, same as the launcher
+    // drives both the highlight and the preview pane
     property int selectedIndex: 0
 
     // ----- sizing -----
@@ -274,8 +274,7 @@ Scope {
                 Layout.rightMargin: Globals.spacing
             }
 
-            // empty state - keeps the list column's width (no preview pane) so the
-            // panel doesn't shrink horizontally when there's no history
+            // empty state - keeps the list column's width (no preview pane) so the panel doesn't shrink horizontally when there's no history
             Text {
                 visible: clipModel.count === 0
                 Layout.preferredWidth: root.listWidth
@@ -333,6 +332,7 @@ Scope {
                         width: ListView.view.width
                         implicitHeight: entryText.implicitHeight + (Globals.spacing + 2) * 2
                         radius: Globals.radius
+                        
                         // faint tint on the active entry (matches the launcher list)
                         color: entry.sel ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
 

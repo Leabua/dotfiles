@@ -6,17 +6,7 @@ import Quickshell.Services.UPower
 
 import QtQuick
 
-// Single-instance low-battery notifier.
-//
-// The visual BatteryIcons live inside the per-screen bar (shell.qml fans the bar
-// out with Variants over Quickshell.screens), so anything that fired notify-send
-// from there ran once per monitor -> two identical toasts on a dual-head setup.
-// This Scope is loaded exactly once (a lone LazyLoader in shell.qml), so the
-// warning fires a single time regardless of how many screens are attached.
-//
-// It watches UPower.displayDevice and warns once per downward crossing while
-// discharging (20% and again at 10%), re-arming each threshold once the battery
-// climbs back above it -> so fullscreening an app never hides an impending death.
+
 Scope {
     id: root
 

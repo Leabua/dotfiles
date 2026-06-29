@@ -15,9 +15,8 @@ ColumnLayout {
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool hasAdapter: adapter !== null
     readonly property bool poweredOn: hasAdapter && adapter.enabled
-    // full device list; each row decides its own section via the reactive `paired`
-    // property so a just-paired device hops lists without re-filtering the array
-    readonly property var allDevices: Bluetooth.devices ? Bluetooth.devices.values : []
+    
+    readonly property var allDevices: Bluetooth.devices ? Bluetooth.devices.values : [] // full device list
 
     function deviceBusy(d): bool {
         return d && (d.pairing || d.state === BluetoothDeviceState.Connecting || d.state === BluetoothDeviceState.Disconnecting);
@@ -77,6 +76,7 @@ ColumnLayout {
 
         // on/off switch -> follows CenterTextBtn colour logic (filled fg when active /
         // hovered, transparent otherwise)
+
         Rectangle {
             id: toggle
             enabled: root.hasAdapter
@@ -224,7 +224,7 @@ ColumnLayout {
         }
     }
 
-    // hint while the adapter is on but nothing has been discovered yet
+    // hint for while the adapter is on but nothing has been discovered yet
     Text {
         visible: root.poweredOn && !root.adapter.discovering
         Layout.fillWidth: true
@@ -234,7 +234,7 @@ ColumnLayout {
         font.pixelSize: Globals.textFont.pixelSize - 2
     }
 
-    // ----- footer: switch back to the audio card (toggle hugs the right edge) -----
+    // footer: switch back to the audio card (toggle hugs the right edge) 
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing

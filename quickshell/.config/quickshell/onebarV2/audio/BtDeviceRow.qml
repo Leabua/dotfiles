@@ -2,12 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import qs.defaults
 
-// One bluetooth device row: [device-type icon] name [status]. Used for both the
-// paired list and the nearby-devices list; the owner decides what activated()
-// does (connect/disconnect for paired, pair for nearby).
 Rectangle {
     id: root
 
+    // pure vibecoding -> no bt devices on hand so I should probably test this at some point todo
     property string deviceName: ""
     property string iconName: ""        // BlueZ freedesktop icon name (e.g. "audio-headset")
     property bool connected: false

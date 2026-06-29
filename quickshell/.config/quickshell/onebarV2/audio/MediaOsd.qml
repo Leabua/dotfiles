@@ -2,7 +2,8 @@ import QtQuick
 import qs.defaults
 
 // Transient now-playing readout: on a song change, the full "title · artist" marquees
-// across the bar once, then clears itself (shell.qml bumps `pulse` to (re)trigger it).
+// across the bar once, then clears itself (shell.qml bumps `pulse` to trigger it).
+
 Item {
     id: root
     property string title: ""
