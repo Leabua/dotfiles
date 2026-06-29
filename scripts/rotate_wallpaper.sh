@@ -50,7 +50,12 @@ if [ -f "$HYPRLOCK_CONFIG" ]; then
   sed -i '/^[[:space:]]*background[[:space:]]*{/,/}/ s|^\([[:space:]]*path[[:space:]]*=[[:space:]]*\).*|\1'"$NEXT_WALLPAPER"'|' "$HYPRLOCK_CONFIG"
 fi
 
-# Update quickshell bar colors
+# Update quickshell bar colors (and hyprlock + hypr border-colors.lua templates)
 matugen image "$NEXT_WALLPAPER"
+
+# Re-read the freshly generated border-colors.lua into the live window borders.
+# (quickshell + hyprlock pick up their colours on their own; only hyprland's config
+# needs a reload to swap the matugen border gradient.)
+hyprctl reload >/dev/null 2>&1
 
 notify-send "Wallpaper Updated" "$(basename "$NEXT_WALLPAPER")"

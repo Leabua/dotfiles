@@ -22,7 +22,8 @@ Singleton {
 
     // default font params
     readonly property font textFont: Qt.font({
-        family: "Iosevka Nerd Font, JetBrainsMono Nerd Font, SF Pro Display",
+        family: "Departure Mono",
+        // family: "Departure Mono,Iosevka Nerd Font, JetBrainsMono Nerd Font, SF Pro Display",
         letterSpacing: 0,
         pixelSize: 14 // -> this is what you use to make things compact
         ,
@@ -45,6 +46,7 @@ Singleton {
     property bool audioMenuOpen: false        // one popup hosts both the audio + bluetooth cards
     property string audioMenuView: "audio"    // which card is showing: "audio" | "bluetooth"
     property bool wifiMenuOpen: false         // standalone wifi card (opened from the Network bar entry)
+    property bool remindersOpen: false        // reminders / kanban panel (opened via the "reminders" IPC handler)
 
     // global initial initial tick value
     property int tick: 0

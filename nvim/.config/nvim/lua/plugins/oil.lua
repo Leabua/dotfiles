@@ -1,18 +1,38 @@
 return {
 	"stevearc/oil.nvim",
+	lazy = false,
 	dependencies = {
 		{ "echasnovski/mini.icons", lazy = false },
 		{ "nvim-tree/nvim-web-devicons" },
 	},
 	keys = {
-		{ "-", "<cmd>Oil<cr>", desc = "Open Parent Directory" },
+		{
+			"<leader>e",
+			function()
+				require("oil").toggle_float()
+			end,
+			desc = "Toggle file explorer",
+		},
 	},
 	config = function()
-		local oil = require("oil")
-		oil.setup({
+		require("oil").setup({
+			skip_confirm_for_simple_edits = true,
+			view_options = {
+				show_hidden = true,
+				is_hidden_file = function(name, _)
+					return name:match("^%.") ~= nil
+				end,
+				natural_order = "fast",
+				case_insensitive = true,
+				sort = {
+					{ "type", "desc" },
+					{ "name", "desc" },
+				},
+			},
 			keymaps = {
 				["h"] = "actions.parent",
 				["l"] = "actions.select",
+				["q"] = "actions.close",
 			},
 		})
 	end,

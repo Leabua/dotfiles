@@ -2,13 +2,27 @@
 ---- LOOK AND FEEL ----
 -----------------------
 
+-- active border gradient -> primary + tertiary from matugen, regenerated on every
+-- wallpaper change (rotate_wallpaper.sh -> matugen -> ~/.cache/hypr/border-colors.lua,
+-- then hyprctl reload re-reads it here). Falls back to static colours if the cache
+-- file isn't there yet (first boot before matugen has ever run this template).
+local function matugen_border()
+	local home = os.getenv("HOME")
+	if home then
+		local ok, c = pcall(dofile, home .. "/.cache/hypr/border-colors.lua")
+		if ok and type(c) == "table" and c[1] and c[2] then
+			return c
+		end
+	end
+	return { "rgb(a6e3a1)", "rgb(89b4fa)" }
+end
+
 hl.config({
 	general = {
 		border_size = 2,
 		gaps_in = 5,
 		gaps_out = 8,
-		-- col = { active_border = { colors = { "rgb(b4befe)", "rgb(94e2d5)" }, angle = 45 } },
-		col = { active_border = { colors = { "rgb(89b4fa)", "rgb(a6e3a1)" }, angle = 45 } },
+		col = { active_border = { colors = matugen_border(), angle = 45 } },
 		resize_on_border = true,
 	},
 

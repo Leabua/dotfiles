@@ -234,17 +234,17 @@ ColumnLayout {
         font.pixelSize: Globals.textFont.pixelSize - 2
     }
 
-    // ----- footer: switch back to the audio card -----
+    // ----- footer: switch back to the audio card (toggle hugs the right edge) -----
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing
+        Item {
+            Layout.fillWidth: true
+        } // push the button to the right edge
         ViewSwitchBtn {
             icon: String.fromCodePoint(0xF0F70) // treble clef (matches the audio menu header)
             label: "Audio"
             onClicked: Globals.audioMenuView = "audio"
-        }
-        Item {
-            Layout.fillWidth: true
         }
     }
 }

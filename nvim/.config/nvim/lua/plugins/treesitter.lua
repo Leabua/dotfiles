@@ -1,34 +1,35 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
+	branch = "main", -- the supported branch for Neovim 0.11+/0.12 (master is legacy)
 	build = ":TSUpdate",
-	event = { "BufReadPost", "BufNewFile" },
+	lazy = false,
 	config = function()
-		local status_ok, configs = pcall(require, "nvim-treesitter.configs")
+		-- Install the parsers we use (async; a no-op if already installed).
+		require("nvim-treesitter").install({
+			"lua",
+			"luadoc",
+			"vim",
+			"vimdoc",
+			"query",
+			"javascript",
+			"typescript",
+			"tsx",
+			"python",
+			"bash",
+			"css",
+			"markdown",
+			"markdown_inline",
+		})
 
-		if not status_ok then
-			return
-		end
-
-		configs.setup({
-			ensure_installed = {
-				"lua",
-				"vim",
-				"vimdoc",
-				"query",
-				"javascript",
-				"typescript",
-				"python",
-				"bash",
-				"html",
-				"css",
-				"markdown", -- ADDED: Required for LSP hover popups
-				"markdown_inline", -- ADDED: Required for code inside LSP popups
-			},
-
-			highlight = { enable = true },
-			indent = { enable = true },
-			sync_install = false,
-			auto_install = true,
+		-- On the `main` branch highlighting/indent are no longer auto-enabled, so
+		-- start them ourselves for any buffer whose filetype has a parser installed.
+		vim.api.nvim_create_autocmd("FileType", {
+			desc = "Enable treesitter highlighting + indentation",
+			callback = function(args)
+				if pcall(vim.treesitter.start, args.buf) then
+					vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end
+			end,
 		})
 	end,
 }

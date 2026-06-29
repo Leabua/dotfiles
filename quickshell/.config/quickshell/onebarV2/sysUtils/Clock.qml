@@ -72,29 +72,4 @@ Item {
             }
         }
     }
-
-    // MouseArea { // hover to show longDate
-    //     id: mouse
-    //     anchors.fill: parent
-    //     anchors.margins: -1
-    //     cursorShape: Qt.PointingHandCursor
-    //
-    //     // 1. You MUST set this to true for QML to track the mouse without clicking
-    //     hoverEnabled: true
-    //
-    //     // 2. Trigger when the mouse enters the bounding box
-    //     onEntered: {
-    //         // Check state to prevent glitches if you scrub the mouse back and forth
-    //         if (!root.showDate && !toggleAnimation.running) {
-    //             toggleAnimation.restart();
-    //         }
-    //     }
-    //
-    //     // 3. Revert back to the clock when the mouse leaves
-    //     onExited: {
-    //         if (root.showDate && !toggleAnimation.running) {
-    //             toggleAnimation.restart();
-    //         }
-    //     }
-    // }
 }

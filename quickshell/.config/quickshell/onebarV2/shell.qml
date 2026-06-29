@@ -7,6 +7,7 @@ import Quickshell.Services.Pipewire
 import qs.audio
 import qs.defaults
 import qs.launcher // installs the qs.launcher module so Launcher.qml can resolve its sibling components (SearchInput/ResultList)
+import qs.reminders // installs the qs.reminders module so Reminders.qml can resolve its sibling EditField
 import qs.sysUtils
 import qs.wifi // installs the qs.wifi module so WifiMenu.qml can resolve WifiView/WifiNetworkRow
 import QtQuick
@@ -216,6 +217,14 @@ Scope {
     }
     LazyLoader {
         source: "battery/PowerProfiles.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "battery/BatteryWarnings.qml" // single-instance low-battery notifier (fires once, not per-screen)
+        active: true
+    }
+    LazyLoader {
+        source: "reminders/Reminders.qml"
         active: true
     }
     LazyLoader {

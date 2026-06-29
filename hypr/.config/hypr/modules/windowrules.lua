@@ -63,13 +63,13 @@ hl.window_rule({
 	size = "900 600",
 })
 
--- localsend
+-- rencal calendar
 hl.window_rule({
-	name = "localsend-float",
-	match = { class = "^localsend$" },
+	name = "rencal-float",
+	match = { class = "^rencal$" },
 	float = true,
 	center = true,
-	size = "900 600",
+	size = "66% 66%",
 })
 
 -- nautilus previewer

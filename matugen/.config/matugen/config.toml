@@ -17,3 +17,7 @@ output_path = '~/.cache/quickshell/colors.json'
 input_path = '~/.config/matugen/templates/hyprlockTemplate.conf'
 output_path = '~/.cache/hypr/hyprlock-colors.conf'
 
+[templates.hyprborder]
+input_path = '~/.config/matugen/templates/hyprborderTemplate.lua'
+output_path = '~/.cache/hypr/border-colors.lua'
+
