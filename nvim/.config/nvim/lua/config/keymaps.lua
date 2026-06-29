@@ -6,6 +6,7 @@ vim.diagnostic.config({
 	float = { border = "rounded", source = "if_many" },
 	underline = { severity = { min = vim.diagnostic.severity.WARN } },
 
+	signs = false, -- no E/W letters in the sign column (keeps it for gitsigns only)
 	virtual_text = false,
 	virtual_lines = false,
 
@@ -21,6 +22,14 @@ vim.diagnostic.config({
 })
 
 keymap("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+-- Jump between diagnostics (uses jump.on_jump above to pop the float open)
+keymap("n", "<leader>[", function()
+	vim.diagnostic.jump({ count = -1 })
+end, { desc = "Previous diagnostic" })
+keymap("n", "<leader>]", function()
+	vim.diagnostic.jump({ count = 1 })
+end, { desc = "Next diagnostic" })
 
 -- Highlight when yanking (copying) text
 vim.api.nvim_create_autocmd("TextYankPost", {

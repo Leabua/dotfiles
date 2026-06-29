@@ -1,3 +1,62 @@
+-- Find an already-open, focusable preview float (our hover / diagnostic popup).
+local function find_preview_float()
+	local cur = vim.api.nvim_get_current_win()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if win ~= cur then
+			local cfg = vim.api.nvim_win_get_config(win)
+			if cfg.relative ~= "" and cfg.focusable then
+				return win
+			end
+		end
+	end
+end
+
+-- Jump into a float and make <Esc> close it (q also works, via the built-in map).
+local function enter_float(win)
+	vim.api.nvim_set_current_win(win)
+	local buf = vim.api.nvim_win_get_buf(win)
+	vim.keymap.set("n", "<Esc>", function()
+		if vim.api.nvim_win_is_valid(win) then
+			vim.api.nvim_win_close(win, true)
+		end
+	end, { buffer = buf, nowait = true, desc = "Close float" })
+end
+
+-- Is the cursor sitting on top of a diagnostic span?
+local function cursor_on_diagnostic(bufnr)
+	local lnum = vim.fn.line(".") - 1
+	local col = vim.fn.col(".") - 1
+	for _, d in ipairs(vim.diagnostic.get(bufnr, { lnum = lnum })) do
+		if col >= d.col and col <= d.end_col then
+			return true
+		end
+	end
+	return false
+end
+
+-- K: open LSP doc or diagnostic (depending on the cursor). K again: jump into it.
+local function hover_or_diagnostic(bufnr)
+	local existing = find_preview_float()
+	if existing then
+		enter_float(existing)
+		return
+	end
+
+	if cursor_on_diagnostic(bufnr) then
+		vim.diagnostic.open_float({
+			scope = "cursor",
+			border = "rounded",
+			focusable = true,
+			close_events = { "InsertEnter", "BufLeave" },
+		})
+	else
+		vim.lsp.buf.hover({
+			border = "rounded",
+			close_events = { "InsertEnter", "BufLeave" },
+		})
+	end
+end
+
 return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
@@ -23,27 +82,6 @@ return {
 			},
 		})
 
-		-- Quickshell / QML server (qmlls6) is DISABLED. On this quickshell project
-		-- it balloons past 7GB (its .qmlls.ini lists /usr/bin in importPaths),
-		-- which triggered the kernel OOM-killer and took down the whole terminal.
-		-- To re-enable it *safely*, run it under a memory-capped systemd scope so a
-		-- runaway qmlls kills only itself, never the editor/terminal:
-		--
-		--   vim.lsp.config("qmlls", {
-		--     cmd = {
-		--       "systemd-run", "--user", "--scope", "--quiet",
-		--       "-p", "MemoryMax=2G", "-p", "MemorySwapMax=0",
-		--       "/usr/sbin/qmlls6",
-		--     },
-		--     filetypes = { "qml", "qmljs" },
-		--     root_markers = { { ".qmlls.ini", "shell.qml" }, ".git" },
-		--   })
-		--   vim.lsp.enable("qmlls")
-		--
-		-- Explicitly keep it off so nvim-lspconfig's built-in default can never
-		-- auto-attach an uncapped qmlls and OOM the machine.
-		vim.lsp.enable("qmlls", false)
-
 		require("mason-lspconfig").setup({
 			ensure_installed = {
 				"lua_ls",
@@ -67,23 +105,8 @@ return {
 				map("<leader>ca", vim.lsp.buf.code_action, "Code action")
 
 				map("K", function()
-					local lnum = vim.fn.line(".") - 1
-					local col = vim.fn.col(".") - 1
-					local on_error = false
-					for _, d in ipairs(vim.diagnostic.get(event.buf, { lnum = lnum })) do
-						if col >= d.col and col <= d.end_col then
-							on_error = true
-							break
-						end
-					end
-
-					if on_error then
-						vim.diagnostic.open_float({ scope = "cursor", close_events = { "InsertEnter", "BufLeave" } })
-						vim.lsp.buf.definition()
-					else
-						vim.lsp.buf.hover({ border = "rounded" })
-					end
-				end, "Hover / error + definition")
+					hover_or_diagnostic(event.buf)
+				end, "Hover / diagnostic (K again to enter, Esc to close)")
 			end,
 		})
 	end,
