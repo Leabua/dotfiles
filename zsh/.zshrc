@@ -54,7 +54,7 @@ alias q="exit"
 alias weather="curl wttr.in"
 alias wq="exit"
 alias y="yazi"
-
+alias gd="git diff | delta"
 alias ga="git add ."
 alias gp="git push --set-upstream origin HEAD"
 alias gc="git add . && git commit -m"

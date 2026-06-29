@@ -23,12 +23,26 @@ return {
 			},
 		})
 
-		vim.lsp.config("qmlls", {
-			cmd = { "/usr/sbin/qmlls6" },
-			filetypes = { "qml", "qmljs" },
-			root_markers = { ".git", ".qmlls.ini", "shell.qml" },
-		})
-		vim.lsp.enable("qmlls")
+		-- Quickshell / QML server (qmlls6) is DISABLED. On this quickshell project
+		-- it balloons past 7GB (its .qmlls.ini lists /usr/bin in importPaths),
+		-- which triggered the kernel OOM-killer and took down the whole terminal.
+		-- To re-enable it *safely*, run it under a memory-capped systemd scope so a
+		-- runaway qmlls kills only itself, never the editor/terminal:
+		--
+		--   vim.lsp.config("qmlls", {
+		--     cmd = {
+		--       "systemd-run", "--user", "--scope", "--quiet",
+		--       "-p", "MemoryMax=2G", "-p", "MemorySwapMax=0",
+		--       "/usr/sbin/qmlls6",
+		--     },
+		--     filetypes = { "qml", "qmljs" },
+		--     root_markers = { { ".qmlls.ini", "shell.qml" }, ".git" },
+		--   })
+		--   vim.lsp.enable("qmlls")
+		--
+		-- Explicitly keep it off so nvim-lspconfig's built-in default can never
+		-- auto-attach an uncapped qmlls and OOM the machine.
+		vim.lsp.enable("qmlls", false)
 
 		require("mason-lspconfig").setup({
 			ensure_installed = {
