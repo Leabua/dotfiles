@@ -23,6 +23,10 @@ vim.opt.swapfile = false
 vim.o.showmode = false -- dont show the mode since its in the statusline -> if no lualine then make true
 vim.opt.fillchars = { eob = " " }
 
+-- hand the bottom region (cmdline + messages) to noice, single global statusline (lualine)
+vim.opt.cmdheight = 0
+vim.opt.laststatus = 3
+
 -- os and vim use same clipboard
 vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
