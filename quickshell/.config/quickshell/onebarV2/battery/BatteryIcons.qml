@@ -6,14 +6,14 @@ import qs.defaults
 Item {
     id: batteryBtn
 
-    property var chargingIcons: ["󰢜 ", "󰂆 ", "󰂇 ", "󰂈 ", "󰢝 ", "󰂉 ", "󰢞 ", "󰂊 ", "󰂋 ", "󰂅 "]
-    property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    readonly property var chargingIcons: ["󰢜 ", "󰂆 ", "󰂇 ", "󰂈 ", "󰢝 ", "󰂉 ", "󰢞 ", "󰂊 ", "󰂋 ", "󰂅 "]
+    readonly property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
 
-    property var bat: UPower.displayDevice
-    property int percent: (bat != null && bat.ready) ? Math.round(bat.percentage * 100) : 0
-    property bool isCharging: bat != null && bat.ready && bat.state === UPowerDeviceState.Charging
+    readonly property var bat: UPower.displayDevice
+    readonly property int percent: (bat != null && bat.ready) ? Math.round(bat.percentage * 100) : 0
+    readonly property bool isCharging: bat != null && bat.ready && bat.state === UPowerDeviceState.Charging
 
-    property string icon: {
+    readonly property string icon: {
         if (bat == null || !bat.ready)
             return "󰂃";
         if (bat.state === UPowerDeviceState.FullyCharged || (isCharging && percent === 100))
@@ -22,7 +22,7 @@ Item {
         return isCharging ? chargingIcons[idx] : defaultIcons[idx];
     }
 
-    property color displayColor: {
+    readonly property color displayColor: {
         if (percent <= 10 && !isCharging)
             return Globals.criticalColor;
         if (percent <= 20 && !isCharging)
@@ -43,7 +43,7 @@ Item {
         BarIcon {
             text: batteryBtn.icon.trim()
             color: batteryBtn.displayColor
-            font.pixelSize: batteryBtn.isCharging ? Globals.barIconSize + 2 : Globals.barIconSize - 8
+            font.pixelSize: batteryBtn.isCharging ? Globals.barIconSize + 3 : Globals.barIconSize - 8
         }
         Text {
             text: batteryBtn.percent + "%"
