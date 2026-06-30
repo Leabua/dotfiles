@@ -31,9 +31,15 @@ return {
 						["@variable.builtin"] = { fg = p.waveRed },
 						["@property"] = { fg = p.carpYellow },
 
-						-- jagged diagnostic underlines: red errors, blue warnings
+						-- jagged diagnostic underlines: red errors, blue everything-else
 						["DiagnosticUnderlineError"] = { undercurl = true, sp = p.samuraiRed },
 						["DiagnosticUnderlineWarn"] = { undercurl = true, sp = p.crystalBlue },
+						["DiagnosticUnderlineInfo"] = { undercurl = true, sp = p.crystalBlue },
+						["DiagnosticUnderlineHint"] = { undercurl = true, sp = p.crystalBlue },
+						-- "unreachable code" / "unused var" come tagged `unnecessary`, which
+						-- forces this group instead of the Underline* ones above. Give it the
+						-- blue undercurl too (and don't dim the text, so the line reads normally).
+						["DiagnosticUnnecessary"] = { undercurl = true, sp = p.crystalBlue },
 					}
 				end,
 			})

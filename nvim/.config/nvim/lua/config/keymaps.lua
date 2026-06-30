@@ -4,7 +4,7 @@ vim.diagnostic.config({
 	update_in_insert = false,
 	severity_sort = true,
 	float = { border = "rounded", source = "if_many" },
-	underline = { severity = { min = vim.diagnostic.severity.WARN } },
+	underline = true, -- jagged lines for every severity (red errors, blue hints/info/warns)
 
 	signs = false, -- no E/W letters in the sign column (keeps it for gitsigns only)
 	virtual_text = false,
