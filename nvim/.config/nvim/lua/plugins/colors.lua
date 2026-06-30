@@ -30,6 +30,10 @@ return {
 						["@number"] = { fg = p.sakuraPink },
 						["@variable.builtin"] = { fg = p.waveRed },
 						["@property"] = { fg = p.carpYellow },
+
+						-- jagged diagnostic underlines: red errors, blue warnings
+						["DiagnosticUnderlineError"] = { undercurl = true, sp = p.samuraiRed },
+						["DiagnosticUnderlineWarn"] = { undercurl = true, sp = p.crystalBlue },
 					}
 				end,
 			})
