@@ -21,8 +21,8 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
-# export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
+# export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 
 if command -v tmux &>/dev/null && [[ -z "$TMUX" ]]; then
   tmux attach 2>/dev/null || tmux new-session
@@ -59,5 +59,5 @@ alias ga="git add ."
 alias gp="git push --set-upstream origin HEAD"
 alias gc="git add . && git commit -m"
 alias gs="git status"
-# Added by Antigravity CLI installer
-export PATH="/home/leabua/.local/bin:$PATH"
+
+alias trackpad="sudo modprobe -r psmouse && sudo modprobe psmouse"
