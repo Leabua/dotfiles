@@ -14,6 +14,12 @@ return {
 		},
 	},
 	opts = {
+		indent = {
+			enabled = true,
+			animate = {
+				style = "down",
+			},
+		},
 		dashboard = {
 			enabled = true,
 			preset = {
