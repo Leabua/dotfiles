@@ -77,18 +77,18 @@ return {
 			vim.api.nvim_set_hl(0, group, { bg = "none" })
 		end
 
-		-- Colors follow the active colorscheme (kanagawa-wave)
-		local c = require("kanagawa.colors").setup({ theme = "wave" }).palette
+		-- Colors follow the active colorscheme (nightfox)
+		local c = require("nightfox.palette").load("nightfox")
 
 		-- Titles: purple
-		vim.api.nvim_set_hl(0, "TelescopePromptTitle", { bg = "none", fg = c.oniViolet })
-		vim.api.nvim_set_hl(0, "TelescopeResultsTitle", { bg = "none", fg = c.oniViolet })
-		vim.api.nvim_set_hl(0, "TelescopePreviewTitle", { bg = "none", fg = c.oniViolet })
+		vim.api.nvim_set_hl(0, "TelescopePromptTitle", { bg = "none", fg = c.magenta.base })
+		vim.api.nvim_set_hl(0, "TelescopeResultsTitle", { bg = "none", fg = c.magenta.base })
+		vim.api.nvim_set_hl(0, "TelescopePreviewTitle", { bg = "none", fg = c.magenta.base })
 
 		-- Borders: blue
-		vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = "none", fg = c.crystalBlue })
-		vim.api.nvim_set_hl(0, "TelescopePromptBorder", { bg = "none", fg = c.crystalBlue })
-		vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { bg = "none", fg = c.crystalBlue })
-		vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { bg = "none", fg = c.crystalBlue })
+		vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = "none", fg = c.blue.base })
+		vim.api.nvim_set_hl(0, "TelescopePromptBorder", { bg = "none", fg = c.blue.base })
+		vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { bg = "none", fg = c.blue.base })
+		vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { bg = "none", fg = c.blue.base })
 	end,
 }
