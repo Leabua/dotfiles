@@ -89,6 +89,23 @@ return {
 
 			strip_backgrounds()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = strip_backgrounds })
+
+			-- Gitsigns gutter colours: an unmistakable green / orange / red triad.
+			-- Orange (instead of the muddy default yellow) makes "changed" read clearly
+			-- distinct from "added". fg-only so the sign column stays transparent.
+			local function set_git_signs()
+				local p = require("nightfox.palette").load("nightfox")
+				vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = p.green.bright, bg = "NONE" })
+				vim.api.nvim_set_hl(0, "GitSignsChange", { fg = p.orange.base, bg = "NONE" })
+				vim.api.nvim_set_hl(0, "GitSignsChangedelete", { fg = p.orange.base, bg = "NONE" })
+				vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = p.red.bright, bg = "NONE" })
+				vim.api.nvim_set_hl(0, "GitSignsTopdelete", { fg = p.red.bright, bg = "NONE" })
+				vim.api.nvim_set_hl(0, "GitSignsUntracked", { fg = p.green.dim, bg = "NONE" })
+			end
+
+			set_git_signs()
+			-- run after strip_backgrounds on re-theme so our explicit fg wins
+			vim.api.nvim_create_autocmd("ColorScheme", { callback = set_git_signs })
 		end,
 	},
 	{
