@@ -56,8 +56,8 @@ vim.o.scrolloff = 8
 
 vim.o.confirm = true
 
--- disable netrw entirely (oil is the file explorer)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- stock netrw is the file explorer; open horizontal splits at the bottom
+vim.g.netrw_alto = 1 -- horizontal split opens below
+vim.g.netrw_winsize = 30 -- explorer takes 30% of the height
 
 vim.opt.termguicolors = true -- 24 bit color
