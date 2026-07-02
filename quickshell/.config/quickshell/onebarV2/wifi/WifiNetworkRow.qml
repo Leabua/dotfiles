@@ -65,9 +65,11 @@ ColumnLayout {
             spacing: Globals.spacing
 
             // signal icon, filled box when connected (mirrors BtDeviceRow)
+            // fixed square so every row's icon reads at the same size regardless
+            // of which wifi-strength glyph (which vary in visual weight) is shown
             Rectangle {
-                implicitWidth: glyph.implicitHeight + Globals.spacing * 2
-                implicitHeight: glyph.implicitHeight + Globals.spacing * 2
+                implicitWidth: Globals.barIconSize + Globals.spacing * 2
+                implicitHeight: Globals.barIconSize + Globals.spacing * 2
                 radius: Globals.radius
                 color: root.connected ? Globals.fgColor : "transparent"
 
@@ -83,7 +85,7 @@ ColumnLayout {
                     text: String.fromCodePoint(root.signalGlyph())
                     color: root.connected ? Globals.bgColor : Globals.fgColor
                     font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 2
+                    font.pixelSize: Globals.barIconSize
                     font.weight: Globals.textFont.weight
                 }
             }
