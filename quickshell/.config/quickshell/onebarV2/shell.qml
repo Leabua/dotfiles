@@ -19,8 +19,8 @@ Scope {
 
     property bool windowVisible: true
 
-    readonly property int collapseShrink: Globals.barCollapse // scale phase
-    readonly property int collapseFade: Math.round(Globals.barCollapse * 0.4) // content fade phase
+    readonly property int collapseShrink: Globals.barCollapse  //scale
+    readonly property int collapseFade: Math.round(Globals.barCollapse * 0.4) // content fade 
 
     onBarShownChanged: {
         if (barShown) {
@@ -72,6 +72,7 @@ Scope {
 
             implicitHeight: Math.max(1, island.implicitHeight)
 
+            // to toggle bar hide bar on wayland
             Binding {
                 target: Globals
                 property: "currentBarHeight"

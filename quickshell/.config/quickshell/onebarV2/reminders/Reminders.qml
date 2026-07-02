@@ -209,8 +209,8 @@ Scope {
         root.scheduleSave();
     }
 
-    // ----- drag/drop reorder (resolved next tick so we never mutate a model from
-    // inside the delegate's own released handler) -----
+    /*drag/drop reorder (resolved next tick so we never mutate a model from
+     inside the delegate's own released handler) */
     function applyDrop(srcBucket: string, srcIndex: int, tgtBucket: string, tgtIndex: int): void {
         const sm = root.modelFor(srcBucket);
         if (srcIndex < 0 || srcIndex >= sm.count)
@@ -287,6 +287,7 @@ Scope {
         return out;
     }
 
+    // Claude goated for this one
     function loadFromText(text: string): void {
         priorityModel.clear();
         laterModel.clear();
@@ -433,7 +434,7 @@ Scope {
             }
         }
     }
-
+    
     PopupWindow {
         open: Globals.remindersOpen
         onDismissed: {
@@ -455,7 +456,7 @@ Scope {
         }
     }
 
-    // ===================== ACTIVE VIEW =====================
+    //  ACTIVE VIEW 
     Component {
         id: activeComponent
 
@@ -533,8 +534,8 @@ Scope {
                     Layout.rightMargin: root.cardPadH
                 }
 
-                // ----- empty state (each line fills the full panel width and
-                // centers its own text -> reliably centred regardless of content) -----
+                /*  empty state (each line fills the full panel width and
+                 centers its own text -> reliably centred regardless of content) */
                 Text {
                     visible: !activeRoot.hasAny
                     Layout.fillWidth: true
@@ -663,7 +664,7 @@ Scope {
                     delegate: cardComponent
                 }
 
-                // ----- footer: switch to completed (toggle hugs the right edge) -----
+                //  footer: switch to completed (toggle hugs the right edge) 
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.topMargin: Globals.spacing / 2
@@ -973,7 +974,7 @@ Scope {
         }
     }
 
-    // ===================== COMPLETED VIEW =====================
+    // ===================== COMPLETED VIEW 
     Component {
         id: completedComponent
 

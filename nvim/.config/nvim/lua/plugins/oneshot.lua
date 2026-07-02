@@ -1,11 +1,27 @@
 return {
 	{
-		"windwp/nvim-autopairs",
-		event = "InsertEnter",
-		config = true,
+		-- auto-close and auto-rename HTML/JSX/TSX tags:
+		--   typing `<div>` inserts the matching `</div>`, and renaming one
+		--   side of a pair updates the other.
+		"windwp/nvim-ts-autotag",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		ft = {
+			"html",
+			"xml",
+			"javascript",
+			"javascriptreact",
+			"jsx",
+			"typescript",
+			"typescriptreact",
+			"tsx",
+			"markdown",
+		},
 		opts = {
-			enable_check_bracket_line = false,
-			check_ts = true,
+			opts = {
+				enable_close = true, -- auto-close tags
+				enable_rename = true, -- keep the pair in sync when you edit one side
+				enable_close_on_slash = false,
+			},
 		},
 	},
 	{

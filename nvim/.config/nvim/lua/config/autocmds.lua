@@ -4,7 +4,7 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 	command = "checktime",
 })
 
--- Automatically make <Esc> close any floating windows (like LSP hover, oil)
+-- Automatically make <Esc> close any floating windows (like LSP hover, mini.files)
 vim.api.nvim_create_autocmd("WinEnter", {
 	desc = "Close floating windows with Escape",
 	callback = function()

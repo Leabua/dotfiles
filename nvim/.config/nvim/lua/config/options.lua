@@ -56,8 +56,4 @@ vim.o.scrolloff = 8
 
 vim.o.confirm = true
 
--- disable netrw entirely (oil is the file explorer)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 vim.opt.termguicolors = true -- 24 bit color

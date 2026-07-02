@@ -17,7 +17,6 @@ Rectangle {
     signal activated
     signal forgetRequested
 
-    // map BlueZ icon names onto nerd-font glyphs (falls back to the bluetooth mark)
     function glyphFor(name: string): int {
         const s = (name || "").toLowerCase();
         if (s.includes("headset") || s.includes("headphone"))
@@ -62,8 +61,8 @@ Rectangle {
 
         // device-type icon, tinted brighter when connected
         Rectangle {
-            implicitWidth: glyph.implicitHeight + Globals.spacing * 2
-            implicitHeight: glyph.implicitHeight + Globals.spacing * 2
+            implicitWidth: Globals.barIconSize + Globals.spacing * 2
+            implicitHeight: Globals.barIconSize + Globals.spacing * 2
             radius: Globals.radius
             color: root.connected ? Globals.fgColor : "transparent"
             // border.width: 1
@@ -81,7 +80,7 @@ Rectangle {
                 text: String.fromCodePoint(root.glyphFor(root.iconName))
                 color: root.connected ? Globals.bgColor : Globals.fgColor
                 font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize + 2
+                font.pixelSize: Globals.barIconSize
                 font.weight: Globals.textFont.weight
             }
         }

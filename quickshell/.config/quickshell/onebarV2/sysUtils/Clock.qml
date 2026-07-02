@@ -35,16 +35,16 @@ Item {
             easing.type: Easing.OutQuad
         }
 
-        // 2. Flip the boolean while the text is invisible.
-        // This instantly updates the text string and implicitWidth,
-        // which tells the parent bar to start its 250ms size animation.
+        /* 2. Flip the boolean while the text is invisible.
+        This  updates the text string and implicitWidth,
+        which tells the parent bar to start its 250ms size animation. */
         PropertyAction {
             target: root
             property: "showDate"
             value: !root.showDate
         }
 
-        // 3. Pause to let the parent bar finish resizing (matching your 250ms bar duration)
+        // 3. Pause to let the parent bar finish resizing (matching the 250ms bar duration)
         PauseAnimation {
             duration: 250
         }
@@ -59,14 +59,14 @@ Item {
         }
     }
 
-    MouseArea {  // click to show long date
+    // click to show long date
+    MouseArea {  
         id: mouse
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
 
         onClicked: {
-            // Only trigger if it isn't already animating to prevent spam-clicking glitches
             if (!toggleAnimation.running) {
                 toggleAnimation.restart();
             }

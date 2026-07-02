@@ -1,53 +1,37 @@
 return {
 	{
-		"rebelot/kanagawa.nvim",
+		"EdenEast/nightfox.nvim",
 		lazy = false,
 		priority = 1000,
 		config = function()
-			require("kanagawa").setup({
-				theme = "wave",
-				transparent = true,
-				dimInactive = false,
-				undercurl = true,
-				-- bold the syntax so the colours pop on the words
-				commentStyle = { italic = true },
-				keywordStyle = { italic = false, bold = true },
-				functionStyle = { bold = true },
-				statementStyle = { bold = true },
-				typeStyle = { bold = true },
-				overrides = function(colors)
-					local p = colors.palette
-					return {
-						["@function"] = { fg = p.crystalBlue, bold = true },
-						["@function.call"] = { fg = p.crystalBlue, bold = true },
-						["@function.builtin"] = { fg = p.springBlue, bold = true },
-						["@keyword"] = { fg = p.oniViolet, bold = true },
-						["@keyword.function"] = { fg = p.oniViolet, bold = true },
-						["@type"] = { fg = p.waveAqua2, bold = true },
-						["@constant"] = { fg = p.surimiOrange },
-						["@constant.builtin"] = { fg = p.surimiOrange },
-						["@string"] = { fg = p.springGreen },
-						["@number"] = { fg = p.sakuraPink },
-						["@variable.builtin"] = { fg = p.waveRed },
-						["@property"] = { fg = p.carpYellow },
-
+			require("nightfox").setup({
+				options = {
+					transparent = true,
+					dim_inactive = false,
+					-- bold the syntax so the colours pop on the words
+					styles = {
+						comments = "italic",
+					},
+				},
+				groups = {
+					all = {
 						-- jagged diagnostic underlines: red errors, blue everything-else
-						["DiagnosticUnderlineError"] = { undercurl = true, sp = p.samuraiRed },
-						["DiagnosticUnderlineWarn"] = { undercurl = true, sp = p.crystalBlue },
-						["DiagnosticUnderlineInfo"] = { undercurl = true, sp = p.crystalBlue },
-						["DiagnosticUnderlineHint"] = { undercurl = true, sp = p.crystalBlue },
-						["DiagnosticUnnecessary"] = { undercurl = true, sp = p.crystalBlue },
-					}
-				end,
+						DiagnosticUnderlineError = { style = "undercurl", sp = "palette.red.base" },
+						DiagnosticUnderlineWarn = { style = "undercurl", sp = "palette.blue.base" },
+						DiagnosticUnderlineInfo = { style = "undercurl", sp = "palette.blue.base" },
+						DiagnosticUnderlineHint = { style = "undercurl", sp = "palette.blue.base" },
+						DiagnosticUnnecessary = { style = "undercurl", sp = "palette.blue.base" },
+					},
+				},
 			})
 
-			vim.cmd.colorscheme("kanagawa-wave")
+			vim.cmd.colorscheme("nightfox")
 
-			local palette = require("kanagawa.colors").setup({ theme = "wave" }).palette
+			local palette = require("nightfox.palette").load("nightfox")
 
 			-- Snacks dashboard header + directory follow the colorscheme
-			vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = palette.peachRed })
-			vim.api.nvim_set_hl(0, "Directory", { fg = palette.crystalBlue, bg = "NONE" })
+			vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = palette.red.base })
+			vim.api.nvim_set_hl(0, "Directory", { fg = palette.blue.base, bg = "NONE" })
 
 			local transparent_groups = {
 				-- editor core
@@ -78,7 +62,7 @@ return {
 				"CursorLineNr",
 				"FoldColumn",
 
-				-- diagnostic + git signs (kanagawa tints these #2a2a37 even with
+				-- diagnostic + git signs (themes often tint these even with
 				-- transparent = true; this is what bled into the noice borders)
 				"DiagnosticSignError",
 				"DiagnosticSignWarn",
