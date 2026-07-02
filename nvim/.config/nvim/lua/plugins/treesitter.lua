@@ -17,6 +17,7 @@ return {
 			"python",
 			"bash",
 			"css",
+			"html",
 			"markdown",
 			"markdown_inline",
 		})
