@@ -19,7 +19,6 @@ Item {
     Process {
         id: memoryProcess
         command: ["cat", "/proc/meminfo"]
-        // used% from /proc/meminfo (MemTotal - MemAvailable) -> one read, no shell + pipe
         stdout: StdioCollector {
             onStreamFinished: {
                 const mt = text.match(/MemTotal:\s+(\d+)/);
@@ -28,12 +27,12 @@ Item {
                     memoryItem.memoryUsage = Math.round((parseInt(mt[1]) - parseInt(ma[1])) / parseInt(mt[1]) * 100);
             }
         }
-        Component.onCompleted: running = true // avoids having to wait for the timer to fire just to get the memory to start going
+        Component.onCompleted: running = true 
     }
 
     RowLayout {
         id: row
-        spacing: Globals.spacing - 1// in-pair gap: icon hugs its value
+        spacing: Globals.spacing - 1
 
         BarIcon {
             text: "󰘚"

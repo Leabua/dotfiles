@@ -35,7 +35,8 @@ Item {
         spacing: Globals.spacing - 2
 
         BarIcon {
-            text: root.icon
+          text: root.icon
+          font.pixelSize: volPercent >= 34 ? Globals.barIconSize : Globals.barIconSize - 8
         }
         Text {
             text: root.volPercent + "%"
