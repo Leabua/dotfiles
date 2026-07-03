@@ -57,6 +57,18 @@ return {
 					width_preview = 25,
 				},
 			})
+
+			-- <CR> opens the file (and closes the explorer), same as L.
+			-- By default mini.files leaves <CR> as the plain "move down a line"
+			-- motion, which is useless in the explorer.
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "MiniFilesBufferCreate",
+				callback = function(args)
+					vim.keymap.set("n", "<CR>", function()
+						require("mini.files").go_in({ close_on_file = true })
+					end, { buffer = args.data.buf_id, desc = "Open file / enter directory" })
+				end,
+			})
 		end,
 	},
 }

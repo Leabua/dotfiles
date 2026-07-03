@@ -15,7 +15,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: Globals.spacing
         anchors.verticalCenter: parent.verticalCenter
-        text: input.query.length > 0 ? input.query : "Search apps… or type a command"
+        text: input.query.length > 0 ? input.query : "Search apps…"
         color: input.query.length === 0 ? Qt.alpha(Globals.fgColor, 0.4) : Globals.fgColor
         font.family: Globals.textFont.family
         font.pixelSize: Globals.textFont.pixelSize

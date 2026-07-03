@@ -9,7 +9,7 @@ import qs.defaults
 // text stays readable (no full fgColor fill / bgColor inversion).
 //
 // `results` is a plain JS array of result objects shaped by Launcher:
-//   { kind, title, category, glyph, iconUrl, entry?/command? }
+//   { kind, title, category, glyph, iconUrl, entry }
 Item {
     id: rl
 
