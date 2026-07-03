@@ -22,8 +22,8 @@ Singleton {
 
     // default font params
     readonly property font textFont: Qt.font({
-        family: "Departure Mono",
         // family: "Departure Mono,Iosevka Nerd Font, JetBrainsMono Nerd Font, SF Pro Display",
+        family: "Departure Mono",
         letterSpacing: 0,
         pixelSize: 14 // -> this is what you use to make things compact
         ,

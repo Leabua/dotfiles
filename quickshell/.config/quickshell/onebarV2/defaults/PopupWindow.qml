@@ -6,33 +6,6 @@ import qs.defaults
 
 import QtQuick
 
-// Reusable popup chrome for the second-order menus (PowerMenu, PowerProfiles,
-// Clipboard, and the audio/bluetooth/wifi cards).
-//
-// Provides: a full-screen transparent layer-shell window that grabs keyboard
-// focus, closes on Escape or on a click outside the card, forwards every other
-// keypress to the owner via keyDown(event), and a styled card (menuBg + radius +
-// border) that swallows its own clicks and sizes itself to whatever content you
-// nest inside it.
-//
-// Keyboard model: the window owns one keyboard-focused catcher. Every key press
-// is emitted as keyDown(event); set event.accepted = true in your handler to
-// consume it. Anything left unaccepted that is Escape dismisses the popup. This
-// lets text menus build a query from event.text and lets any menu add hjkl/arrow
-// navigation without each one re-implementing focus + dismissal.
-//
-// Usage:
-//   PopupWindow {
-//       open: Globals.somethingOpen          // bind to your open-state
-//       onDismissed: Globals.somethingOpen = false
-//       hAlign: "center"                     // card x-anchor: "left" | "center" | "right"
-//       cardTopMargin: ...                   // extra offset below the window top margin
-//       margins { top: ...; left: ...; right: ... }   // PanelWindow margins as usual
-//       onKeyDown: event => { ... }          // optional: handle typing / nav
-//
-//       ColumnLayout { ...your content... }  // self-sizing, no anchors needed
-//   }
-
 PanelWindow { // qmllint disable uncreatable-type
     id: root
 

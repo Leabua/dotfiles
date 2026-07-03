@@ -41,6 +41,7 @@ source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 alias bonsai="cbonsai --infinite --live"
+alias c="| wl-copy"
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"
 alias dc="z ~/dev/courses/"
 alias dp="z ~/dev/projects/"

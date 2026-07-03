@@ -2,10 +2,6 @@
 ---- LOOK AND FEEL ----
 -----------------------
 
--- active border gradient -> primary + tertiary from matugen, regenerated on every
--- wallpaper change (rotate_wallpaper.sh -> matugen -> ~/.cache/hypr/border-colors.lua,
--- then hyprctl reload re-reads it here). Falls back to static colours if the cache
--- file isn't there yet (first boot before matugen has ever run this template).
 local function matugen_border()
 	local home = os.getenv("HOME")
 	if home then

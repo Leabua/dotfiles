@@ -57,3 +57,5 @@ Desktop.ini
 *secret*
 *password*
 *.token
+.claude/
+
