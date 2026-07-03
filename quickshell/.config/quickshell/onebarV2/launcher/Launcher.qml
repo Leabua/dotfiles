@@ -9,7 +9,7 @@ import "data/Score.js" as Score
 import QtQuick
 import QtQuick.Layouts
 
-// Omni-style command palette / app launcher, ported from bjarneo/quickshelldots <- github
+// Omni-style app launcher, ported from bjarneo/quickshelldots <- github
 
 Scope {
     id: root
@@ -52,8 +52,8 @@ Scope {
         root.rebuild();
     }
 
-    // score the cached index against the current query; empty query lists every
-    // app alphabetically, and any typed text gets a trailing "run command" entry
+    // score the cached index against the current query; an empty query lists
+    // every app alphabetically
     function rebuild(): void {
         const q = root.query.trim().toLowerCase();
         const tokens = q.length ? q.split(/\s+/) : [];
@@ -68,18 +68,7 @@ Scope {
             });
         }
         scored.sort(Score.compare);
-        let out = scored.map(s => s.item);
-        if (root.query.trim().length > 0) {
-            out.push({
-                kind: "run",
-                title: "Run  " + root.query.trim(),
-                category: "COMMAND",
-                glyph: "󰆍",
-                iconUrl: "",
-                command: root.query.trim()
-            });
-        }
-        root.results = out;
+        root.results = scored.map(s => s.item);
         root.selectedIndex = 0;
     }
 
@@ -95,9 +84,7 @@ Scope {
     function activate(item): void {
         if (!item)
             return;
-        if (item.kind === "run")
-            Quickshell.execDetached(["sh", "-c", item.command]);
-        else if (item.entry)
+        if (item.entry)
             item.entry.execute();
         root.open = false;
     }
