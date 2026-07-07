@@ -8,7 +8,6 @@ return {
 				options = {
 					transparent = true,
 					dim_inactive = false,
-					-- bold the syntax so the colours pop on the words
 					styles = {
 						comments = "italic",
 					},

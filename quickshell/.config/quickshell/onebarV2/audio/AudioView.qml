@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Io
 import qs.audio
@@ -39,6 +40,28 @@ ColumnLayout {
         if (!n || !n.properties)
             return "Application";
         return n.properties["application.name"] || n.properties["media.name"] || n.description || n.name || "Application";
+    }
+    // resolve the playback app's real icon so a row shows *what* is playing.
+    // the stream's own application.icon-name is often wrong/missing (e.g. Helium
+    // advertises "helium" but its icon file is "helium-browser"), so match the
+    // app to its desktop entry first and use that entry's themed Icon=; fall back
+    // to the advertised icon-name only if no entry matches.
+    function appIcon(n): string {
+        if (!n || !n.properties)
+            return "";
+        const p = n.properties;
+        for (const cand of [p["application.name"], p["application.process.binary"], n.name]) {
+            if (!cand)
+                continue;
+            const e = DesktopEntries.heuristicLookup(cand);
+            if (e && e.icon) {
+                const path = Quickshell.iconPath(e.icon, "");
+                if (path)
+                    return path;
+            }
+        }
+        const ico = p["application.icon-name"];
+        return ico ? Quickshell.iconPath(ico, "") : "";
     }
     // pick a speaker glyph that matches the current output level / mute state
     function sinkGlyph(): int {
@@ -286,7 +309,8 @@ ColumnLayout {
         delegate: VolumeSliderRow {
             required property var modelData
             Layout.fillWidth: true
-            icon: 0xF08C6 // generic application glyph
+            icon: 0xF08C6 // generic application glyph (fallback when no app icon resolves)
+            iconSource: root.appIcon(modelData)
             value: modelData.audio ? modelData.audio.volume : 0
             muted: modelData.audio ? modelData.audio.muted : false
             onMoved: v => {

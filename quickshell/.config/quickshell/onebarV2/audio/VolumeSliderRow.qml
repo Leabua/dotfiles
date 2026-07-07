@@ -5,8 +5,12 @@ import qs.defaults
 RowLayout {
     id: root
 
-    // glyph shown in the left box (nerd-font codepoint)
+    // glyph shown in the left box (nerd-font codepoint); used as the fallback
+    // when no app icon resolves
     property int icon: 0xF057E
+    // optional app-icon image URL; when it loads it replaces the glyph so a
+    // playback row shows *which* app is making sound (see AudioView.appIcon)
+    property string iconSource: ""
     // current level, 0..1 (bind to node.audio.volume)
     property real value: 0
     // dim the row + box when the source is muted
@@ -31,19 +35,39 @@ RowLayout {
         border.width: 0
         border.color: Qt.alpha(Globals.fgColor, root.muted ? 0.2 : 0.3)
 
+        // real app icon when one resolves, otherwise fall back to the glyph
+        readonly property bool hasImg: root.iconSource !== "" && appIcon.status === Image.Ready
+
         Behavior on color {
             ColorAnimation {
                 duration: Globals.animFast
             }
         }
 
+        Image {
+            id: appIcon
+            anchors.centerIn: parent
+            width: glyph.implicitHeight
+            height: glyph.implicitHeight
+            source: root.iconSource
+            sourceSize.width: 44
+            sourceSize.height: 44
+            fillMode: Image.PreserveAspectFit
+            asynchronous: true
+            smooth: true
+            cache: true
+            visible: box.hasImg
+            opacity: root.muted ? 0.35 : 1
+        }
+
         Text {
             id: glyph
             anchors.centerIn: parent
+            visible: !box.hasImg
             text: String.fromCodePoint(root.icon)
             color: Qt.alpha(Globals.fgColor, root.muted ? 0.35 : 1)
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 4
+            font.pixelSize: Globals.textFont.pixelSize + 10 // one knob: the box + app-icon images size off this glyph
             font.weight: Globals.textFont.weight
         }
 
