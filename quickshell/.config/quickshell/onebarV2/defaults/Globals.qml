@@ -43,10 +43,11 @@ Singleton {
     property bool barShown: true      // shell.qml mirrors its bar state here so centered menus can shift up when the bar is hidden
     property bool powerMenuOpen: false
     property bool powerProfilesOpen: false
-    property bool audioMenuOpen: false        // one popup hosts both the audio + bluetooth cards
-    property string audioMenuView: "audio"    // which card is showing: "audio" | "bluetooth"
-    property bool wifiMenuOpen: false         // standalone wifi card (opened from the Network bar entry)
-    property bool remindersOpen: false        // reminders / kanban panel (opened via the "reminders" IPC handler)
+    property bool audioMenuOpen: false        
+    property string audioMenuView: "audio"    
+    property bool wifiMenuOpen: false         
+    property bool remindersOpen: false        
+    property bool engineRoomOpen: false       
 
     // global initial initial tick value
     property int tick: 0
@@ -81,7 +82,7 @@ Singleton {
     readonly property int borderWidth: 0
     readonly property color borderColor: fgColor
 
-    readonly property int radius: 8 // change to 0 for no rounding
+    readonly property int radius: 0 // change to 0 for no rounding -> 8 is the default
 
     // animation durations -> anchor animations to these instead of inline numbers
     readonly property int animFast: 80

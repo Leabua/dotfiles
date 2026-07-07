@@ -6,6 +6,7 @@ import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
 import qs.audio
 import qs.defaults
+import qs.engineRoom // registers the qs.engineRoom module so the path-loaded EngineRoom can self-import it
 import qs.launcher
 import qs.reminders
 import qs.sysUtils
@@ -228,6 +229,10 @@ Scope {
     }
     LazyLoader {
         source: "audio/AudioMenu.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "engineRoom/EngineRoom.qml"
         active: true
     }
     LazyLoader {

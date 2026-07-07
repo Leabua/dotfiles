@@ -14,20 +14,21 @@ Item {
 
     // using global tick from Globals.tick
     property int sharedTick: Globals.tick
-    onSharedTickChanged: memoryProcess.running = true
+    onSharedTickChanged: memoryFile.reload()
 
-    Process {
-        id: memoryProcess
-        command: ["cat", "/proc/meminfo"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const mt = text.match(/MemTotal:\s+(\d+)/);
-                const ma = text.match(/MemAvailable:\s+(\d+)/);
-                if (mt && ma)
-                    memoryItem.memoryUsage = Math.round((parseInt(mt[1]) - parseInt(ma[1])) / parseInt(mt[1]) * 100);
-            }
+    // read /proc/meminfo directly via FileView -> no subprocess spawned per tick
+    FileView {
+        id: memoryFile
+        path: "/proc/meminfo"
+        blockLoading: true
+        onLoaded: {
+            const t = text();
+            const mt = t.match(/MemTotal:\s+(\d+)/);
+            const ma = t.match(/MemAvailable:\s+(\d+)/);
+            if (mt && ma)
+                memoryItem.memoryUsage = Math.round((parseInt(mt[1]) - parseInt(ma[1])) / parseInt(mt[1]) * 100);
         }
-        Component.onCompleted: running = true 
+        Component.onCompleted: reload()
     }
 
     RowLayout {
@@ -42,5 +43,12 @@ Item {
             color: Globals.fgColor
             font: Globals.textFont
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
     }
 }

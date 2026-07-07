@@ -14,7 +14,7 @@ Item {
     implicitWidth: row.implicitWidth
 
     property int sharedTick: Globals.tick
-    onSharedTickChanged: cpuProc.running = true
+    onSharedTickChanged: cpuFile.reload()
 
     property color displayColor: {
         if (cpuUsage > 85)
@@ -25,22 +25,22 @@ Item {
             return Globals.fgColor;
     }
 
-    Process {
-        id: cpuProc
-        command: ["head", "-1", "/proc/stat"]
-        stdout: SplitParser {
-            onRead: data => {
-                var p = data.trim().split(/\s+/);
-                var idle = parseInt(p[4]) + parseInt(p[5]);
-                var total = p.slice(1, 8).reduce((a, b) => a + parseInt(b), 0);
-                if (root.lastCpuTotal) {
-                    root.cpuUsage = Math.round(100 - (idle - root.lastCpuIdle) / (total - root.lastCpuTotal) * 100);
-                }
-                root.lastCpuIdle = idle;
-                root.lastCpuTotal = total;
+    // read /proc/stat directly via FileView -> no subprocess spawned per tick
+    FileView {
+        id: cpuFile
+        path: "/proc/stat"
+        blockLoading: true
+        onLoaded: {
+            var p = text().split("\n")[0].trim().split(/\s+/); // aggregate "cpu ..." line
+            var idle = parseInt(p[4]) + parseInt(p[5]);
+            var total = p.slice(1, 8).reduce((a, b) => a + parseInt(b), 0);
+            if (root.lastCpuTotal) {
+                root.cpuUsage = Math.round(100 - (idle - root.lastCpuIdle) / (total - root.lastCpuTotal) * 100);
             }
+            root.lastCpuIdle = idle;
+            root.lastCpuTotal = total;
         }
-        Component.onCompleted: running = true
+        Component.onCompleted: reload()
     }
 
     RowLayout {
@@ -56,5 +56,12 @@ Item {
             color: root.displayColor
             font: Globals.textFont
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
     }
 }
