@@ -49,33 +49,33 @@
       zsh-syntax-highlighting
       zsh-history-substring-search
 
-        # languages and runtimes
-        python3
-        nodejs
+# languages and runtimes
+      python3
+      nodejs
 
-        # lsp
-        basedpyright
-        gnumake
-        jdt-language-server
-        lua-language-server
-        tailwindcss-language-server
-        typescript-language-server
-        vscode-langservers-extracted
+# lsp
+      basedpyright
+      gnumake
+      jdt-language-server
+      lua-language-server
+      tailwindcss-language-server
+      typescript-language-server
+      vscode-langservers-extracted
 
-        # conform -> formatters
-        stylua
-        prettier
-        black
-        shfmt
+# conform -> formatters
+      stylua
+      prettier
+      black
+      shfmt
 
-        # flakes
-        inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
-    ];
+# flakes
+      inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
+      ];
 
-    # fonts (system-wide, via fonts.packages not systemPackages)
-    fonts.packages = with pkgs; [
-      departure-mono
+# fonts (system-wide, via fonts.packages not systemPackages)
+  fonts.packages = with pkgs; [
+    departure-mono
       nerd-fonts.departure-mono
-        nerd-fonts.iosevka
-    ];
+      nerd-fonts.iosevka
+  ];
 }
