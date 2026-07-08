@@ -2,8 +2,6 @@ return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
-		{ "mason-org/mason.nvim", opts = {} },
-		"mason-org/mason-lspconfig.nvim",
 		"saghen/blink.cmp",
 	},
 	config = function()
@@ -23,16 +21,19 @@ return {
 			},
 		})
 
-		require("mason-lspconfig").setup({
-			ensure_installed = {
-				"lua_ls",
-				"ts_ls",
-				"html",
-				"cssls",
-				"tailwindcss",
-				"pyright",
-				"jdtls",
-			},
+		-- Servers come from Nix (environment.systemPackages), NOT Mason:
+		-- Mason ships generic-linux binaries that NixOS can't exec. vim.lsp.enable
+		-- just turns on lspconfig's built-in defaults; each starts only if its
+		-- binary is on PATH, so installing it in configuration.nix is what wires
+		-- it up. Add/remove a name here to match what you install via Nix.
+		vim.lsp.enable({
+			"lua_ls",
+			"ts_ls",
+			"html",
+			"cssls",
+			"tailwindcss",
+			"basedpyright",
+			"jdtls",
 		})
 
 		vim.api.nvim_create_autocmd("LspAttach", {
