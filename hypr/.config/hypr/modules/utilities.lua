@@ -4,9 +4,6 @@
 
 local bind = hl.bind
 
--- toggle transparency
--- bind("SUPER + BACKSPACE", hl.dsp.window.set_prop({ prop = "opaque", value = "toggle" }))
-
 -- lock
 bind("SUPER + CTRL + L", hl.dsp.exec_cmd("hyprlock"))
 
@@ -25,7 +22,6 @@ bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true }
 bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 -- power button
--- bind("XF86PowerOff", hl.dsp.exec_cmd("~/.config/waybar/scripts/sysmenu.sh --power"), { locked = true })
 bind(
 	"XF86PowerOff",
 	hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"),

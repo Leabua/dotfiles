@@ -196,7 +196,7 @@ binds {
     // [NOCTALIA] Wallpaper — random on laptop screen
     Mod+Shift+P { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "wallpaper" "random" ; }
     // [SWITCHED OFF] Old swww rotate script
-    // Mod+Shift+P { spawn-sh "~/.dotfiles/scripts/rotate_wallpaper.sh"; }
+    // Mod+Shift+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
 
     Mod+Shift+M { spawn-sh "/usr/bin/chromium --app-id=blgdilankhbcpipclgpdndahbehalgkh"; }
 

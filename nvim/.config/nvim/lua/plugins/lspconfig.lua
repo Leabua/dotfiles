@@ -31,6 +31,7 @@ return {
 				"cssls",
 				"tailwindcss",
 				"pyright",
+				"jdtls",
 			},
 		})
 

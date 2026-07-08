@@ -1,64 +1,85 @@
+# ── p10k instant prompt ──────────────────────────────────────
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+# ── history ──────────────────────────────────────────────────
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
+
+# ── input & completion ───────────────────────────────────────
 bindkey -v
-
 zstyle :compinstall filename '/home/leabua/.zshrc'
-
 autoload -Uz compinit
 compinit
 
-export PATH="$HOME/.npm-global/bin:$PATH"
-export PATH="$HOME/.dotfiles/scripts:$PATH"
+# ── path ─────────────────────────────────────────────────────
+export PATH="$HOME/dotfiles/scripts:$PATH"
 export PATH="$PATH:/home/leabua/.local/bin"
-export PNPM_HOME="/home/leabua/.local/share/pnpm"
 
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-
-# export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+# ── ssh agent (gcr/gnome-keyring) ────────────────────────────
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 
+# ── tmux autostart ───────────────────────────────────────────
 if command -v tmux &>/dev/null && [[ -z "$TMUX" ]]; then
   tmux attach 2>/dev/null || tmux new-session
 fi
 
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+# ── prompt (powerlevel10k) ───────────────────────────────────
+# _src sources the first candidate that exists, so this file stays portable
+# across arch (/usr/share) and nixos (/run/current-system/sw/share).
+_src() { local f; for f in "$@"; do [[ -r $f ]] && { source "$f"; return 0; }; done; return 1 }
+
+_src \
+  /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+  /run/current-system/sw/share/zsh/themes/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
+# ── tools & plugins ──────────────────────────────────────────
 eval "$(zoxide init zsh)"
 
-source /usr/share/fzf/completion.zsh
-source /usr/share/fzf/key-bindings.zsh
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+_src /usr/share/fzf/completion.zsh   /run/current-system/sw/share/fzf/completion.zsh
+_src /usr/share/fzf/key-bindings.zsh /run/current-system/sw/share/fzf/key-bindings.zsh
 
+_src \
+  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh \
+  /run/current-system/sw/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+_src \
+  /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh \
+  /run/current-system/sw/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+
+# zsh-syntax-highlighting must be sourced last
+_src \
+  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# ── nixos ────────────────────────────────────────────────────
+alias nixconf="sudo nvim /etc/nixos/configuration.nix"
+alias rebuild="sudo nixos-rebuild switch --flake /etc/nixos#nixos"
+
+# ── general QoL ──────────────────────────────────────────────
 alias bonsai="cbonsai --infinite --live"
-alias c="| wl-copy"
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"
 alias dc="z ~/dev/courses/"
 alias dp="z ~/dev/projects/"
-alias ff="fastfetch --logo arch3"
-alias gravity="agy"
+alias ff="fastfetch --logo nixos"
 alias hacks="cmatrix -b -u 2 -C magenta"
 alias p="python3"
 alias py="python"
 alias tmux_kill="rm -rf ~/.local/share/tmux/resurrect/*.txt && tmux kill-server"
 alias q="exit"
-alias weather="curl wttr.in"
 alias wq="exit"
+alias weather="curl wttr.in"
 alias y="yazi"
-alias gd="git diff | delta"
+
+# ── git QoL ──────────────────────────────────────────────────
 alias ga="git add ."
-alias gp="git push --set-upstream origin HEAD"
 alias gc="git add . && git commit -m"
+alias gp="git push --set-upstream origin HEAD"
 alias gs="git status"
 
+# ── hp pavilion trackpad reset ───────────────────────────────
 alias trackpad="sudo modprobe -r psmouse && sudo modprobe psmouse"
