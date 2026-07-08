@@ -15,7 +15,7 @@ font-size = 13
 font-feature = calt
 # Center the asterisk: Iosevka's VSAB selector. 8 = hex-mid (centered
 # 6-point). Default 1 = penta-high (sits high); 2 = penta-mid (5-point).
-font-feature = VSAB=8
+font-feature = VSAB=5    
 
 # window
 window-padding-y = 1

@@ -1,6 +1,6 @@
 return {
 	"folke/snacks.nvim",
-	dependencies = { "echasnovski/mini.icons" },
+	dependencies = { { "echasnovski/mini.icons", opts = {} } },
 	priority = 1000,
 	lazy = false,
 	keys = {
@@ -12,8 +12,20 @@ return {
 			end,
 			desc = "Lazygit",
 		},
+		-- File explorer (replaces mini.files)
+		{
+			"<leader>e",
+			function()
+				Snacks.explorer()
+			end,
+			desc = "File Explorer",
+		},
 	},
 	opts = {
+		-- explorer is a picker source; picker must be enabled.
+		-- replace_netrw = false so oil.nvim owns directory/netrw opening instead.
+		picker = { enabled = true },
+		explorer = { replace_netrw = false },
 		indent = {
 			enabled = true,
 			animate = {

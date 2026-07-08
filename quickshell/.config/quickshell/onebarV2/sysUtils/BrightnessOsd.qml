@@ -35,7 +35,7 @@ Item {
                 return String.fromCodePoint(0xF00E0);
             }
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 6
+            font.pixelSize: Globals.textFont.pixelSize 
             color: Globals.fgColor
         }
 

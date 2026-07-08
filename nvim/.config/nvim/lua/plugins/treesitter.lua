@@ -15,6 +15,7 @@ return {
 			"typescript",
 			"tsx",
 			"python",
+			"java",
 			"bash",
 			"css",
 			"html",

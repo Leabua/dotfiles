@@ -4,7 +4,6 @@
 
 BROWSER = "helium-browser"
 FILEMANAGER = "nautilus"
-MENU = "pkill -x rofi || rofi -show drun -theme ~/.config/rofi/config.rasi"
 TERMINAL = "ghostty"
 
 ---------------------
@@ -13,7 +12,8 @@ TERMINAL = "ghostty"
 
 hl.env("XCURSOR_SIZE", "20")
 hl.env("HYPRCURSOR_SIZE", "20")
-hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
+hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
+hl.env("GTK_THEME", "Adwaita:dark")
 
 --------------------
 --- Source Files ---

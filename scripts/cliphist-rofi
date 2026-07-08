@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-THEME="$HOME/.dotfiles/rofi/rofi/clipboard.rasi"
+THEME="$HOME/dotfiles/rofi/rofi/clipboard.rasi"
 CACHE="$HOME/.cache/cliphist_thumbs"
 mkdir -p "$CACHE"
 

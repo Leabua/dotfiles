@@ -49,7 +49,7 @@ Item {
     BarIcon {
         id: textID
         text: root.icon
-        font.pixelSize: Globals.barIconSize + 2
+        font.pixelSize: Globals.barIconSize 
 
         MouseArea {
             anchors.fill: parent

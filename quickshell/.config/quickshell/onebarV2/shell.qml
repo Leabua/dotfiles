@@ -112,6 +112,7 @@ Scope {
                     BarRow1 {
                         id: row1
                         barLvl: root.barLevel
+                        screenName: modelData ? modelData.name : ""
                     }
 
                     opacity: root.activeOsd !== "" ? 0 : 1

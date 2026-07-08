@@ -35,7 +35,7 @@ Item {
                 return String.fromCodePoint(0xF057E);
             }
             font.family: Globals.textFont.family
-            font.pixelSize: (root.volPercent < 34) ? Globals.textFont.pixelSize - 2 : Globals.textFont.pixelSize + 6
+            font.pixelSize: Globals.textFont.pixelSize
             color: Globals.fgColor
         }
 
