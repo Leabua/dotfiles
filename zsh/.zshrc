@@ -57,9 +57,11 @@ _src \
   /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ── nixos ────────────────────────────────────────────────────
-alias nix="sudo nvim /etc/nixos/configuration.nix"
+# config lives in the dotfiles repo now (edit as normal user, full nvim).
+# rebuild needs an absolute flake path: under sudo, ~ resolves to /root.
+alias nix="nvim $HOME/dotfiles/nixos"
 alias clean="sudo nix-collect-garbage -d"
-alias rebuild="sudo nixos-rebuild switch --flake /etc/nixos#nixos"
+alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos"
 
 # ── general QoL ──────────────────────────────────────────────
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"
