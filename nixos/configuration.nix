@@ -50,6 +50,7 @@
         enable = true;
         xwayland.enable = true;
     };
+    programs.niri.enable = true;
 
 # hyprpolkitagent ships a user systemd unit (WantedBy=graphical-session.target)
 # rather than a plain binary on PATH, so it's wired via systemd, not autostart.lua

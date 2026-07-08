@@ -23,19 +23,18 @@ environment {
 spawn-sh-at-startup "ssh-add ~/.ssh/id_ed25519"
 spawn-at-startup "gnome-keyring-daemon" "--start" "--components=ssh,secrets,pkcs11"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
-// [SWITCHED OFF] Waybar replaced by Noctalia
-// spawn-at-startup "waybar"
 spawn-at-startup "nm-applet"
-// [SWITCHED OFF] swww daemon — Noctalia manages wallpaper
-// spawn-at-startup "swww-daemon"
-// [SWITCHED OFF] swww wallpaper restore — Noctalia manages wallpaper
-// spawn-sh-at-startup "swww img $(cat ~/.cache/swww_current_wallpaper 2>/dev/null || echo ~/Wallpapers/your-default.jpg)"
+// wallpaper daemon — same as Hyprland's autostart.lua
+spawn-at-startup "awww-daemon"
+spawn-sh-at-startup "awww img $(cat ~/.cache/awww_current_wallpaper 2>/dev/null) --transition-type fade"
 spawn-at-startup "hypridle"
 spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
-spawn-at-startup "/usr/lib/polkit-kde-authentication-agent-1"
-// [NOCTALIA] Main shell — bar, launcher, lockscreen, wallpaper, notifications
-spawn-at-startup "qs" "-c" "noctalia-shell"
+// hyprpolkitagent is started system-wide via a systemd user unit
+// (WantedBy=graphical-session.target), not from here — see nixos/configuration.nix
+// Main shell — same onebarV2 quickshell config Hyprland uses (noctalia-shell
+// isn't installed on this system; see hypr/.config/hypr/modules/autostart.lua)
+spawn-sh-at-startup "qs -p $HOME/.config/quickshell/onebarV2"
 
 // -------------------
 // Input Devices
@@ -178,48 +177,36 @@ binds {
     Mod+Shift+F { spawn "nautilus"; }
     Mod+Shift+B { spawn "zen-browser"; }
 
-    // [NOCTALIA] App launcher
-    Mod+Space { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    // [SWITCHED OFF] Old rofi launcher
-    // Mod+Space { spawn-sh "pkill -x rofi || rofi -show drun -theme ~/.config/rofi/config.rasi"; }
+    // App launcher (onebarV2)
+    Mod+Space { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call launcher toggle"; }
 
-    // [NOCTALIA] Session/power menu
-    Mod+Alt+Space { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
-    // [SWITCHED OFF] Old rofi sysmenu
-    // Mod+Alt+Space { spawn-sh "pkill rofi || ~/.config/waybar/scripts/sysmenu.sh"; }
+    // Power menu (onebarV2 has no separate session menu — powerMenu is the closest match)
+    Mod+Alt+Space { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"; }
 
-    // [NOCTALIA] Clipboard picker
-    Mod+Shift+V { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
-    Mod+Shift+C { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
+    // Clipboard picker
+    Mod+Shift+V { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle"; }
+    Mod+Shift+C { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle"; }
 
+    // Wallpaper — cycle to next, same script Hyprland uses
+    Mod+Shift+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
 
-    // [NOCTALIA] Wallpaper — random on laptop screen
-    Mod+Shift+P { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "wallpaper" "random" ; }
-    // [SWITCHED OFF] Old swww rotate script
-    // Mod+Shift+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
+    Mod+Shift+M { spawn-sh "chromium --app-id=blgdilankhbcpipclgpdndahbehalgkh"; }
 
-    Mod+Shift+M { spawn-sh "/usr/bin/chromium --app-id=blgdilankhbcpipclgpdndahbehalgkh"; }
+    // Bar toggle
+    Mod+Shift+Return { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call bar toggle"; }
 
-    // -- System Utilities --
-    // [SWITCHED OFF] Waybar toggle — no longer relevant
-    // Mod+Shift+Space { spawn-sh "killall -SIGUSR1 waybar"; }
+    // Lockscreen — hyprlock implements ext-session-lock-v1, works under niri too
+    Mod+Alt+L { spawn "hyprlock"; }
 
-    // [NOCTALIA] Bar toggle
-    Mod+Shift+Return { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "bar" "toggle"; }
+    // Control center — onebarV2 has no equivalent panel; repurposed for its closest
+    // relative, the bar-detail-level cycle (Hyprland binds this to Super+Alt+Space)
+    Mod+Alt+C { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle"; }
 
-    // [NOCTALIA] Lockscreen
-    Mod+Alt+L { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
-    // [SWITCHED OFF] hyprlock — Hyprland specific
-    // Mod+Alt+L { spawn "hyprlock"; }
+    // Notification history
+    Mod+Alt+N { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call notifications toggle"; }
 
-    // [NOCTALIA] Control center
-    Mod+Alt+C { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
-
-    // [NOCTALIA] Notification history
-    Mod+Alt+N { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "notifications" "toggleHistory"; }
-
-    // [NOCTALIA] System monitor
-    Mod+Alt+M { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "systemMonitor" "toggle"; }
+    // System monitor (onebarV2's engineRoom panel)
+    Mod+Alt+M { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call engineRoom toggle"; }
 
     Print { spawn-sh "grim -g \"$(slurp)\" - | satty --filename -"; }
     Mod+Print { spawn-sh "grim - | wl-copy && notify-send 'Screenshot' 'Monitor copied to clipboard' -i clipboard"; }
@@ -241,10 +228,8 @@ binds {
     XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
 
     // -- Power Menu --
-    // [NOCTALIA] Hardware power button triggers session menu
-    XF86PowerOff allow-when-locked=false { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
-    // [SWITCHED OFF] Old waybar sysmenu power
-    // XF86PowerOff allow-when-locked=true { spawn-sh "~/.config/waybar/scripts/sysmenu.sh --power"; }
+    // Hardware power button triggers power menu (onebarV2)
+    XF86PowerOff allow-when-locked=false { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"; }
 
     // -- Core Window Management --
     Mod+W { close-window; }
