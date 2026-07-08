@@ -53,15 +53,14 @@ _src \
 
 # zsh-syntax-highlighting must be sourced last
 _src \
-  /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
   /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ── nixos ────────────────────────────────────────────────────
-# config lives in the dotfiles repo now (edit as normal user, full nvim).
-# rebuild needs an absolute flake path: under sudo, ~ resolves to /root.
 alias nixconf="nvim $HOME/dotfiles/nixos"
 alias clean="sudo nix-collect-garbage -d"
 alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos"
+alias search="nix search nixpkgs"
 
 # ── general QoL ──────────────────────────────────────────────
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"
