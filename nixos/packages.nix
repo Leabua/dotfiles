@@ -70,4 +70,11 @@
         # flakes
         inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
     ];
+
+    # fonts (system-wide, via fonts.packages not systemPackages)
+    fonts.packages = with pkgs; [
+        nerd-fonts.iosevka
+        nerd-fonts.departure-mono
+        departure-mono
+    ];
 }

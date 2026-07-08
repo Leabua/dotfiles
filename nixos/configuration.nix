@@ -69,12 +69,6 @@
         "/share/zsh-history-substring-search"
     ];
 
-    fonts.packages = with pkgs; [
-        nerd-fonts.iosevka
-        nerd-fonts.departure-mono
-        departure-mono
-    ];
-
     # Forcing dark mode via session variables (better for Wayland/Hyprland)
     environment.sessionVariables = {
         GTK_THEME = "Adwaita:dark";
