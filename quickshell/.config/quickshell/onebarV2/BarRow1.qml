@@ -9,6 +9,7 @@ import qs.sysUtils
 RowLayout {
     id: root
     property int barLvl
+    property string screenName: ""
     spacing: Globals.spacing + 4
     // Use shown: false to have it gone forever and true to always have it there
     Reveal {
@@ -27,6 +28,7 @@ RowLayout {
         shown: root.barLvl >= 1
         Workspaces {
             id: ws
+            screenName: root.screenName
         }
     }
     Reveal {
