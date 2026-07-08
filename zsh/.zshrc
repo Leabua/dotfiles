@@ -59,7 +59,7 @@ _src \
 # ── nixos ────────────────────────────────────────────────────
 # config lives in the dotfiles repo now (edit as normal user, full nvim).
 # rebuild needs an absolute flake path: under sudo, ~ resolves to /root.
-alias nix="nvim $HOME/dotfiles/nixos"
+alias nixconf="nvim $HOME/dotfiles/nixos"
 alias clean="sudo nix-collect-garbage -d"
 alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos"
 
