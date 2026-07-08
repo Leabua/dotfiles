@@ -43,7 +43,7 @@ Item {
         BarIcon {
             text: batteryBtn.icon.trim()
             color: batteryBtn.displayColor
-            font.pixelSize: batteryBtn.isCharging ? Globals.barIconSize + 3 : Globals.barIconSize - 8
+            font.pixelSize: Globals.barIconSize
         }
         Text {
             text: batteryBtn.percent + "%"

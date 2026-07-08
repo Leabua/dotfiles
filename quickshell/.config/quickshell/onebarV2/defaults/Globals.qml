@@ -31,7 +31,7 @@ Singleton {
     })
 
     // bar entry glyphs sit a touch larger than their value text -> one knob to tune
-    readonly property int barIconSize: textFont.pixelSize + 8
+    readonly property int barIconSize: textFont.pixelSize 
 
     // orientation
     property int currentBarHeight: 0  // track the bar height for centered second order menus else

@@ -57,7 +57,8 @@ _src \
   /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ── nixos ────────────────────────────────────────────────────
-alias nixconf="sudo nvim /etc/nixos/configuration.nix"
+alias nix="sudo nvim /etc/nixos/configuration.nix"
+alias clean="sudo nix-collect-garbage -d"
 alias rebuild="sudo nixos-rebuild switch --flake /etc/nixos#nixos"
 
 # ── general QoL ──────────────────────────────────────────────

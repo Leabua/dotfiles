@@ -59,5 +59,6 @@ Desktop.ini
 *.token
 .claude/
 
-# stop the wallpaper switching from showing diffs
-/home/leabua/dotfiles/hypr/.config/hypr/hyprlock.conf
+# hyprlock.conf's wallpaper path changes locally when wallpaper switches;
+# it's still tracked, but marked skip-worktree so local edits don't show as diffs
+# (see: git update-index --skip-worktree hypr/.config/hypr/hyprlock.conf)
