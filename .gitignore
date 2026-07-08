@@ -60,4 +60,4 @@ Desktop.ini
 .claude/
 
 # stop the wallpaper switching from showing diffs
-/home/leabua/dotfiles/hypr/hyprpaper.conf
+/home/leabua/dotfiles/hypr/hyprlock.conf
