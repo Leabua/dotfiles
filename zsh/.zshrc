@@ -61,12 +61,8 @@ alias nixconf="sudo nvim /etc/nixos/configuration.nix"
 alias rebuild="sudo nixos-rebuild switch --flake /etc/nixos#nixos"
 
 # ── general QoL ──────────────────────────────────────────────
-alias bonsai="cbonsai --infinite --live"
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"
-alias dc="z ~/dev/courses/"
-alias dp="z ~/dev/projects/"
 alias ff="fastfetch --logo nixos"
-alias hacks="cmatrix -b -u 2 -C magenta"
 alias p="python3"
 alias py="python"
 alias tmux_kill="rm -rf ~/.local/share/tmux/resurrect/*.txt && tmux kill-server"
