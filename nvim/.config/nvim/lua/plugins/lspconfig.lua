@@ -21,6 +21,14 @@ return {
 			},
 		})
 
+		-- Quickshell / QML. `-E` makes qmlls read QML2_IMPORT_PATH so it resolves the
+		-- Quickshell + Qt QML modules. Requires quickshell installed globally and
+		-- qt.enable = true (both set in configuration.nix) so those modules land on
+		-- QML2_IMPORT_PATH, which nvim inherits from the session.
+		vim.lsp.config("qmlls", {
+			cmd = { "qmlls", "-E" },
+		})
+
 		-- Servers come from Nix (environment.systemPackages), NOT Mason:
 		-- Mason ships generic-linux binaries that NixOS can't exec. vim.lsp.enable
 		-- just turns on lspconfig's built-in defaults; each starts only if its
@@ -34,6 +42,7 @@ return {
 			"tailwindcss",
 			"basedpyright",
 			"jdtls",
+			"qmlls",
 		})
 
 		vim.api.nvim_create_autocmd("LspAttach", {
