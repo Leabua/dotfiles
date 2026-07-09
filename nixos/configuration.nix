@@ -93,7 +93,12 @@ fileSystems."/mnt/hdd" = {
     environment.sessionVariables = {
         GTK_THEME = "Adwaita:dark";
         QT_QPA_PLATFORM = "wayland;xcb";
-        LIBVA_DRIVER_NAME = "iHD"; 
+        LIBVA_DRIVER_NAME = "iHD";
+        # default apps for CLI tools (git, etc. read these; GUI file-open uses
+        # xdg.mime.defaultApplications below)
+        EDITOR = "nvim";
+        VISUAL = "nvim";
+        BROWSER = "zen-beta";
     };
 
     programs.dconf.enable = true;
@@ -108,6 +113,9 @@ fileSystems."/mnt/hdd" = {
         settings = {
             "org/gnome/desktop/interface" = {
                 color-scheme = "prefer-dark";
+                # Papirus has full, crisp MIME-type icons. Adwaita 50 dropped its
+                # colour file icons, which is why Nautilus showed jagged fallbacks.
+                icon-theme = "Papirus-Dark";
             };
         };
     }];
@@ -116,6 +124,24 @@ fileSystems."/mnt/hdd" = {
         enable = true;
         extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
         config.common.default = "*";
+    };
+
+    # System-wide default apps (writes /etc/xdg/mimeapps.list). A per-user
+    # ~/.config/mimeapps.list still overrides these for whatever it lists
+    # (currently the browser/html handlers, already set to zen-beta).
+    # nvim-terminal.desktop (defined in packages.nix) opens text in nvim inside
+    # ghostty, since the stock nvim.desktop is Terminal=true and won't launch on Hyprland.
+    xdg.mime.defaultApplications = {
+        "text/plain"        = "nvim-terminal.desktop";
+        "text/markdown"     = "nvim-terminal.desktop";
+        "text/x-python"     = "nvim-terminal.desktop";
+        "text/x-lua"        = "nvim-terminal.desktop";
+        "text/javascript"   = "nvim-terminal.desktop";
+        "application/json"  = "nvim-terminal.desktop";
+        # browser — declarative source of truth (mirrors the per-user file)
+        "text/html"                = "zen-beta.desktop";
+        "x-scheme-handler/http"    = "zen-beta.desktop";
+        "x-scheme-handler/https"   = "zen-beta.desktop";
     };
 
     nix.settings.experimental-features = ["nix-command" "flakes"];

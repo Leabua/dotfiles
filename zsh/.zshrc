@@ -58,7 +58,9 @@ _src \
 
 # ── nixos ────────────────────────────────────────────────────
 alias nixconf="nvim $HOME/dotfiles/nixos"
-alias clean="sudo nix-collect-garbage -d"
+# GC old generations, then rebuild the boot menu so it drops entries for the
+# now-deleted generations (nix-collect-garbage alone leaves stale boot entries).
+alias clean="sudo nix-collect-garbage -d && sudo nixos-rebuild boot --flake $HOME/dotfiles/nixos#nixos"
 alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos"
 alias search="nix search nixpkgs"
 
