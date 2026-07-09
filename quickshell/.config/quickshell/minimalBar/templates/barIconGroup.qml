@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.templates
 
 Item {
     id: root
@@ -12,7 +11,9 @@ Item {
 
         Text {
             text: root.icon
-            font: Globals.textFont
+            font.family: Globals.textFont.family
+            font.weight: Globals.textFont.weight
+            font.pixelSize: Globals.barIconSize
             color: Globals.fgColor
         }
 

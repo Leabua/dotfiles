@@ -60,7 +60,7 @@ Item {
     }
 
     // click to show long date
-    MouseArea {  
+    MouseArea {
         id: mouse
         anchors.fill: parent
         anchors.margins: -1
