@@ -10,10 +10,10 @@ RowLayout {
     id: root
     property int barLvl
     property string screenName: ""
-    spacing: Globals.spacing + 4
+    spacing: Globals.spacing + 2
     // Use shown: false to have it gone forever and true to always have it there
     Reveal {
-        shown: false
+        shown: true
         Logo {
             id: logo
         }

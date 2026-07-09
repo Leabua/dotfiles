@@ -29,11 +29,13 @@
       libnotify
       matugen
       maven
+      nautilus
       neovim
       obs-studio
       obsidian
       pavucontrol
       playerctl
+      pnpm
       quickshell
       ripgrep
       satty

@@ -34,7 +34,24 @@
 
     services.libinput.enable = true;
 
-# backing services for the quickshell bar widgets
+    hardware.graphics = {
+        enable = true;
+        extraPackages = with pkgs; [
+            intel-media-driver   
+            libvdpau-va-gl       
+        ];
+    };
+
+fileSystems."/mnt/hdd" = {
+  device = "/dev/disk/by-uuid/4fc12482-bbb3-4ced-a896-2b5f560c9f6b";
+  fsType = "ext4";
+  options = [
+    "nofail"                          
+    "x-systemd.device-timeout=5s"     
+  ];
+};
+
+# backend services for the quickshell bar widgets
     services.upower.enable = true;                 # battery
     services.power-profiles-daemon.enable = true;  # power profiles
     hardware.bluetooth.enable = true;              # bluetooth
@@ -52,8 +69,6 @@
     };
     programs.niri.enable = true;
 
-# hyprpolkitagent ships a user systemd unit (WantedBy=graphical-session.target)
-# rather than a plain binary on PATH, so it's wired via systemd, not autostart.lua
     systemd.packages = with pkgs; [ hyprpolkitagent ];
     systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
 
@@ -70,10 +85,15 @@
         "/share/zsh-history-substring-search"
     ];
 
+    # file manager backends for Nautilus
+    services.gvfs.enable = true;    
+    services.udisks2.enable = true; 
+
     # Forcing dark mode via session variables (better for Wayland/Hyprland)
     environment.sessionVariables = {
         GTK_THEME = "Adwaita:dark";
         QT_QPA_PLATFORM = "wayland;xcb";
+        LIBVA_DRIVER_NAME = "iHD"; 
     };
 
     programs.dconf.enable = true;
@@ -100,6 +120,5 @@
 
     nix.settings.experimental-features = ["nix-command" "flakes"];
     nixpkgs.config.allowUnfree = true;
-
     system.stateVersion = "26.05";
 }

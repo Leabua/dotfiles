@@ -25,8 +25,8 @@ Item {
         return glyphs[distroId] ?? "󰻀"; // generic penguin as fallback
     }
 
-    implicitHeight: textID.implicitHeight - 0.5 // arch logo in particular is always obnoxiously large so shrink as needed
-    implicitWidth: textID.implicitWidth - 2
+    implicitHeight: textID.implicitHeight  // arch logo in particular is always obnoxiously large so shrink as needed
+    implicitWidth: textID.implicitWidth 
 
     Process {
         id: osProc
@@ -41,7 +41,7 @@ Item {
         id: textID
         text: root.icon
         font.family: Globals.textFont.family
-        font.pixelSize: Globals.barIconSize
+        font.pixelSize: Globals.barIconSize + 1
         color: Globals.fgColor
     }
 }
