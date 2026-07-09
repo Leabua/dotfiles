@@ -1,9 +1,6 @@
-pragma Singleton
-
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 
 Singleton {
     id: root
@@ -17,7 +14,7 @@ Singleton {
     })
 
     // bar entry icons sit a touch larger than their value text -> one knob to tune -> convenient fix
-    readonly property int barIconSize: textFont.pixelSize  
+    readonly property int barIconSize: textFont.pixelSize
 
     // global initial initial tick value
     property int tick: 0
@@ -25,10 +22,11 @@ Singleton {
     // colors -> material UI colors generated with matugen -> if issue check mutagen config and colour templates
     readonly property alias fgColor: jsonParser.primary
     readonly property alias fgColor2: jsonParser.tertiary
-    readonly property color bgColor: "#1e1e1e"
-
+    //
     // readonly property color bgColor: "#000000"
     // readonly property color bgColor: "#1a1a1a"
+    readonly property color bgColor: "#1e1e1e"
+
     readonly property color healthy: "#4fd6be" // green
     readonly property color warningColor: "#f9e2af" // amber
     readonly property color criticalColor: "#f38ba8" // red
@@ -64,14 +62,14 @@ Singleton {
         watchChanges: true
         onFileChanged: reload()
 
-        JsonAdapter { 
-          id: jsonParser
-          //sane defaults in case matugen breaks
-          property string primary: "#FFFFFF"
-          property string tertiary: "#008080"  
+        JsonAdapter {
+            id: jsonParser
+            //sane defaults in case matugen breaks
+            property string primary: "#FFFFFF"
+            property string tertiary: "#FFFFFF"
         }
-      }
-      
+    }
+
     // global timer
     Timer {
         interval: 10000 // 10 seconds -> low = more battery use. Likely minimal but needs to be changed for some laptops
@@ -80,4 +78,3 @@ Singleton {
         onTriggered: root.tick++ // change event fired every {interval} seconds
     }
 }
-
