@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.templates
 
 Item {
     id: root

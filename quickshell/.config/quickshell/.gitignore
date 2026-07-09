@@ -1,0 +1,2 @@
+# quickshell writes this per-session symlink into /run for the QML language server
+.qmlls.ini
