@@ -29,11 +29,10 @@
       libnotify
       matugen
       maven
-      nautilus
       neovim
       obs-studio
       obsidian
-      papirus-icon-theme   # complete, crisp MIME icons for Nautilus (see icon-theme in configuration.nix)
+      papirus-icon-theme   # complete, crisp MIME/app icons desktop-wide (see icon-theme in configuration.nix)
       pavucontrol
       playerctl
       pnpm
@@ -44,9 +43,11 @@
       slurp
       stow
       tmux
+      trash-cli
       tree-sitter
       wget
       wl-clipboard
+      yazi
       zoxide
       zsh-powerlevel10k
       zsh-autosuggestions
@@ -75,7 +76,7 @@
 # flakes
       inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
 
-# desktop entry so Nautilus (and other GUIs) open text files in nvim inside
+# desktop entry so GUI apps open text files in nvim inside
 # ghostty. Named nvim-terminal to avoid colliding with neovim's own nvim.desktop.
       (makeDesktopItem {
         name = "nvim-terminal";

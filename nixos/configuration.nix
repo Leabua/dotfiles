@@ -72,6 +72,17 @@ fileSystems."/mnt/hdd" = {
     systemd.packages = with pkgs; [ hyprpolkitagent ];
     systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
 
+    # purge trashed files (yazi's delete, trash-cli's `trash-put`, etc. all
+    # write to the same freedesktop.org Trash dir) older than 20 days
+    systemd.user.services.trash-cleanup.serviceConfig.ExecStart = "${pkgs.trash-cli}/bin/trash-empty 20";
+    systemd.user.timers.trash-cleanup = {
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+            OnCalendar = "daily";
+            Persistent = true;
+        };
+    };
+
     programs.firefox.enable = true;
     services.openssh.enable = true;
 
@@ -85,9 +96,9 @@ fileSystems."/mnt/hdd" = {
         "/share/zsh-history-substring-search"
     ];
 
-    # file manager backends for Nautilus
-    services.gvfs.enable = true;    
-    services.udisks2.enable = true; 
+    # file manager backends (USB/udisks2 mounting, phone/MTP via gvfs)
+    services.gvfs.enable = true;
+    services.udisks2.enable = true;
 
     # Forcing dark mode via session variables (better for Wayland/Hyprland)
     environment.sessionVariables = {
@@ -114,7 +125,7 @@ fileSystems."/mnt/hdd" = {
             "org/gnome/desktop/interface" = {
                 color-scheme = "prefer-dark";
                 # Papirus has full, crisp MIME-type icons. Adwaita 50 dropped its
-                # colour file icons, which is why Nautilus showed jagged fallbacks.
+                # colour file icons, leaving jagged fallbacks in GTK apps.
                 icon-theme = "Papirus-Dark";
             };
         };
