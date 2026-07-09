@@ -31,7 +31,7 @@ Singleton {
     })
 
     // bar entry glyphs sit a touch larger than their value text -> one knob to tune
-    readonly property int barIconSize: textFont.pixelSize 
+    readonly property int barIconSize: textFont.pixelSize
 
     // orientation
     property int currentBarHeight: 0  // track the bar height for centered second order menus else
@@ -43,11 +43,11 @@ Singleton {
     property bool barShown: true      // shell.qml mirrors its bar state here so centered menus can shift up when the bar is hidden
     property bool powerMenuOpen: false
     property bool powerProfilesOpen: false
-    property bool audioMenuOpen: false        
-    property string audioMenuView: "audio"    
-    property bool wifiMenuOpen: false         
-    property bool remindersOpen: false        
-    property bool engineRoomOpen: false       
+    property bool audioMenuOpen: false
+    property string audioMenuView: "audio"
+    property bool wifiMenuOpen: false
+    property bool remindersOpen: false
+    property bool engineRoomOpen: false
 
     // global initial initial tick value
     property int tick: 0

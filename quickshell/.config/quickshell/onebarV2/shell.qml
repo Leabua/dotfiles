@@ -21,7 +21,7 @@ Scope {
     property bool windowVisible: true
 
     readonly property int collapseShrink: Globals.barCollapse  //scale
-    readonly property int collapseFade: Math.round(Globals.barCollapse * 0.4) // content fade 
+    readonly property int collapseFade: Math.round(Globals.barCollapse * 0.4) // content fade
 
     onBarShownChanged: {
         if (barShown) {
