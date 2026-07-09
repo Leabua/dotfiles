@@ -1,3 +1,3 @@
 #!/bin/bash
 
-qs -p "$HOME/.config/quickshell/onebarV2" &
+qs -p "$HOME/.config/quickshell/minimalBar" &
