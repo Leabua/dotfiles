@@ -56,6 +56,12 @@ return {
 					hidden = true,
 					file_ignore_patterns = { "%.git/" },
 				},
+				-- match find_files: let ripgrep search hidden files too (still skip .git)
+				live_grep = {
+					additional_args = function()
+						return { "--hidden", "--glob", "!**/.git/*" }
+					end,
+				},
 			},
 		})
 		pcall(require("telescope").load_extension, "fzf")

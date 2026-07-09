@@ -24,7 +24,13 @@ return {
 	opts = {
 		-- explorer is a picker source; picker must be enabled.
 		-- replace_netrw = false so oil.nvim owns directory/netrw opening instead.
-		picker = { enabled = true },
+		picker = {
+			enabled = true,
+			sources = {
+				-- show dotfiles in the explorer by default (toggle with `H`)
+				explorer = { hidden = true },
+			},
+		},
 		explorer = { replace_netrw = false },
 		indent = {
 			enabled = true,
