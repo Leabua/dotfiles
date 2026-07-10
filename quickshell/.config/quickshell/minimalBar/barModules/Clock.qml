@@ -14,20 +14,17 @@ Item {
         precision: SystemClock.Minutes
     }
 
-    BarIconGroup {
+    BarIcon {
         id: textID
         displayText: root.showDate ? Qt.formatDateTime(clock.date, "hh:mm - dd MMM") : Qt.formatDateTime(clock.date, "hh:mm")
-    }
+        MouseArea {
+            id: mouse
+            anchors.fill: parent
+            anchors.margins: -1
+            cursorShape: Qt.PointingHandCursor
 
-    // click to show long date
-    MouseArea {
-        id: mouse
-        anchors.fill: parent
-        anchors.margins: -1
-        cursorShape: Qt.PointingHandCursor
-
-        onClicked: {
-            root.showDate ? true : false;
+            //click to show longdate
+            onClicked: root.showDate = !root.showDate
         }
     }
 }

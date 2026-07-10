@@ -88,7 +88,7 @@ RowLayout {
             // How many dots to show. Niri essentially does last occupied window + 1 and hyprland is my pref for 5 persistant workspaces
             visible: workspaceLayout.isNiri ? true : workspaceId <= Math.max(5, workspaceLayout.maxWorkspaceId)
 
-            // spherical indicators -> a circle is just a square where the radius = .5 height
+            // spherical indicators -> a circle is just a square where the radius = 0.5 x height ie make them equal to get a circle
             implicitWidth: Globals.textFont.pixelSize // decrease to make more vertical
             implicitHeight: isActive ? Globals.textFont.pixelSize / 2 : Globals.textFont.pixelSize // decrease to make more flat
             radius: implicitHeight / 2

@@ -11,8 +11,8 @@ Item {
     property var lastCpuTotal: 0
 
     // define the height or nothing shows
-    implicitHeight: row.implicitHeight
-    implicitWidth: row.implicitWidth
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
 
     property int sharedTick: Globals.tick
     onSharedTickChanged: cpuFile.reload()
@@ -44,25 +44,17 @@ Item {
         Component.onCompleted: reload()
     }
 
-    RowLayout {
-        id: row
-        spacing: Globals.spacing - 1
+    BarIcon {
+        id: content
+        icon: "󰍛"
+        displayText: root.cpuUsage + "%"
+        color: root.displayColor
 
-        BarIcon {
-            text: "󰍛"
-            color: root.displayColor
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -1
+            cursorShape: Qt.PointingHandCursor
+            // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
         }
-        Text {
-            text: root.cpuUsage + "%"
-            color: root.displayColor
-            font: Globals.textFont
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        anchors.margins: -1
-        cursorShape: Qt.PointingHandCursor
-        onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
     }
 }
