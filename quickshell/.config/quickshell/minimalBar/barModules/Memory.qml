@@ -6,14 +6,14 @@ Item {
     id: root
     property int memoryUsage: 0
 
-    implicitHeight: bar.implicitHeight
-    implicitWidth: bar.implicitWidth
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
 
     property int sharedTick: Globals.tick
     onSharedTickChanged: memoryFile.reload()
 
     BarIcon {
-        id: bar
+        id: content
         icon: "󰘚 "
         displayText: root.memoryUsage + "%"
         color: root.memoryUsage > 85 ? Globals.criticalColor : root.memoryUsage > 70 ? Globals.warningColor : Globals.fgColor

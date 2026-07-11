@@ -32,21 +32,19 @@ Item {
     }
 
     visible: bat != null && bat.ready
-    implicitWidth: row.implicitWidth
-    implicitHeight: row.implicitHeight
+    implicitWidth: content.implicitWidth
+    implicitHeight: content.implicitHeight
 
-    Item {
-        id: row
-        BarIcon {
-            icon: batteryBtn.icon
-            displayText: batteryBtn.percent + "%"
-            color: batteryBtn.displayColor
-        }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            // onClicked: Globals.powerProfilesOpen = !Globals.powerProfilesOpen
-        }
+    BarIcon {
+        id: content
+        icon: batteryBtn.icon
+        displayText: batteryBtn.percent + "%"
+        color: batteryBtn.displayColor
+    }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        // onClicked: Globals.powerProfilesOpen = !Globals.powerProfilesOpen
     }
 }

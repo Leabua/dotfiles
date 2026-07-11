@@ -23,11 +23,11 @@ Item {
     property int sharedTick: Globals.tick
     onSharedTickChanged: wifiProc.running = true
 
-    implicitHeight: bar.implicitHeight
-    implicitWidth: bar.implicitWidth
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
 
     BarIcon {
-        id: bar
+        id: content
         icon: root.icon
     }
     MouseArea {

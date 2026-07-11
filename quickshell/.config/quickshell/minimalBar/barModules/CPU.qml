@@ -25,19 +25,17 @@ Item {
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth
 
-    Item {
+    BarIcon {
         id: content
-        BarIcon {
-            icon: "󰍛"
-            displayText: root.cpuUsage + "%"
-            color: root.displayColor
-        }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
-        }
+        icon: "󰍛"
+        displayText: root.cpuUsage + "%"
+        color: root.displayColor
+    }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
     }
 
     // read /proc/stat directly via FileView -> no subprocess spawned per tick
