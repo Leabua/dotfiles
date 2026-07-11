@@ -57,8 +57,7 @@ _src \
 # ── nixos ────────────────────────────────────────────────────
 alias clean="sudo nix-collect-garbage -d && sudo nixos-rebuild boot --flake $HOME/dotfiles/nixos#nixos"
 alias nixconf="nvim $HOME/dotfiles/nixos"
-alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos"
-# alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos |& nom"
+alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos |& nom"
 alias search="nix search nixpkgs"
 alias upgrade="nix flake update --flake $HOME/dotfiles/nixos && rebuild"
 
