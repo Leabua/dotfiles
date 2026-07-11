@@ -1,12 +1,13 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.templates
 
 RowLayout {
     id: root
     property string icon: ""
     property string displayText: ""
     property color color: Globals.fgColor
-    spacing: Globals.spacing
+    spacing: Globals.spacing / 3
 
     Text {
         id: iconID
