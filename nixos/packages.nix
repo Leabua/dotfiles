@@ -30,6 +30,7 @@
       libnotify
       matugen
       maven
+      nix-output-monitor # give me some visual for the nix rebuilds and upgrades
       neovim
       obs-studio
       obsidian

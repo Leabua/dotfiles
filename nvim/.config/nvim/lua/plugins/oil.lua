@@ -6,7 +6,6 @@ return {
 	---@module 'oil'
 	---@type oil.SetupOpts
 	opts = {
-		-- show dotfiles by default (toggle in oil with `g.`)
 		view_options = {
 			show_hidden = true,
 		},
