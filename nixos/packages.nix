@@ -26,6 +26,7 @@
       jdk
       jq
       kitty
+      lazygit
       libnotify
       matugen
       maven

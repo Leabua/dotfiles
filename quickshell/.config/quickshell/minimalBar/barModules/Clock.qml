@@ -14,9 +14,11 @@ Item {
         precision: SystemClock.Minutes
     }
 
-    BarIcon {
+    Item {
         id: textID
-        displayText: root.showDate ? Qt.formatDateTime(clock.date, "hh:mm - dd MMM") : Qt.formatDateTime(clock.date, "hh:mm")
+        BarIcon {
+            displayText: root.showDate ? Qt.formatDateTime(clock.date, "hh:mm - dd MMM") : Qt.formatDateTime(clock.date, "hh:mm")
+        }
         MouseArea {
             id: mouse
             anchors.fill: parent

@@ -8,11 +8,8 @@ RowLayout {
     property color color: Globals.fgColor
     spacing: Globals.spacing
 
-    implicitHeight: Math.max(displayText.implicitHeight, icon.implicitHeight)
-    implicitWidth: Math.max(displayText.implicitWidth, icon.implicitWidth)
-
     Text {
-        id: icon
+        id: iconID
         text: root.icon
         font.family: Globals.textFont.family
         font.weight: Globals.textFont.weight
@@ -22,7 +19,7 @@ RowLayout {
     }
 
     Text {
-        id: displayText
+        id: textID
         text: root.displayText
         font: Globals.textFont
         color: root.color

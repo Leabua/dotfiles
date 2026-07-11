@@ -27,8 +27,6 @@ if command -v tmux &>/dev/null && [[ -z "$TMUX" ]]; then
 fi
 
 # ── prompt (powerlevel10k) ───────────────────────────────────
-# _src sources the first candidate that exists, so this file stays portable
-# across arch (/usr/share) and nixos (/run/current-system/sw/share).
 _src() { local f; for f in "$@"; do [[ -r $f ]] && { source "$f"; return 0; }; done; return 1 }
 
 _src \
@@ -57,12 +55,11 @@ _src \
   /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # ── nixos ────────────────────────────────────────────────────
-alias nixconf="nvim $HOME/dotfiles/nixos"
-# GC old generations, then rebuild the boot menu so it drops entries for the
-# now-deleted generations (nix-collect-garbage alone leaves stale boot entries).
 alias clean="sudo nix-collect-garbage -d && sudo nixos-rebuild boot --flake $HOME/dotfiles/nixos#nixos"
+alias nixconf="nvim $HOME/dotfiles/nixos"
 alias rebuild="sudo nixos-rebuild switch --flake $HOME/dotfiles/nixos#nixos"
 alias search="nix search nixpkgs"
+alias upgrade="nix flake update --flake $HOME/dotfiles/nixos && rebuild"
 
 # ── general QoL ──────────────────────────────────────────────
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"

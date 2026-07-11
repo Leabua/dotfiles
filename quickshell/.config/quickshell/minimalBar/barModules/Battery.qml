@@ -1,6 +1,5 @@
 import Quickshell.Services.UPower
 import QtQuick
-import QtQuick.Layouts
 import qs.templates
 
 Item {
@@ -36,12 +35,13 @@ Item {
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
 
-    BarIcon {
+    Item {
         id: row
-        icon: batteryBtn.icon
-        displayText: batteryBtn.percent + "%"
-        color: batteryBtn.displayColor
-
+        BarIcon {
+            icon: batteryBtn.icon
+            displayText: batteryBtn.percent + "%"
+            color: batteryBtn.displayColor
+        }
         MouseArea {
             anchors.fill: parent
             anchors.margins: -1
