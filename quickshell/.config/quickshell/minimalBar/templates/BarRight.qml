@@ -6,15 +6,15 @@ import qs.barModules
 
 Rectangle {
     id: root
-    implicitWidth: Math.max(row.implicitWidth, 300)
-    implicitHeight: row.implicitHeight
-    color: "transparent"
-    radius: Globals.textFont.pixelsize / 2
+    implicitWidth: row.implicitWidth + Globals.horiPadding
+    implicitHeight: row.implicitHeight + Globals.vertPadding
+    color: Globals.bgColor
+    radius: implicitHeight / 2
 
     RowLayout {
         id: row
-        spacing: Globals.spacing + 1
-        Cpu {} // conditional logic -> cpu crit states
+        anchors.centerIn: parent
+        CPU {} // conditional logic -> cpu crit states
         Memory {} // conditional logic -> mem crit states
         Volume {}
         Battery {} //conditional logic -> battery crit states

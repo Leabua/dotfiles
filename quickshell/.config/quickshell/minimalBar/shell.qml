@@ -25,7 +25,7 @@ ShellRoot {
                 right: Globals.marginsRight
                 bottom: Globals.marginsBottom
             }
-            implicitHeight: defHeight.implicitHeight
+            implicitHeight: defHeight.implicitHeight + Globals.vertPadding
 
             Text {
                 id: defHeight
@@ -38,7 +38,8 @@ ShellRoot {
             BarLeft {
                 id: leftIsland
                 anchors {
-                    left: true
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
                 }
             }
 
@@ -48,7 +49,8 @@ ShellRoot {
 
             BarRight {
                 anchors {
-                    right: true
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
                 }
             }
         }

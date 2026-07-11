@@ -89,8 +89,8 @@ RowLayout {
             visible: workspaceLayout.isNiri ? true : workspaceId <= Math.max(5, workspaceLayout.maxWorkspaceId)
 
             // spherical indicators -> a circle is just a square where the radius = 0.5 x height ie make them equal to get a circle
-            implicitWidth: Globals.textFont.pixelSize // decrease to make more vertical
-            implicitHeight: isActive ? Globals.textFont.pixelSize / 2 : Globals.textFont.pixelSize // decrease to make more flat
+            implicitWidth: isActive ? Globals.textFont.pixelSize + 7 : Globals.textFont.pixelSize // decrease to make more vertical
+            implicitHeight: isActive ? Globals.textFont.pixelSize - 4 : Globals.textFont.pixelSize // decrease to make more flat
             radius: implicitHeight / 2
 
             property color dotColor: {
@@ -108,6 +108,12 @@ RowLayout {
                     duration: 60
                 }
             }
+            // Need to clean this up
+            // Behavior on height {
+            //     NumberAnimation {
+            //         duration: 600
+            //     }
+            // }
         }
     }
 }

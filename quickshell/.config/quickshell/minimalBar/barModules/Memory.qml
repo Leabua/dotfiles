@@ -14,7 +14,7 @@ Item {
 
     BarIcon {
         id: content
-        icon: "󰘚 "
+        icon: "󰘚"
         displayText: root.memoryUsage + "%"
         color: root.memoryUsage > 85 ? Globals.criticalColor : root.memoryUsage > 70 ? Globals.warningColor : Globals.fgColor
     }

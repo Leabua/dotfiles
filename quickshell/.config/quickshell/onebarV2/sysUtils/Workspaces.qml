@@ -57,15 +57,15 @@ RowLayout {
                     const focused = event.WorkspaceActivated.focused;
                     const activatedOutput = workspaceLayout.niriWorkspaces.find(w => w.id === id)?.output;
                     workspaceLayout.niriWorkspaces = workspaceLayout.niriWorkspaces.map(w => Object.assign({}, w, {
-                                is_active: w.id === id || (w.output === activatedOutput ? false : w.is_active),
-                                is_focused: focused ? w.id === id : (w.is_focused && w.id !== id)
-                            }));
+                            is_active: w.id === id || (w.output === activatedOutput ? false : w.is_active),
+                            is_focused: focused ? w.id === id : (w.is_focused && w.id !== id)
+                        }));
                 } else if (event.WorkspaceUrgencyChanged) {
                     const id = event.WorkspaceUrgencyChanged.id;
                     const urgent = event.WorkspaceUrgencyChanged.urgent;
                     workspaceLayout.niriWorkspaces = workspaceLayout.niriWorkspaces.map(w => w.id === id ? Object.assign({}, w, {
-                                is_urgent: urgent
-                            }) : w);
+                            is_urgent: urgent
+                        }) : w);
                 }
             }
         }
@@ -115,6 +115,12 @@ RowLayout {
                     duration: 60
                 }
             }
+            // Todo need to make a sweet animation for this
+            // Behavior on height {
+            //     SmoothedAnimation {
+            //         duration: 600
+            //     }
+            // }
         }
     }
 }

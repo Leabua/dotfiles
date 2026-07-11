@@ -6,13 +6,15 @@ import qs.barModules
 
 Rectangle {
     id: root
-    implicitWidth: Math.max(row.implicitWidth, 300)
-    implicitHeight: row.implicitHeight
-    color: Globals.fgColor
-    radius: Globals.textFont.pixelsize / 2
+    implicitWidth: row.implicitWidth + Globals.padding
+    implicitHeight: row.implicitHeight === 0 ? 0 : row.implicitHeight + Globals.vertPadding
+
+    color: Globals.bgColor
+    radius: Globals.textFont / 2
     RowLayout {
         id: row
         spacing: Globals.spacing / 2
+
         /*
          volumeOSD{}
          brightnessOSD{}

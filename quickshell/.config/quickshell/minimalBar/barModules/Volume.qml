@@ -16,8 +16,8 @@ Item {
     readonly property bool muted: ready && sink.audio.muted
     readonly property int volPercent: ready ? Math.round(sink.audio.volume * 100) : 0
 
-    implicitWidth: row.implicitWidth
-    implicitHeight: row.implicitHeight
+    implicitWidth: content.implicitWidth
+    implicitHeight: content.implicitHeight
 
     readonly property string icon: {
         if (!ready)
@@ -31,6 +31,7 @@ Item {
         return String.fromCodePoint(0xF057E); // else high icon
     }
     BarIcon {
+        id: content
         icon: root.icon
         displayText: root.volPercent + "%"
     }
