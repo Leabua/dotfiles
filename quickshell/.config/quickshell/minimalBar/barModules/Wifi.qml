@@ -1,6 +1,6 @@
 import Quickshell.Io
 import QtQuick
-import qs.barModules
+import qs.templates
 
 Item {
     id: root
@@ -23,6 +23,19 @@ Item {
     property int sharedTick: Globals.tick
     onSharedTickChanged: wifiProc.running = true
 
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
+
+    BarIcon {
+        id: content
+        icon: root.icon
+    }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        // onClicked: Globals.wifiMenuOpen = !Globals.wifiMenuOpen
+    }
     Process {
         id: wifiProc
         command: ["nmcli", "-t", "-f", "active,ssid,signal", "dev", "wifi"]
@@ -42,21 +55,5 @@ Item {
             }
         }
         Component.onCompleted: running = true
-    }
-
-    implicitHeight: textID.height
-    implicitWidth: textID.implicitWidth
-
-    BarIconGroup {
-        id: textID
-        text: root.icon
-        font.pixelSize: Globals.barIconSize
-
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            onClicked: Globals.wifiMenuOpen = !Globals.wifiMenuOpen
-        }
     }
 }

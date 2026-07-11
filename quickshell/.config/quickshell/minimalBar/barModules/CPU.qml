@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell.Io
 import qs.templates
 
@@ -9,10 +8,6 @@ Item {
     property int cpuUsage: 0
     property var lastCpuIdle: 0
     property var lastCpuTotal: 0
-
-    // define the height or nothing shows
-    implicitHeight: content.implicitHeight
-    implicitWidth: content.implicitWidth
 
     property int sharedTick: Globals.tick
     onSharedTickChanged: cpuFile.reload()
@@ -24,6 +19,23 @@ Item {
             return Globals.warningColor;
         else
             return Globals.fgColor;
+    }
+
+    // define the height or nothing shows
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
+
+    BarIcon {
+        id: content
+        icon: "󰍛"
+        displayText: root.cpuUsage + "%"
+        color: root.displayColor
+    }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
     }
 
     // read /proc/stat directly via FileView -> no subprocess spawned per tick
@@ -42,19 +54,5 @@ Item {
             root.lastCpuTotal = total;
         }
         Component.onCompleted: reload()
-    }
-
-    BarIcon {
-        id: content
-        icon: "󰍛"
-        displayText: root.cpuUsage + "%"
-        color: root.displayColor
-
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
-        }
     }
 }

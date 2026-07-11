@@ -1,18 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.templates
 
 RowLayout {
     id: root
     property string icon: ""
     property string displayText: ""
     property color color: Globals.fgColor
-    spacing: Globals.spacing
-
-    implicitHeight: Math.max(displayText.implicitHeight, icon.implicitHeight)
-    implicitWidth: Math.max(displayText.implicitWidth, icon.implicitWidth)
+    spacing: Globals.spacing / 3
 
     Text {
-        id: icon
+        id: iconID
         text: root.icon
         font.family: Globals.textFont.family
         font.weight: Globals.textFont.weight
@@ -22,7 +20,7 @@ RowLayout {
     }
 
     Text {
-        id: displayText
+        id: textID
         text: root.displayText
         font: Globals.textFont
         color: root.color

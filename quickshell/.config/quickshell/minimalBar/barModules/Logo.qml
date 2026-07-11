@@ -25,9 +25,20 @@ Item {
         return glyphs[distroId] ?? "󰻀"; //fallback
     }
 
-    implicitHeight: textID.implicitHeight
-    implicitWidth: textID.implicitWidth
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
 
+    // Might make this the power menu
+    BarIcon {
+        id: content
+        icon: root.icon
+    }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        // onClicked: Globals.powerMenuOpen = !Globals.powerMenuOpen
+    }
     Process {
         id: osProc
         command: ["sh", "-c", ". /etc/os-release && echo $ID"]
@@ -35,19 +46,5 @@ Item {
             onStreamFinished: root.distroId = text.trim()
         }
         Component.onCompleted: running = true
-    }
-
-    // Might make this the power menu
-    BarIcon {
-        id: textID
-        icon: root.icon
-        color: Globals.fgColor
-
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            // onClicked: Globals.powerMenuOpen = !Globals.powerMenuOpen
-        }
     }
 }

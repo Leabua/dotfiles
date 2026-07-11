@@ -1,6 +1,5 @@
 import Quickshell.Services.UPower
 import QtQuick
-import QtQuick.Layouts
 import qs.templates
 
 Item {
@@ -33,20 +32,19 @@ Item {
     }
 
     visible: bat != null && bat.ready
-    implicitWidth: row.implicitWidth
-    implicitHeight: row.implicitHeight
+    implicitWidth: content.implicitWidth
+    implicitHeight: content.implicitHeight
 
     BarIcon {
-        id: row
+        id: content
         icon: batteryBtn.icon
         displayText: batteryBtn.percent + "%"
         color: batteryBtn.displayColor
-
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            // onClicked: Globals.powerProfilesOpen = !Globals.powerProfilesOpen
-        }
+    }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
+        // onClicked: Globals.powerProfilesOpen = !Globals.powerProfilesOpen
     }
 }

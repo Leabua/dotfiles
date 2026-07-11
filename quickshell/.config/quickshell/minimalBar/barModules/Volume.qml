@@ -1,7 +1,7 @@
 import Quickshell.Services.Pipewire
 import QtQuick
 import QtQuick.Layouts
-import qs.defaults
+import qs.templates
 
 Item {
     id: root
@@ -16,8 +16,8 @@ Item {
     readonly property bool muted: ready && sink.audio.muted
     readonly property int volPercent: ready ? Math.round(sink.audio.volume * 100) : 0
 
-    implicitWidth: row.implicitWidth
-    implicitHeight: row.implicitHeight
+    implicitWidth: content.implicitWidth
+    implicitHeight: content.implicitHeight
 
     readonly property string icon: {
         if (!ready)
@@ -30,25 +30,16 @@ Item {
             return String.fromCodePoint(0xF0580); // 34 - 66 - mid icon
         return String.fromCodePoint(0xF057E); // else high icon
     }
-    RowLayout {
-        id: row
-        spacing: Globals.spacing - 2
-
-        BarIcon {
-            text: root.icon
-            font.pixelSize: Globals.barIconSize
-        }
-        Text {
-            text: root.volPercent + "%"
-            color: Globals.fgColor
-            font: Globals.textFont
-        }
+    BarIcon {
+        id: content
+        icon: root.icon
+        displayText: root.volPercent + "%"
     }
 
     MouseArea {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        onClicked: Globals.audioMenuOpen = !Globals.audioMenuOpen
+        // onClicked: Globals.audioMenuOpen = !Globals.audioMenuOpen
     }
 }

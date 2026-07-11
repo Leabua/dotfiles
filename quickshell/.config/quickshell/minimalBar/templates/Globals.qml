@@ -8,14 +8,14 @@ Singleton {
 
     // ------- font --------
     readonly property font textFont: Qt.font({
-        family: "Departure Mono",
+        family: "DepartureMono Nerd Font",
         letterSpacing: 0,
         pixelSize: 14,
         weight: 700
     })
 
     // bar entry icons sit a touch larger than their value text -> one knob to tune -> convenient fix
-    readonly property int barIconSize: textFont.pixelSize
+    readonly property int barIconSize: textFont.pixelSize + 2
     readonly property int bigIcon: textFont.pixelSize + 28
 
     // --------- colors -----------------
@@ -53,13 +53,16 @@ Singleton {
     // ---------spacing & layout -----------
     //spacing
     readonly property int spacing: 6
+    readonly property int padding: spacing * 2
+    readonly property int vertPadding: spacing * 2 - 6
+    readonly property int horiPadding: spacing * 2 + 5
 
     // margins
     readonly property int margins: 10
     readonly property int marginsTop: 6
     readonly property int marginsLeft: 10
     readonly property int marginsRight: 10
-    readonly property int marginsBottom: -3
+    readonly property int marginsBottom: -4
 
     // -------- borders and radii ----------
     readonly property int borderWidth: 0
@@ -75,7 +78,7 @@ Singleton {
     property int tick: 0
 
     Timer {
-        interval: 10000 // 10 seconds -> low = more battery use. Likely minimal but needs to be changed for some laptops
+        interval: 5000 // 10 seconds -> low = more battery use. Likely minimal but needs to be changed for some laptops
         repeat: true // stop freezing
         running: true // keep it running
         onTriggered: root.tick++ // change event fired every {interval} seconds

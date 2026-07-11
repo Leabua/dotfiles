@@ -6,8 +6,8 @@ Item {
     id: root
     property bool showDate: false
 
-    implicitHeight: textID.implicitHeight
-    implicitWidth: textID.implicitWidth
+    implicitHeight: content.implicitHeight
+    implicitWidth: content.implicitWidth
 
     SystemClock {
         id: clock
@@ -15,16 +15,16 @@ Item {
     }
 
     BarIcon {
-        id: textID
+        id: content
         displayText: root.showDate ? Qt.formatDateTime(clock.date, "hh:mm - dd MMM") : Qt.formatDateTime(clock.date, "hh:mm")
-        MouseArea {
-            id: mouse
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
+    }
+    MouseArea {
+        id: mouse
+        anchors.fill: parent
+        anchors.margins: -1
+        cursorShape: Qt.PointingHandCursor
 
-            //click to show longdate
-            onClicked: root.showDate = !root.showDate
-        }
+        //click to show longdate
+        onClicked: root.showDate = !root.showDate
     }
 }

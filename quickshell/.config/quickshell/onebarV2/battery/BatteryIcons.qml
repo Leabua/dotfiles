@@ -6,7 +6,7 @@ import qs.defaults
 Item {
     id: batteryBtn
 
-    readonly property var chargingIcons: ["󰢜 ", "󰂆 ", "󰂇 ", "󰂈 ", "󰢝 ", "󰂉 ", "󰢞 ", "󰂊 ", "󰂋 ", "󰂅 "]
+    readonly property var chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
     readonly property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
 
     readonly property var bat: UPower.displayDevice
@@ -17,7 +17,7 @@ Item {
         if (bat == null || !bat.ready)
             return "󰂃";
         if (bat.state === UPowerDeviceState.FullyCharged || (isCharging && percent === 100))
-            return "󰂅 ";
+            return "󰂅";
         let idx = Math.min(Math.floor(percent / 10), 9);
         return isCharging ? chargingIcons[idx] : defaultIcons[idx];
     }
