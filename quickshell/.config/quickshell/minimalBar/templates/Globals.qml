@@ -55,7 +55,7 @@ Singleton {
     readonly property int spacing: 6
     readonly property int padding: spacing * 2
     readonly property int vertPadding: spacing * 2 - 6
-    readonly property int horiPadding: spacing * 2
+    readonly property int horiPadding: spacing * 2 + 5
 
     // margins
     readonly property int margins: 10
