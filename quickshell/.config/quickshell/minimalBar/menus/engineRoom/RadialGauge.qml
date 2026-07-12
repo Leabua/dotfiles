@@ -77,26 +77,25 @@ Item {
         }
     }
 
-    Column {
+    // ~~~ glyph centred in the arc ~~~
+    Text {
         anchors.centerIn: parent
-        spacing: 1
-
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: root.glyph
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: root.diameter * 0.32
-            font.weight: Globals.textFont.weight
-        }
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            visible: root.caption !== ""
-            text: root.caption
-            color: Qt.alpha(Globals.fgColor, 0.75)
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize - 2
-            font.weight: Globals.textFont.weight
-        }
+        text: root.glyph
+        color: Globals.fgColor
+        font.family: Globals.textFont.family
+        font.pixelSize: root.diameter * 0.32
+        font.weight: Globals.textFont.weight
+    }
+    // ~~~ value drops into the arc's bottom gap ~~~
+    Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: root.diameter * 0.3
+        visible: root.caption !== ""
+        text: root.caption
+        color: Qt.alpha(Globals.fgColor, 0.75)
+        font.family: Globals.textFont.family
+        font.pixelSize: Globals.textFont.pixelSize - 2
+        font.weight: Globals.textFont.weight
     }
 }

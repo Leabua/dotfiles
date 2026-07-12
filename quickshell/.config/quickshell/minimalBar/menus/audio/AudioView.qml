@@ -362,7 +362,7 @@ ColumnLayout {
             Layout.fillWidth: true
         } // push the button to the right edge
         ViewSwitchBtn {
-            icon: String.fromCodePoint(0xF00AF) // bluetooth
+            icon: String.fromCodePoint(0xF293) // bluetooth
             label: "Bluetooth"
             onClicked: Globals.audioMenuView = "bluetooth"
         }

@@ -447,7 +447,7 @@ Scope {
         onKeyDown: event => root.handleKey(event)
 
         margins {
-            top: Globals.marginsTop
+            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
             right: Globals.marginsRight
         }
 
@@ -464,13 +464,23 @@ Scope {
             id: activeRoot
             implicitWidth: root.panelWidth
             implicitHeight: col.implicitHeight
+            onHeightChanged: console.log("DEBUG activeRoot.height=", activeRoot.height, "activeRoot.implicitHeight=", activeRoot.implicitHeight, "col.implicitHeight=", col.implicitHeight, "col.height=", col.height)
 
             readonly property bool hasAny: priorityModel.count > 0 || laterModel.count > 0 || root.editing
+            onHasAnyChanged: console.log("DEBUG hasAny changed to", activeRoot.hasAny, "priCount=", priorityModel.count, "laterCount=", laterModel.count)
+
+            Connections {
+                target: priorityModel
+                function onCountChanged(): void {
+                    console.log("DEBUG priorityModel.count=", priorityModel.count);
+                }
+            }
 
             ColumnLayout {
                 id: col
                 width: root.panelWidth
                 spacing: Globals.spacing
+                onImplicitHeightChanged: console.log("DEBUG col.implicitHeight ->", col.implicitHeight, "col.height=", col.height, "priorityList.contentHeight=", priorityList.contentHeight, "priorityList.visible=", priorityList.visible, "priorityList.height=", priorityList.height)
 
                 // ----- header -----
                 RowLayout {
@@ -609,12 +619,13 @@ Scope {
                     id: priorityList
                     Layout.fillWidth: true
                     Layout.preferredHeight: contentHeight
-                    visible: activeRoot.hasAny
                     interactive: false
                     boundsBehavior: Flickable.StopAtBounds
                     spacing: 0
                     model: priorityModel
                     delegate: cardComponent
+                    onContentHeightChanged: console.log("DEBUG priorityList.contentHeight ->", priorityList.contentHeight, "visible=", priorityList.visible, "Layout.preferredHeight=", priorityList.Layout.preferredHeight)
+                    onVisibleChanged: console.log("DEBUG priorityList.visible ->", priorityList.visible, "contentHeight=", priorityList.contentHeight)
                 }
 
                 // ----- "When you have the time" section -----
@@ -664,14 +675,17 @@ Scope {
                     delegate: cardComponent
                 }
 
-                //  footer: switch to completed (toggle hugs the right edge) 
+                //  footer: switch to completed (toggle hugs the right edge)
                 RowLayout {
+                    id: footerRow
                     Layout.fillWidth: true
                     Layout.topMargin: Globals.spacing / 2
+                    onYChanged: console.log("DEBUG footerRow.y=", footerRow.y, "footerRow.height=", footerRow.height, "footerRow.implicitHeight=", footerRow.implicitHeight, "bottom=", footerRow.y + footerRow.height, "col.implicitHeight=", col.implicitHeight)
                     Item {
                         Layout.fillWidth: true
                     }
                     ViewSwitchBtn {
+                        id: completedBtn
                         icon: "\u{F05E1}" // check-circle-outline
                         label: completedModel.count > 0 ? "Completed · " + completedModel.count : "Completed"
                         onClicked: {
@@ -679,6 +693,7 @@ Scope {
                                 root.confirmEdit();
                             root.view = "completed";
                         }
+                        Component.onCompleted: console.log("DEBUG completedBtn width=", completedBtn.width, "height=", completedBtn.height, "implicitHeight=", completedBtn.implicitHeight)
                     }
                 }
             }

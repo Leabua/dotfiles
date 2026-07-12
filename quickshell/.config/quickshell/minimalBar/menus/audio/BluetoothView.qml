@@ -58,7 +58,7 @@ ColumnLayout {
         spacing: Globals.spacing
 
         Text {
-            text: String.fromCodePoint(root.poweredOn ? 0xF00AF : 0xF00B2) // bluetooth / bluetooth-off
+            text: String.fromCodePoint(root.poweredOn ? 0xF293 : 0xF00B2) // bluetooth / bluetooth-off
             visible: Globals.headerIcons
             color: Globals.fgColor
             font.family: Globals.textFont.family
@@ -187,7 +187,7 @@ ColumnLayout {
             text: String.fromCodePoint(0xF0437) // radar
             color: root.adapter && root.adapter.discovering ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.6)
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 12
+            font.pixelSize: Globals.textFont.pixelSize - 1
             font.weight: Globals.textFont.weight
 
             RotationAnimation on rotation {

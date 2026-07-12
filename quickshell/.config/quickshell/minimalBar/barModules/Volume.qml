@@ -42,7 +42,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
-            Globals.audioMenuOpen = !Globals.audioMenuOpen;
+            Globals.toggleMenu("audio");
         }
     }
 }

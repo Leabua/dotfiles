@@ -53,11 +53,11 @@ Scope {
         visible: !root.centerOpen // don't show toasts while the notification center is open (they'd overlap if otherwise)
         anchors {
             top: true
-            right: true
+            left: true
         }
         margins {
-            top: Globals.marginsTop
-            right: Globals.marginsRight
+            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
+            left: Globals.marginsLeft
         }
         implicitWidth: 380
         implicitHeight: Math.max(1, column.implicitHeight)
@@ -163,7 +163,7 @@ Scope {
         screen: Globals.focusedScreen // open the center on the focused monitor
 
         margins {
-            top: Globals.marginsTop
+            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
             right: Globals.marginsRight
         }
 

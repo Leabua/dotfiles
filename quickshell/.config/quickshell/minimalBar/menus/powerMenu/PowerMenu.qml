@@ -91,7 +91,7 @@ Scope {
                 // logout
                 CenterTextBtn {
                     id: logout
-                    icon: "󰍃"
+                    icon: String.fromCodePoint(0xE668)
                     label: "Log Out"
                     largestButton: buttons.largestButton
                     runThis: ["bash", "-c", "if command -v hyprshutdown >/dev/null 2>&1 && [[ \"$XDG_CURRENT_DESKTOP\" == \"Hyprland\" ]]; then hyprshutdown; elif [[ \"$XDG_CURRENT_DESKTOP\" == \"Hyprland\" ]]; then hyprctl dispatch exit; else niri msg action quit; fi"]
@@ -103,7 +103,7 @@ Scope {
                 // reboot
                 CenterTextBtn {
                     id: reboot
-                    icon: "󰜉"
+                    icon: String.fromCodePoint(0xF0E2)
                     label: "Reboot"
                     largestButton: buttons.largestButton
                     runThis: ["systemctl", "reboot"]
@@ -115,7 +115,7 @@ Scope {
                 // shut down
                 CenterTextBtn {
                     id: poweroff
-                    icon: "󰐥"
+                    icon: String.fromCodePoint(0xF011)
                     label: "Power Off"
                     largestButton: buttons.largestButton
                     runThis: ["systemctl", "poweroff"]

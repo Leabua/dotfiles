@@ -479,7 +479,7 @@ ColumnLayout {
             text: String.fromCodePoint(0xF0437) // radar
             color: root.scanning ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.6)
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 2
+            font.pixelSize: Globals.textFont.pixelSize - 1
             font.weight: Globals.textFont.weight
 
             RotationAnimation on rotation {

@@ -300,7 +300,7 @@ ColumnLayout {
             RadialGauge {
                 Layout.alignment: Qt.AlignHCenter
                 diameter: root.gaugeSize
-                glyph: "󰍛"
+                glyph: String.fromCodePoint(0xF2DB)
                 value: root.cpuOverall
                 caption: Math.round(root.cpuOverall * 100) + "%"
                 arcColor: root.heatColor(root.cpuOverall)

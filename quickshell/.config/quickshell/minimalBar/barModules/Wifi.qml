@@ -36,7 +36,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
-            Globals.wifiMenuOpen = !Globals.wifiMenuOpen;
+            Globals.toggleMenu("wifi");
         }
     }
     Process {

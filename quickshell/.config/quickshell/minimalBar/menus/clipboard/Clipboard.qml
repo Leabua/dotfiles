@@ -218,7 +218,7 @@ Scope {
         onKeyDown: event => root.handleKey(event)
 
         margins {
-            top: Globals.marginsTop
+            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
             left: Globals.marginsLeft
         }
 
@@ -235,7 +235,7 @@ Scope {
                 spacing: Globals.spacing
 
                 Text {
-                    text: String.fromCodePoint(0xF014C) // nf-md-clipboard
+                    text: String.fromCodePoint(0xF46D) // font-awesome clipboard
                     visible: Globals.headerIcons
                     color: Globals.fgColor
                     font.family: Globals.textFont.family

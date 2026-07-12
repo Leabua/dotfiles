@@ -24,9 +24,15 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
-            Globals.engineRoomOpen = !Globals.engineRoomOpen;
+            Globals.toggleMenu("engineRoom");
         }
     }
+    Binding {
+        target: Globals
+        property: "memUsage"
+        value: root.memoryUsage
+    }
+
     FileView {
         id: memoryFile
         path: "/proc/meminfo"

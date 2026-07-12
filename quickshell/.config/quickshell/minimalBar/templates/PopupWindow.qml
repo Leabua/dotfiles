@@ -21,8 +21,19 @@ PanelWindow { // qmllint disable uncreatable-type
 
     // card x-placement against the window: "left" | "center" | "right"
     property string hAlign: "left"
-    // scene-x to centre the card under (button-anchored menus) -> < 0 falls back to hAlign
+    // scene-x of the bar button that opened this; -1 = not button-anchored (use hAlign)
     property real anchorCenterX: -1
+    // button-anchored menus snap to the nearest screen edge so they never clip
+    readonly property string _align: {
+        if (anchorCenterX < 0)
+            return hAlign;
+        const w = screen ? screen.width : width;
+        if (anchorCenterX > w * 0.55)
+            return "right";
+        if (anchorCenterX < w * 0.45)
+            return "left";
+        return "center";
+    }
     // extra top offset added on top of the window's top margin
     property real cardTopMargin: 0
     // inner padding between the card edge and the content
@@ -40,6 +51,14 @@ PanelWindow { // qmllint disable uncreatable-type
         bottom: true
         left: true
         right: true
+    }
+
+    // ~~~ leave the bar strip out of the input region so bar icons stay clickable while a menu is open ~~~
+    mask: Region {
+        x: 0
+        y: root.margins.top
+        width: root.width
+        height: root.height - root.margins.top
     }
 
     // force Wayland to send keyboard events here so the popup can capture typing
@@ -66,11 +85,9 @@ PanelWindow { // qmllint disable uncreatable-type
         id: card
         anchors.top: parent.top
         anchors.topMargin: root.cardTopMargin
-        anchors.horizontalCenter: root.hAlign === "center" ? parent.horizontalCenter : undefined
-        anchors.left: root.hAlign === "left" ? parent.left : undefined
-        anchors.right: root.hAlign === "right" ? parent.right : undefined
-        // ------- shift a centered card sideways to sit under the bar button that opened it (0 = plain centered) -------
-        anchors.horizontalCenterOffset: (root.hAlign === "center" && root.anchorCenterX >= 0) ? Math.max(card.implicitWidth / 2 - parent.width / 2, Math.min(root.anchorCenterX - parent.width / 2, parent.width / 2 - card.implicitWidth / 2)) : 0
+        anchors.horizontalCenter: root._align === "center" ? parent.horizontalCenter : undefined
+        anchors.left: root._align === "left" ? parent.left : undefined
+        anchors.right: root._align === "right" ? parent.right : undefined
 
         // size to what ever the nested content is plus padding on every side
         implicitWidth: contentHolder.childrenRect.width + root.padding * 2

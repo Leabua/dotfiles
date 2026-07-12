@@ -16,6 +16,7 @@ Rectangle {
         spacing: Globals.spacing
         Logo {} // -> new access point for power settings
         Clock {}
-        Workspaces {}  // -> making this the entry point for the engine room
+        Workspaces {}
+        CriticalAlerts {} // battery / cpu / ram alerts when the right island is hidden
     }
 }

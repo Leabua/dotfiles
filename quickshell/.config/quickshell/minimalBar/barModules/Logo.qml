@@ -39,7 +39,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
-            Globals.powerMenuOpen = !Globals.powerMenuOpen;
+            Globals.toggleMenu("powerMenu");
         }
     }
     Process {

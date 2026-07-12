@@ -72,8 +72,8 @@ Singleton {
     // margins
     readonly property int margins: 10
     readonly property int marginsTop: 6
-    readonly property int marginsLeft: 10
-    readonly property int marginsRight: 10
+    readonly property int marginsLeft: 8
+    readonly property int marginsRight: 8
     readonly property int marginsBottom: -4
 
     // -------- borders and radii ----------
@@ -107,6 +107,36 @@ Singleton {
 
     // scene-x of the bar button that opened the current menu -> menus anchor their card under it (-1 = centered)
     property real menuAnchorX: -1
+
+    // ~~~ right-island critical mirror -> surfaced in the centre island when the right cluster is hidden ~~~
+    property bool rightIslandShown: true
+    property int cpuUsage: 0
+    property int memUsage: 0
+    property int batteryPercent: 100
+    property bool batteryCharging: false
+    property bool batteryReady: false
+
+    // ----- one bar menu open at a time; clicking another bar icon switches -----
+    function toggleMenu(name) {
+        const wasOpen = (name === "wifi" && wifiMenuOpen) || (name === "audio" && audioMenuOpen) || (name === "engineRoom" && engineRoomOpen) || (name === "powerProfiles" && powerProfilesOpen) || (name === "powerMenu" && powerMenuOpen);
+        wifiMenuOpen = false;
+        audioMenuOpen = false;
+        engineRoomOpen = false;
+        powerProfilesOpen = false;
+        powerMenuOpen = false;
+        if (!wasOpen) {
+            if (name === "wifi")
+                wifiMenuOpen = true;
+            else if (name === "audio")
+                audioMenuOpen = true;
+            else if (name === "engineRoom")
+                engineRoomOpen = true;
+            else if (name === "powerProfiles")
+                powerProfilesOpen = true;
+            else if (name === "powerMenu")
+                powerMenuOpen = true;
+        }
+    }
 
     // global initial initial tick value + timer
     property int tick: 0

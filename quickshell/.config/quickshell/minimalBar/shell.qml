@@ -53,12 +53,17 @@ ShellRoot {
             Binding {
                 target: Globals
                 property: "currentBarHeight"
-                value: leftIsland.implicitHeight
+                value: defHeight.implicitHeight + Globals.vertPadding // bar strip height (leftIsland is OSD-only -> 0 when idle)
             }
             Binding {
                 target: Globals
                 property: "barShown"
                 value: root.barVisible
+            }
+            Binding {
+                target: Globals
+                property: "rightIslandShown"
+                value: root.rightIslandVisible
             }
 
             // literally some rectangles with positions -> refer to the actual files for whats going on
