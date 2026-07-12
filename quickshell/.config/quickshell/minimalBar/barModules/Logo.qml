@@ -37,7 +37,10 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        // onClicked: Globals.powerMenuOpen = !Globals.powerMenuOpen
+        onClicked: {
+            Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
+            Globals.powerMenuOpen = !Globals.powerMenuOpen;
+        }
     }
     Process {
         id: osProc

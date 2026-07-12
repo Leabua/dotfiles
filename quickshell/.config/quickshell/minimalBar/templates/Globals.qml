@@ -2,9 +2,21 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 
 Singleton {
     id: root
+
+    // the ShellScreen Hyprland currently has focused -> lets toasts / popups follow the active monitor
+    readonly property var focusedScreen: {
+        const m = Hyprland.focusedMonitor;
+        if (!m)
+            return null;
+        for (const s of Quickshell.screens)
+            if (s.name === m.name)
+                return s;
+        return null;
+    }
 
     // ------- font --------
     readonly property font textFont: Qt.font({
@@ -73,6 +85,28 @@ Singleton {
     readonly property int animFast: 80
     readonly property int animDuration: 150
     readonly property int animSlow: 250
+
+    // ---------- menu open-state ----------
+    // bar-icon clicks and the matching IPC handlers toggle these; the menus mounted
+    // from menus/ listen and show / hide their PopupWindow accordingly
+    property bool wifiMenuOpen: false
+    property bool audioMenuOpen: false
+    property string audioMenuView: "audio" // "audio" | "bluetooth" -> which card the audio menu shows
+    property bool engineRoomOpen: false
+    property bool powerProfilesOpen: false
+    property bool powerMenuOpen: false
+    property bool remindersOpen: false
+
+    // ---------- menu positioning support ----------
+    property int currentBarHeight: 0  // mirrored from shell.qml so centered menus sit just below the bar
+    property bool barShown: true       // minimalBar is always shown; kept so ported menus' show / hide maths resolve
+    readonly property int hyprGaps: 3  // match hyprland window gaps so menus sit flush with tiled windows
+    readonly property int cardY: 24    // vertical nudge applied to menu cards under the bar
+    readonly property bool headerIcons: true // flip to preview menu headers with / without their glyph
+    readonly property bool buttonIcons: true // flip to preview menu buttons with / without their glyph
+
+    // scene-x of the bar button that opened the current menu -> menus anchor their card under it (-1 = centered)
+    property real menuAnchorX: -1
 
     // global initial initial tick value + timer
     property int tick: 0

@@ -35,7 +35,10 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
+        onClicked: {
+            Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
+            Globals.engineRoomOpen = !Globals.engineRoomOpen;
+        }
     }
 
     // read /proc/stat directly via FileView -> no subprocess spawned per tick

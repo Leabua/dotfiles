@@ -5,7 +5,7 @@ import qs.templates
 Item {
     id: batteryBtn
 
-    readonly property var chargingIcons: ["󰢜 ", "󰂆 ", "󰂇 ", "󰂈 ", "󰢝 ", "󰂉 ", "󰢞 ", "󰂊 ", "󰂋 ", "󰂅 "]
+    readonly property var chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
     readonly property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
 
     readonly property var bat: UPower.displayDevice
@@ -45,6 +45,9 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        // onClicked: Globals.powerProfilesOpen = !Globals.powerProfilesOpen
+        onClicked: {
+            Globals.menuAnchorX = batteryBtn.mapToItem(null, batteryBtn.width / 2, 0).x;
+            Globals.powerProfilesOpen = !Globals.powerProfilesOpen;
+        }
     }
 }
