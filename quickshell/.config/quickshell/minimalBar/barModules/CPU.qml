@@ -27,7 +27,7 @@ Item {
 
     BarIcon {
         id: content
-        icon: "󰍛"
+        icon: String.fromCodePoint(0xF2DB)
         displayText: root.cpuUsage + "%"
         color: root.displayColor
     }
@@ -35,7 +35,16 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        // onClicked: Globals.engineRoomOpen = !Globals.engineRoomOpen
+        onClicked: {
+            Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
+            Globals.toggleMenu("engineRoom");
+        }
+    }
+
+    Binding {
+        target: Globals
+        property: "cpuUsage"
+        value: root.cpuUsage
     }
 
     // read /proc/stat directly via FileView -> no subprocess spawned per tick

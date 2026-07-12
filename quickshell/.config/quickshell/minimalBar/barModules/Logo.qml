@@ -28,7 +28,6 @@ Item {
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth
 
-    // Might make this the power menu
     BarIcon {
         id: content
         icon: root.icon
@@ -37,7 +36,10 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        // onClicked: Globals.powerMenuOpen = !Globals.powerMenuOpen
+        onClicked: {
+            Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
+            Globals.toggleMenu("powerMenu");
+        }
     }
     Process {
         id: osProc

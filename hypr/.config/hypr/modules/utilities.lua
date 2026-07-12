@@ -24,7 +24,7 @@ bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 -- power button
 bind(
 	"XF86PowerOff",
-	hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"),
+	hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/minimalBar ipc call powerMenu toggle"),
 	{ locked = true }
 )
 

@@ -40,6 +40,9 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        // onClicked: Globals.audioMenuOpen = !Globals.audioMenuOpen
+        onClicked: {
+            Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
+            Globals.toggleMenu("audio");
+        }
     }
 }
