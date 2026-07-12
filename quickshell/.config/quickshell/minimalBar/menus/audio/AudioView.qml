@@ -41,11 +41,10 @@ ColumnLayout {
             return "Application";
         return n.properties["application.name"] || n.properties["media.name"] || n.description || n.name || "Application";
     }
+
     // resolve the playback app's real icon so a row shows *what* is playing.
-    // the stream's own application.icon-name is often wrong/missing (e.g. Helium
-    // advertises "helium" but its icon file is "helium-browser"), so match the
-    // app to its desktop entry first and use that entry's themed Icon=; fall back
-    // to the advertised icon-name only if no entry matches.
+    // the stream's own application.
+
     function appIcon(n): string {
         if (!n || !n.properties)
             return "";
@@ -63,6 +62,7 @@ ColumnLayout {
         const ico = p["application.icon-name"];
         return ico ? Quickshell.iconPath(ico, "") : "";
     }
+    //
     // pick a speaker glyph that matches the current output level / mute state
     function sinkGlyph(): int {
         if (!root.sink || !root.sink.audio || root.sink.audio.muted || root.sink.audio.volume <= 0)
@@ -93,7 +93,7 @@ ColumnLayout {
     // pactl and switch the card profile on selection (what pavucontrol's Config
     // tab does), then route the default sink to the node it creates.
 
-    property var profileOutputs: [] 
+    property var profileOutputs: []
     property string pendingSinkName: "" // sink we expect to appear after a profile switch
 
     // "output:hdmi-stereo+input:analog-stereo" -> "hdmi-stereo"
@@ -134,6 +134,7 @@ ColumnLayout {
 
     // after a profile switch the new sink appears asynchronously; grab it and
     // make it default (give up after ~5s so we never spin forever)
+
     Timer {
         id: claimTimer
         interval: 200
@@ -169,7 +170,7 @@ ColumnLayout {
     function parseCards(text: string): void {
         const out = [];
         let card = "", path = "", active = "", inProfiles = false;
-        let profs = []; 
+        let profs = [];
 
         const flush = () => {
             if (!card)
@@ -193,7 +194,8 @@ ColumnLayout {
                     id: "profile:" + card + ":" + p.name,
                     card: card,
                     profile: p.name,
-                    sink: "alsa_output." + path + "." + tok, // predicted node.name pipewire will create
+                    sink: "alsa_output." + path + "." + tok // predicted node.name pipewire will create
+                    ,
                     label: p.desc.split(" + ")[0] // drop the "+ Analog Stereo Input" tail
                 });
             }
@@ -222,7 +224,7 @@ ColumnLayout {
                 continue;
             }
             if (/^\t\S/.test(raw)) {
-                inProfiles = false; // any other single-tab section ends the Profiles block
+                inProfiles = false;
                 continue;
             }
             if (inProfiles) {
@@ -231,7 +233,7 @@ ColumnLayout {
                     const av = pm[2].match(/available:\s*(\w+)/);
                     profs.push({
                         name: pm[1],
-                        desc: pm[2].replace(/\s*\([^)]*\)\s*$/, ""), // strip trailing "(sinks: 1, ... available: yes)"
+                        desc: pm[2].replace(/\s*\([^)]*\)\s*$/, ""),
                         avail: av ? av[1] : "unknown"
                     });
                 }
@@ -274,13 +276,13 @@ ColumnLayout {
     DeviceSelector {
         Layout.fillWidth: true
         icon: 0xF057E // speaker
-        devices: root.outputs.concat(root.profileOutputs) // live sinks + switchable card profiles (HDMI)
+        devices: root.outputs.concat(root.profileOutputs)
         currentNode: root.sink
         currentName: root.devName(root.sink)
         nameFor: n => n && n.__profile ? n.label : root.devName(n)
         onSelected: n => {
             if (n && n.__profile)
-                root.activateProfile(n); // switch the card profile, then route to its new sink
+                root.activateProfile(n);
             else
                 Pipewire.preferredDefaultAudioSink = n;
         }
@@ -309,7 +311,7 @@ ColumnLayout {
         delegate: VolumeSliderRow {
             required property var modelData
             Layout.fillWidth: true
-            icon: 0xF08C6 // generic application glyph (fallback when no app icon resolves)
+            icon: 0xF08C6
             iconSource: root.appIcon(modelData)
             value: modelData.audio ? modelData.audio.volume : 0
             muted: modelData.audio ? modelData.audio.muted : false
@@ -342,7 +344,7 @@ ColumnLayout {
     VolumeSliderRow {
         Layout.fillWidth: true
         visible: root.source && root.source.ready
-        icon: (root.source && root.source.audio && (root.source.audio.muted || root.source.audio.volume <= 0)) ? 0xF036D : 0xF036C 
+        icon: (root.source && root.source.audio && (root.source.audio.muted || root.source.audio.volume <= 0)) ? 0xF036D : 0xF036C
         value: root.source && root.source.audio ? root.source.audio.volume : 0
         muted: root.source && root.source.audio ? root.source.audio.muted : false
         onMoved: v => {
@@ -354,7 +356,7 @@ ColumnLayout {
                 root.source.audio.muted = !root.source.audio.muted;
         }
     }
-    //  footer: switch to the bluetooth card (toggle hugs the right edge) 
+    //  footer: switch to the bluetooth card (toggle hugs the right edge)
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing

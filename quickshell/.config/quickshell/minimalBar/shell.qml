@@ -91,15 +91,23 @@ ShellRoot {
 
     // ------- menus: mounted once, opened via bar clicks / ipc -------
     LazyLoader {
-        source: "menus/wifi/WifiMenu.qml"
-        active: true
-    }
-    LazyLoader {
         source: "menus/audio/AudioMenu.qml"
         active: true
     }
     LazyLoader {
+        source: "menus/clipboard/Clipboard.qml"
+        active: true
+    }
+    LazyLoader {
         source: "menus/engineRoom/EngineRoom.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "menus/launcher/Launcher.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "menus/notifications/Notifications.qml"
         active: true
     }
     LazyLoader {
@@ -111,19 +119,11 @@ ShellRoot {
         active: true
     }
     LazyLoader {
-        source: "menus/notifications/Notifications.qml"
-        active: true
-    }
-    LazyLoader {
         source: "menus/reminders/Reminders.qml"
         active: true
     }
     LazyLoader {
-        source: "menus/clipboard/Clipboard.qml"
-        active: true
-    }
-    LazyLoader {
-        source: "menus/launcher/Launcher.qml"
+        source: "menus/wifi/WifiMenu.qml"
         active: true
     }
 

@@ -14,7 +14,9 @@ Rectangle {
 
     property int contentWidth: contentCol.implicitWidth
 
-    implicitWidth: root.largestButton
+    // a button row sets largestButton so every toggle matches the widest one;
+    // a lone button leaves it unset -> fall back to hugging its own content
+    implicitWidth: root.largestButton > 0 ? root.largestButton : contentCol.implicitWidth + Globals.padding
     implicitHeight: contentCol.implicitHeight + Globals.spacing
 
     radius: Globals.radius

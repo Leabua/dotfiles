@@ -54,6 +54,7 @@ Scope {
 
     // score the cached index against the current query; an empty query lists
     // every app alphabetically
+
     function rebuild(): void {
         const q = root.query.trim().toLowerCase();
         const tokens = q.length ? q.split(/\s+/) : [];

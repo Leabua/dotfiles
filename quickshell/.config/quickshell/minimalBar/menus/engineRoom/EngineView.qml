@@ -8,9 +8,6 @@ import qs.templates
 import QtQuick
 import QtQuick.Layouts
 
-// "Engine Room": four radial gauges (CPU / GPU / Memory / Battery) in a row, each with
-// a btop-style stat block underneath. All the /proc + UPower reads live here and
-// only run while the card is open (this component is instantiated on demand).
 ColumnLayout {
     id: root
 
@@ -24,6 +21,7 @@ ColumnLayout {
     function lerpColor(a: color, b: color, t: real): color {
         return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1);
     }
+
     // green -> amber -> red ramp for load-style values (0 = cool, 1 = hot)
     function heatColor(f: real): color {
         f = Math.max(0, Math.min(1, f));
@@ -35,10 +33,12 @@ ColumnLayout {
     property var coreUsages: []        // [0..1] per core
     property int cpuTemp: 0            // deg C
     property string loadAvg: "—"
+
     // per-key jiffy baselines so we can diff between samples ("all" + each core)
     property var _lastIdle: ({})
     property var _lastTotal: ({})
 
+    // pure vibecoding
     function parseCpu(text: string): void {
         const cores = [];
         let overall = root.cpuOverall;
@@ -68,10 +68,10 @@ ColumnLayout {
 
     // ---------- Memory ----------
     property real memUsedFrac: 0
-    property string memUsedStr: "—"
-    property string cacheStr: "—"
+    property string memUsedStr: "-"
+    property string cacheStr: "-"
     property real swapFrac: 0
-    property string swapStr: "—"
+    property string swapStr: "-"
 
     function fmtGiB(kib: real): string {
         const gib = kib / 1048576;
@@ -96,6 +96,7 @@ ColumnLayout {
     }
 
     // ---------- GPU (Intel iGPU: no root, no nvidia-smi) ----------
+    // not sure how if this would work for a dedicate gpu
     // busy% from RC6 idle-residency delta; clock from the i915 sysfs freq knobs.
     // (an Intel iGPU has no dedicated temp/VRAM sensor -- it shares the CPU package.)
     property real gpuBusy: 0     // 0..1
@@ -134,7 +135,7 @@ ColumnLayout {
     readonly property int batPercent: root.batReady ? Math.round(bat.percentage * 100) : 0
     readonly property real batFrac: root.batReady ? bat.percentage : 0
 
-    readonly property var chargingIcons: ["󰢜 ", "󰂆 ", "󰂇 ", "󰂈 ", "󰢝 ", "󰂉 ", "󰢞 ", "󰂊 ", "󰂋 ", "󰂅 "]
+    readonly property var chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
     readonly property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
 
     function batGlyph(): string {

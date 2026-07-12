@@ -7,6 +7,8 @@ import qs.templates
 import QtQuick
 import QtQuick.Layouts
 
+// tony banters yt
+
 Scope {
     id: root
 
@@ -49,7 +51,7 @@ Scope {
     // incoming toast notification
     PanelWindow { // qmllint disable uncreatable-type
 
-        screen: Globals.focusedScreen 
+        screen: Globals.focusedScreen
         visible: !root.centerOpen // don't show toasts while the notification center is open (they'd overlap if otherwise)
         anchors {
             top: true

@@ -27,8 +27,8 @@ Scope {
         open: Globals.engineRoomOpen
         onDismissed: Globals.engineRoomOpen = false
         hAlign: "center"
-        anchorCenterX: Globals.menuAnchorX // open under the bar button that toggled it
-        // sit just below the bar when it's shown, shift to the screen top when hidden
+        anchorCenterX: Globals.menuAnchorX
+
         cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
         padding: Globals.spacing
 

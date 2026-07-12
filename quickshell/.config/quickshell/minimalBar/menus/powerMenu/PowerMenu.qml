@@ -29,8 +29,7 @@ Scope {
         open: Globals.powerMenuOpen
         onDismissed: Globals.powerMenuOpen = false
         hAlign: "center"
-        anchorCenterX: Globals.menuAnchorX // open under the bar button that toggled it
-        // sit just below the bar when it's shown, shift up to the top when it's hidden
+        anchorCenterX: Globals.menuAnchorX
         cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
         padding: Globals.spacing
 
@@ -68,7 +67,7 @@ Scope {
             }
 
             MenuDivider {}
-            // The buttons in the row -> todo squish these buttons a bit
+            // The buttons in the row -> TODO squish these buttons a bit feel too bloated on most screens
             RowLayout {
                 id: buttons
                 Layout.fillHeight: true
@@ -91,7 +90,7 @@ Scope {
                 // logout
                 CenterTextBtn {
                     id: logout
-                    icon: String.fromCodePoint(0xE668)
+                    icon: String.fromCodePoint(0xF0343)
                     label: "Log Out"
                     largestButton: buttons.largestButton
                     runThis: ["bash", "-c", "if command -v hyprshutdown >/dev/null 2>&1 && [[ \"$XDG_CURRENT_DESKTOP\" == \"Hyprland\" ]]; then hyprshutdown; elif [[ \"$XDG_CURRENT_DESKTOP\" == \"Hyprland\" ]]; then hyprctl dispatch exit; else niri msg action quit; fi"]

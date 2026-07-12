@@ -28,7 +28,6 @@ Item {
     implicitHeight: content.implicitHeight
     implicitWidth: content.implicitWidth
 
-    // Might make this the power menu
     BarIcon {
         id: content
         icon: root.icon

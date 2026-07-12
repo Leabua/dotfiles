@@ -332,7 +332,7 @@ Scope {
                         width: ListView.view.width
                         implicitHeight: entryText.implicitHeight + (Globals.spacing + 2) * 2
                         radius: Globals.radius
-                        
+
                         // faint tint on the active entry (matches the launcher list)
                         color: entry.sel ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
 

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.templates
 
-// Search row: the current query (or a placeholder when empty) and a blinking caret riding the end of the text. 
+// Search row: the current query (or a placeholder when empty) and a blinking caret riding the end of the text.
 Item {
     id: input
 

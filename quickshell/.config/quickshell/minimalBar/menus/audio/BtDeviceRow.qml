@@ -5,7 +5,7 @@ import qs.templates
 Rectangle {
     id: root
 
-    // pure vibecoding -> no bt devices on hand so I should probably test this at some point todo
+    // pure vibecoding
     property string deviceName: ""
     property string iconName: ""        // BlueZ freedesktop icon name (e.g. "audio-headset")
     property bool connected: false
@@ -123,8 +123,7 @@ Rectangle {
             }
         }
 
-        // unpair / forget (paired rows only); takes its own clicks so it doesn't
-        // also fire the row's connect/disconnect
+        // unpair / forget (paired rows only); takes its own clicks so it doesn't also fire the row's connect/disconnect
         Rectangle {
             visible: root.showForget && !root.busy
             implicitWidth: forgetGlyph.implicitWidth + Globals.spacing

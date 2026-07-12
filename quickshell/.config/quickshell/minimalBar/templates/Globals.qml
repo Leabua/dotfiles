@@ -142,9 +142,9 @@ Singleton {
     property int tick: 0
 
     Timer {
-        interval: 5000 // 10 seconds -> low = more battery use. Likely minimal but needs to be changed for some laptops
-        repeat: true // stop freezing
-        running: true // keep it running
-        onTriggered: root.tick++ // change event fired every {interval} seconds
+        interval: 5000
+        repeat: true
+        running: true
+        onTriggered: root.tick++
     }
 }

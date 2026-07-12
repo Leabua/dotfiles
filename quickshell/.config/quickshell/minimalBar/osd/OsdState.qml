@@ -9,7 +9,6 @@ import Quickshell.Services.Pipewire
 Singleton {
     id: root
 
-    // which osd is on screen -> "" means none, so Media may show instead
     property string active: ""
 
     // one shared width so the sliders dont resize the island while swapping

@@ -5,7 +5,7 @@ import qs.templates
 Item {
     id: batteryBtn
 
-    // ~~~ mdi battery-charging keeps the bolt-in-battery look (fa's is pro-gated) ~~~
+    // fa = font awesome
     readonly property var chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
 
     readonly property var bat: UPower.displayDevice
@@ -69,6 +69,7 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
+        // all this is so that I can be bale to click outside the bar on other buttons but need a more elegant fix
         onClicked: {
             Globals.menuAnchorX = batteryBtn.mapToItem(null, batteryBtn.width / 2, 0).x;
             Globals.toggleMenu("powerProfiles");

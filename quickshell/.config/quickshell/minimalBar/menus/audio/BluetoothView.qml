@@ -15,7 +15,7 @@ ColumnLayout {
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool hasAdapter: adapter !== null
     readonly property bool poweredOn: hasAdapter && adapter.enabled
-    
+
     readonly property var allDevices: Bluetooth.devices ? Bluetooth.devices.values : [] // full device list
 
     function deviceBusy(d): bool {
@@ -234,7 +234,7 @@ ColumnLayout {
         font.pixelSize: Globals.textFont.pixelSize - 2
     }
 
-    // footer: switch back to the audio card (toggle hugs the right edge) 
+    // footer: switch back to the audio card (toggle hugs the right edge)
     RowLayout {
         Layout.fillWidth: true
         Layout.topMargin: Globals.spacing

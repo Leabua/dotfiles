@@ -10,7 +10,7 @@ RowLayout {
     id: workspaceLayout
     spacing: Globals.spacing
 
-    // TODO: set per-instance from shell.qml -> BarRow1.qml (this bar is instantiated
+    //  TODO: set per-instance from shell.qml -> BarRow1.qml (this bar is instantiated
     // once per monitor) -> only used on niri, since niri's workspaces genuinely
     // belong to one output each, unlike Hyprland's shared global numbering
 
@@ -108,12 +108,6 @@ RowLayout {
                     duration: 60
                 }
             }
-            // Need to clean this up
-            // Behavior on height {
-            //     NumberAnimation {
-            //         duration: 600
-            //     }
-            // }
         }
     }
 }

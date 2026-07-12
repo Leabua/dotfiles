@@ -2,9 +2,6 @@ import QtQuick
 import QtQuick.Shapes
 import qs.templates
 
-// Speedtest-style radial gauge: a faint 270deg track with a heat-coloured
-// progress arc riding over it, and a big glyph (+ optional % caption) sitting in
-// the open centre. `value` is 0..1; the arc animates as it changes.
 Item {
     id: root
 
@@ -17,6 +14,7 @@ Item {
 
     // arc opens at the bottom: start bottom-left (135deg), sweep 270deg CW over
     // the top to bottom-right, leaving a 90deg gap centred on 6 o'clock
+
     readonly property real _span: 270
     readonly property real _start: 135
     readonly property real _clamped: Math.max(0, Math.min(1, value))

@@ -1,12 +1,12 @@
 .pragma library
 
 // Weighted match scoring, ported from bjarneo/quickshell's OmniMenu.
-//
-// Each indexed item carries three lowercased fields: _t (title), _k (keywords +
-// generic name + comment) and _c (categories). Every query token must match at
-// least one field or the whole item is rejected (return 0). Scores stack per
-// token so more specific matches float to the top:
-//   title prefix 100 · title substring 60 · keyword 20 · category 10
+/* Each indexed item carries three lowercased fields: _t (title), _k (keywords +
+ generic name + comment) and _c (categories). Every query token must match at
+ least one field or the whole item is rejected (return 0). Scores stack per
+ token so more specific matches float to the top:
+ title prefix 100 · title substring 60 · keyword 20 · category 10 */   
+
 var PREFIX = 100;
 var TITLE = 60;
 var KEYWORD = 20;
@@ -26,14 +26,12 @@ function scoreItem(item, tokens) {
         if (item._c.indexOf(t) >= 0)
             sub += CATEGORY;
         if (sub === 0)
-            return 0; // a token matched nothing -> drop the item
+            return 0; // a token matched to nothing -> drop the item
         total += sub;
     }
     return total;
 }
 
-// Sort comparator for { item, score } pairs: higher score first, then
-// alphabetical by title so equal-score results stay stable and predictable.
 function compare(a, b) {
     if (b.score !== a.score)
         return b.score - a.score;

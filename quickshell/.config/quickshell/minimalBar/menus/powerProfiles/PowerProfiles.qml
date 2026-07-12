@@ -28,7 +28,7 @@ Scope {
         open: Globals.powerProfilesOpen
         onDismissed: Globals.powerProfilesOpen = false
         hAlign: "center"
-        anchorCenterX: Globals.menuAnchorX // open under the bar button that toggled it
+        anchorCenterX: Globals.menuAnchorX
 
         // sit just below the bar when it's shown, shift up to the top when it's hidden
         cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0

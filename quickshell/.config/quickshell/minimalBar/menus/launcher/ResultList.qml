@@ -3,13 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import qs.templates
 
-// Scrollable result list. Layout (40px rows, icon + title + category) and the
-// selection styling are both from bjarneo's OmniMenu ResultList: the active row
-// gets a faint background tint plus a short colour bar on its left edge, and the
-// text stays readable (no full fgColor fill / bgColor inversion).
-//
-// `results` is a plain JS array of result objects shaped by Launcher:
-//   { kind, title, category, glyph, iconUrl, entry }
+/* Scrollable result list. Layout (40px rows, icon + title + category) and the
+selection styling are both from bjarneo's OmniMenu (need to link the github for that in here). */
+
 Item {
     id: rl
 
@@ -35,6 +31,7 @@ Item {
 
         // the default wheel step is tiny on a touchpad; scale it up and drive
         // contentY directly so scrolling feels responsive (bump scrollSpeed to taste)
+
         WheelHandler {
             property real scrollSpeed: 2
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.templates
 
-// A display-only text field for the reminders editor. 
+// A display-only text field for the reminders editor.
 Item {
     id: field
 
