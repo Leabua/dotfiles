@@ -10,7 +10,8 @@ Item {
 
     readonly property var bat: UPower.displayDevice
     readonly property int percent: (bat != null && bat.ready) ? Math.round(bat.percentage * 100) : 0
-    readonly property bool isCharging: bat != null && bat.ready && bat.state === UPowerDeviceState.Charging
+    // UPower drops out of "Charging" once the battery tops out (FullyCharged) or is trickle-charging (PendingCharge) -> still plugged in, so treat both as charging
+    readonly property bool isCharging: bat != null && bat.ready && (bat.state === UPowerDeviceState.Charging || bat.state === UPowerDeviceState.FullyCharged || bat.state === UPowerDeviceState.PendingCharge)
 
     // ----- fa battery on discharge, mdi bolt while charging -----
     readonly property string icon: {

@@ -120,11 +120,16 @@ return {
 			local theme = require("lualine.themes.seoul256")
 			-- local theme = require("lualine.themes.palenight")
 			for _, mode in pairs(theme) do
-				if mode.b then
-					mode.b.bg = "NONE"
+				-- lualine_a's fg is near-black, meant to sit on its own bright
+				-- mode-colored pill (that bg is the only per-mode color cue).
+				-- Stripping every bg below would leave dark text on nothing, so
+				-- promote that accent color to fg first: readable, still
+				-- color-coded per mode, no filled pill.
+				if mode.a and mode.a.bg then
+					mode.a.fg = mode.a.bg
 				end
-				if mode.c then
-					mode.c.bg = "NONE"
+				for _, section in pairs(mode) do
+					section.bg = "NONE"
 				end
 			end
 
@@ -157,16 +162,20 @@ return {
 			return {
 				options = {
 					theme = theme,
-					section_separators = { left = "\u{e0b1}", right = "\u{e0b3}" },
+					-- powerline arrow glyphs (e0b0-e0b3) are solid-filled characters —
+					-- they render as solid shapes from their own foreground ink, with
+					-- no bg involved, so they show up as dividers even on a fully
+					-- transparent statusline. Drop them entirely: flat text, no dividers.
+					section_separators = { left = "", right = "" },
+					component_separators = { left = "", right = "" },
 				},
 				sections = {
-					-- keep the filled triangle caps on the coloured end sections
-					lualine_a = { { "mode", separator = { right = "\u{e0b0}" } } },
+					lualine_a = { "mode" },
 					lualine_c = {
 						"filename",
 						{ macro_recording, color = { fg = "#ff5555", gui = "bold" } },
 					},
-					lualine_z = { { "location", separator = { left = "\u{e0b2}" } } },
+					lualine_z = { "location" },
 				},
 			}
 		end,

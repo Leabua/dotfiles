@@ -6,11 +6,17 @@ import qs.templates
 RowLayout {
     id: root
     spacing: Globals.spacing
-    visible: !Globals.rightIslandShown
+
+    readonly property bool cpuAlert: Globals.cpuUsage > 70
+    readonly property bool memAlert: Globals.memUsage > 70
+    readonly property bool batteryAlert: Globals.batteryReady && ((Globals.batteryPercent <= 20 && !Globals.batteryCharging) || (Globals.batteryPercent >= 80 && Globals.batteryCharging))
+
+    // an empty RowLayout still reserves a spacing gap next to its neighbours -> only take up space when there's something to show
+    visible: !Globals.rightIslandShown && (cpuAlert || memAlert || batteryAlert)
 
     // ~~~ cpu ~~~
     BarIcon {
-        visible: Globals.cpuUsage > 70
+        visible: root.cpuAlert
         icon: String.fromCodePoint(0xF2DB)
         displayText: Globals.cpuUsage + "%"
         color: Globals.cpuUsage > 85 ? Globals.criticalColor : Globals.warningColor
@@ -18,7 +24,7 @@ RowLayout {
 
     // ~~~ ram ~~~
     BarIcon {
-        visible: Globals.memUsage > 70
+        visible: root.memAlert
         icon: "󰘚"
         displayText: Globals.memUsage + "%"
         color: Globals.memUsage > 85 ? Globals.criticalColor : Globals.warningColor
@@ -26,7 +32,7 @@ RowLayout {
 
     // ~~~ battery: low / critical while draining, or topped up while charging ~~~
     BarIcon {
-        visible: Globals.batteryReady && ((Globals.batteryPercent <= 20 && !Globals.batteryCharging) || (Globals.batteryPercent >= 80 && Globals.batteryCharging))
+        visible: root.batteryAlert
         icon: Globals.batteryCharging ? "󰂅" : (Globals.batteryPercent <= 10 ? String.fromCodePoint(0xF244) : String.fromCodePoint(0xE0B1))
         displayText: Globals.batteryPercent + "%"
         color: (Globals.batteryPercent <= 10 && !Globals.batteryCharging) ? Globals.criticalColor : (Globals.batteryPercent <= 20 && !Globals.batteryCharging) ? Globals.warningColor : Globals.healthy
