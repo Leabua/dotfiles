@@ -16,4 +16,13 @@ return {
 			require("mini.pairs").setup()
 		end,
 	},
+
+	-- Minimal bufferline showing open buffers in the tabline
+	{
+		"echasnovski/mini.tabline",
+		event = "VeryLazy",
+		config = function()
+			require("mini.tabline").setup()
+		end,
+	},
 }

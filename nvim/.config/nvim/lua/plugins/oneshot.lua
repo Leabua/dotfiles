@@ -1,8 +1,5 @@
 return {
 	{
-		-- auto-close and auto-rename HTML/JSX/TSX tags:
-		--   typing `<div>` inserts the matching `</div>`, and renaming one
-		--   side of a pair updates the other.
 		"windwp/nvim-ts-autotag",
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		ft = {
