@@ -63,7 +63,7 @@ alias upgrade="nix flake update --flake $HOME/dotfiles/nixos && rebuild"
 
 # ── general QoL ──────────────────────────────────────────────
 alias catall="find . -type f -exec tail -n +1 {} + | nvim"
-alias ff="fastfetch --logo nixos"
+alias ff="fastfetch"
 alias p="python3"
 alias py="python"
 alias tmux_kill="rm -rf ~/.local/share/tmux/resurrect/*.txt && tmux kill-server"
