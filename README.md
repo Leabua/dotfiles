@@ -69,29 +69,29 @@ Almost everything lands in `~/.config/<package>`. The only two exceptions are `z
 
 | Package | What it does | Files |
 | --- | --- | --- |
-| `hypr` | Hyprland compositor: Lua modules for bindings, monitors, tiling and window rules, plus hyprlock / hypridle / hyprpaper / hyprsunset | [hypr](https://github.com/Leabua/dotfiles/tree/master/hypr/.config/hypr) |
-| `niri` | Niri, the scrollable-tiling Wayland compositor — the alternative to Hyprland | [niri](https://github.com/Leabua/dotfiles/tree/master/niri/.config/niri) |
-| `quickshell` | Custom QtQuick desktop shell: bar, menus, OSDs and launcher. Two bars live here, `minimalBar` and `onebarV2` | [quickshell](https://github.com/Leabua/dotfiles/tree/master/quickshell/.config/quickshell) |
-| `waybar` | Status bar — the simpler alternative if you don't want Quickshell | [waybar](https://github.com/Leabua/dotfiles/tree/master/waybar/.config/waybar) |
-| `nvim` | Neovim: LSP, plugins and colours | [nvim](https://github.com/Leabua/dotfiles/tree/master/nvim/.config/nvim) |
-| `zsh` | Shell config with the powerlevel10k prompt (`.zshrc`, `.p10k.zsh`) | [zsh](https://github.com/Leabua/dotfiles/tree/master/zsh) |
-| `tmux` | Terminal multiplexer | [tmux](https://github.com/Leabua/dotfiles/tree/master/tmux/.config/tmux) |
-| `ghostty` | Terminal emulator — the daily driver | [ghostty](https://github.com/Leabua/dotfiles/tree/master/ghostty/.config/ghostty) |
 | `alacritty` | Terminal emulator — the lightweight fallback | [alacritty](https://github.com/Leabua/dotfiles/tree/master/alacritty/.config/alacritty) |
-| `matugen` | Generates the Material You colour palette from the current wallpaper; everything else reads its output | [matugen](https://github.com/Leabua/dotfiles/tree/master/matugen/.config/matugen) |
-| `walker` | Wayland-native application launcher | [walker](https://github.com/Leabua/dotfiles/tree/master/walker/.config/walker) |
-| `satty` | Screenshot annotation tool | [satty](https://github.com/Leabua/dotfiles/tree/master/satty/.config/satty) |
-| `gtk` | GTK 3 and GTK 4 theme settings, so GTK apps match the rest | [gtk](https://github.com/Leabua/dotfiles/tree/master/gtk/.config) |
-| `wallpapers` | The wallpaper collection — lands at `~/Wallpapers`, which is where `rotate_wallpaper.sh` looks | [wallpapers](https://github.com/Leabua/dotfiles/tree/master/wallpapers/Wallpapers) |
-| `rofi` | Launcher and menus: app runner, clipboard, power menu | [rofi](https://github.com/Leabua/dotfiles/tree/master/rofi/.config/rofi) |
-| `mako` | Lightweight Wayland notification daemon | [mako](https://github.com/Leabua/dotfiles/tree/master/mako/.config/mako) |
-| `btop` | Resource monitor | [btop](https://github.com/Leabua/dotfiles/tree/master/btop/.config/btop) |
-| `yazi` | Terminal file manager | [yazi](https://github.com/Leabua/dotfiles/tree/master/yazi/.config/yazi) |
-| `wiremix` | TUI mixer for PipeWire audio | [wiremix](https://github.com/Leabua/dotfiles/tree/master/wiremix/.config/wiremix) |
-| `impala` | TUI for wifi (iwd) | [impala](https://github.com/Leabua/dotfiles/tree/master/impala/.config/impala) |
 | `bluetui` | TUI for bluetooth | [bluetui](https://github.com/Leabua/dotfiles/tree/master/bluetui/.config/bluetui) |
+| `btop` | Resource monitor | [btop](https://github.com/Leabua/dotfiles/tree/master/btop/.config/btop) |
 | `fastfetch` | System info on shell start | [fastfetch](https://github.com/Leabua/dotfiles/tree/master/fastfetch/.config/fastfetch) |
+| `ghostty` | Terminal emulator — the daily driver | [ghostty](https://github.com/Leabua/dotfiles/tree/master/ghostty/.config/ghostty) |
+| `gtk` | GTK 3 and GTK 4 theme settings, so GTK apps match the rest | [gtk](https://github.com/Leabua/dotfiles/tree/master/gtk/.config) |
+| `hypr` | Hyprland compositor: Lua modules for bindings, monitors, tiling and window rules, plus hyprlock / hypridle / hyprpaper / hyprsunset | [hypr](https://github.com/Leabua/dotfiles/tree/master/hypr/.config/hypr) |
+| `impala` | TUI for wifi (iwd) | [impala](https://github.com/Leabua/dotfiles/tree/master/impala/.config/impala) |
+| `mako` | Lightweight Wayland notification daemon | [mako](https://github.com/Leabua/dotfiles/tree/master/mako/.config/mako) |
+| `matugen` | Generates the Material You colour palette from the current wallpaper; everything else reads its output | [matugen](https://github.com/Leabua/dotfiles/tree/master/matugen/.config/matugen) |
+| `niri` | Niri, the scrollable-tiling Wayland compositor — the alternative to Hyprland | [niri](https://github.com/Leabua/dotfiles/tree/master/niri/.config/niri) |
+| `nvim` | Neovim: LSP, plugins and colours | [nvim](https://github.com/Leabua/dotfiles/tree/master/nvim/.config/nvim) |
 | `pacseek` | TUI for browsing the Arch repos and the AUR — Arch only, skip it on Nixos | [pacseek](https://github.com/Leabua/dotfiles/tree/master/pacseek/.config/pacseek) |
+| `quickshell` | Custom QtQuick desktop shell: bar, menus, OSDs and launcher. Two bars live here, `minimalBar` and `onebarV2` | [quickshell](https://github.com/Leabua/dotfiles/tree/master/quickshell/.config/quickshell) |
+| `rofi` | Launcher and menus: app runner, clipboard, power menu | [rofi](https://github.com/Leabua/dotfiles/tree/master/rofi/.config/rofi) |
+| `satty` | Screenshot annotation tool | [satty](https://github.com/Leabua/dotfiles/tree/master/satty/.config/satty) |
+| `tmux` | Terminal multiplexer | [tmux](https://github.com/Leabua/dotfiles/tree/master/tmux/.config/tmux) |
+| `walker` | Wayland-native application launcher | [walker](https://github.com/Leabua/dotfiles/tree/master/walker/.config/walker) |
+| `wallpapers` | The wallpaper collection — lands at `~/Wallpapers`, which is where `rotate_wallpaper.sh` looks | [wallpapers](https://github.com/Leabua/dotfiles/tree/master/wallpapers/Wallpapers) |
+| `waybar` | Status bar — the simpler alternative if you don't want Quickshell | [waybar](https://github.com/Leabua/dotfiles/tree/master/waybar/.config/waybar) |
+| `wiremix` | TUI mixer for PipeWire audio | [wiremix](https://github.com/Leabua/dotfiles/tree/master/wiremix/.config/wiremix) |
+| `yazi` | Terminal file manager | [yazi](https://github.com/Leabua/dotfiles/tree/master/yazi/.config/yazi) |
+| `zsh` | Shell config with the powerlevel10k prompt (`.zshrc`, `.p10k.zsh`) | [zsh](https://github.com/Leabua/dotfiles/tree/master/zsh) |
 
 ## Not stow packages
 
