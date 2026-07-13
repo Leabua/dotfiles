@@ -108,6 +108,9 @@ Singleton {
     // scene-x of the bar button that opened the current menu -> menus anchor their card under it (-1 = centered)
     property real menuAnchorX: -1
 
+    // screen rect of the open menu card -> lets the toasts duck below a menu sitting in their spot (zero-width = nothing open)
+    property rect menuCardRect: Qt.rect(0, 0, 0, 0)
+
     // ~~~ right-island critical mirror -> surfaced in the centre island when the right cluster is hidden ~~~
     property bool rightIslandShown: true
     property int cpuUsage: 0

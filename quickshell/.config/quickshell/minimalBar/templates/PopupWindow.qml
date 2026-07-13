@@ -65,6 +65,14 @@ PanelWindow { // qmllint disable uncreatable-type
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
+    // ~~~ publish the card's screen rect while open -> the toasts read it and drop below a menu that lands on top of them ~~~
+    Binding {
+        target: Globals
+        property: "menuCardRect"
+        value: Qt.rect(root.margins.left + card.x, root.margins.top + card.y, card.width, card.height)
+        when: root.open
+    }
+
     // forward every keypress to the owner; an unaccepted Escape closes the popup
     Item {
         focus: true
