@@ -5,29 +5,21 @@ import qs.templates
 Item {
     id: batteryBtn
 
-    // fa = font awesome
+    // mdi battery glyphs (matches onebarV2)
     readonly property var chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
+    readonly property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
 
     readonly property var bat: UPower.displayDevice
     readonly property int percent: (bat != null && bat.ready) ? Math.round(bat.percentage * 100) : 0
     // UPower drops out of "Charging" once the battery tops out (FullyCharged) or is trickle-charging (PendingCharge) -> still plugged in, so treat both as charging
     readonly property bool isCharging: bat != null && bat.ready && (bat.state === UPowerDeviceState.Charging || bat.state === UPowerDeviceState.FullyCharged || bat.state === UPowerDeviceState.PendingCharge)
 
-    // ----- fa battery on discharge, mdi bolt while charging -----
+    // ----- mdi battery on discharge, mdi charging glyphs while charging -----
     readonly property string icon: {
         if (bat == null || !bat.ready)
-            return String.fromCodePoint(0xF244);
-        if (isCharging)
-            return chargingIcons[Math.min(Math.floor(percent / 10), 9)];
-        if (percent > 87)
-            return String.fromCodePoint(0xF240);
-        if (percent > 62)
-            return String.fromCodePoint(0xF241);
-        if (percent > 37)
-            return String.fromCodePoint(0xF242);
-        if (percent > 12)
-            return String.fromCodePoint(0xE0B1);
-        return String.fromCodePoint(0xF244);
+            return "󰂃";
+        let idx = Math.min(Math.floor(percent / 10), 9);
+        return isCharging ? chargingIcons[idx] : defaultIcons[idx];
     }
 
     readonly property color displayColor: {

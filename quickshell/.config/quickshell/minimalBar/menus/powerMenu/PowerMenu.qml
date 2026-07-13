@@ -28,8 +28,8 @@ Scope {
     PopupWindow {
         open: Globals.powerMenuOpen
         onDismissed: Globals.powerMenuOpen = false
+        // always centred under the bar, no matter what opened it (logo click, IPC, power key)
         hAlign: "center"
-        anchorCenterX: Globals.menuAnchorX
         cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
         padding: Globals.spacing
 

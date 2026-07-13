@@ -33,7 +33,7 @@ RowLayout {
     // ~~~ battery: low / critical while draining, or topped up while charging ~~~
     BarIcon {
         visible: root.batteryAlert
-        icon: Globals.batteryCharging ? "󰂅" : (Globals.batteryPercent <= 10 ? String.fromCodePoint(0xF244) : String.fromCodePoint(0xE0B1))
+        icon: Globals.batteryCharging ? "󰂅" : (Globals.batteryPercent <= 10 ? "󰁺" : "󰁻")
         displayText: Globals.batteryPercent + "%"
         color: (Globals.batteryPercent <= 10 && !Globals.batteryCharging) ? Globals.criticalColor : (Globals.batteryPercent <= 20 && !Globals.batteryCharging) ? Globals.warningColor : Globals.healthy
     }

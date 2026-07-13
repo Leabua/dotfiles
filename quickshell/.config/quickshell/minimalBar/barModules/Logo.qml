@@ -37,8 +37,7 @@ Item {
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            Globals.menuAnchorX = root.mapToItem(null, root.width / 2, 0).x;
-            Globals.toggleMenu("powerMenu");
+            Globals.toggleMenu("powerMenu"); // power menu is centred, not anchored to this icon
         }
     }
     Process {

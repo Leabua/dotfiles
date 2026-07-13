@@ -88,6 +88,36 @@ return {
 
 			strip_backgrounds()
 			vim.api.nvim_create_autocmd("ColorScheme", { callback = strip_backgrounds })
+
+			local function strip_bufferline_backgrounds()
+				for _, group in ipairs(vim.fn.getcompletion("BufferLine", "highlight")) do
+					local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+					if hl.bg then
+						vim.api.nvim_set_hl(0, group, {
+							fg = hl.fg,
+							sp = hl.sp,
+							bold = hl.bold,
+							italic = hl.italic,
+							underline = hl.underline,
+							underdouble = hl.underdouble,
+						})
+					end
+				end
+			end
+
+			vim.api.nvim_create_autocmd({ "ColorScheme", "BufWinEnter", "BufEnter" }, {
+				callback = function()
+					vim.schedule(strip_bufferline_backgrounds)
+				end,
+			})
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "LazyLoad",
+				callback = function(ev)
+					if ev.data == "bufferline.nvim" then
+						vim.schedule(strip_bufferline_backgrounds)
+					end
+				end,
+			})
 		end,
 	},
 	{
@@ -120,11 +150,6 @@ return {
 			local theme = require("lualine.themes.seoul256")
 			-- local theme = require("lualine.themes.palenight")
 			for _, mode in pairs(theme) do
-				-- lualine_a's fg is near-black, meant to sit on its own bright
-				-- mode-colored pill (that bg is the only per-mode color cue).
-				-- Stripping every bg below would leave dark text on nothing, so
-				-- promote that accent color to fg first: readable, still
-				-- color-coded per mode, no filled pill.
 				if mode.a and mode.a.bg then
 					mode.a.fg = mode.a.bg
 				end
@@ -162,10 +187,6 @@ return {
 			return {
 				options = {
 					theme = theme,
-					-- powerline arrow glyphs (e0b0-e0b3) are solid-filled characters —
-					-- they render as solid shapes from their own foreground ink, with
-					-- no bg involved, so they show up as dividers even on a fully
-					-- transparent statusline. Drop them entirely: flat text, no dividers.
 					section_separators = { left = "", right = "" },
 					component_separators = { left = "", right = "" },
 				},
