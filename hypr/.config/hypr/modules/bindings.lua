@@ -1,6 +1,6 @@
----------------
---- Bindings---
----------------
+----------------
+--- Bindings ---
+----------------
 local bind = hl.bind
 
 -- wallpaper switcher
@@ -18,7 +18,5 @@ bind("SUPER + ALT + SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/mini
 bind("SUPER +  N", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/minimalBar ipc call notifications toggle")) -- noti panel
 bind("SUPER + C", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/minimalBar ipc call clipboard toggle")) -- clipboard secondary
 bind("SUPER + R", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/minimalBar ipc call reminders toggle")) -- clipboard secondary
-bind("SUPER + SHIFT + R", hl.dsp.exec_cmd("rencal")) -- rencal calendar (floats via windowrules)
 -- hide shell bar
 bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("qs -p $HOME/.config/quickshell/minimalBar ipc call bar toggle")) --hide bar
-

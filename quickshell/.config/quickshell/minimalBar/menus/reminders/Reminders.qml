@@ -12,6 +12,7 @@ import QtQuick.Layouts
 Scope {
     id: root
 
+    // HACK: This is where we want our reminders to be stored and how we get them into Obsidian 
     readonly property string filePath: Quickshell.env("HOME") + "/Documents/Uni Notes/Reminder Logs.md"
 
     // sizing tokens
@@ -446,8 +447,9 @@ Scope {
         screen: Globals.focusedScreen // open on the focused monitor, like the notification center
         onKeyDown: event => root.handleKey(event)
 
+        // ~~~ the right island is the only bar element above a right-aligned card -> ride to the top when it's gone ~~~
         margins {
-            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
+            top: Globals.marginsTop + (Globals.barShown && Globals.rightIslandShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
             right: Globals.marginsRight
         }
 

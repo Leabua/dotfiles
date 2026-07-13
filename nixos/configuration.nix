@@ -73,8 +73,6 @@ fileSystems."/mnt/hdd" = {
     systemd.packages = with pkgs; [ hyprpolkitagent ];
     systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
 
-    # purge trashed files (yazi's delete, trash-cli's `trash-put`, etc. all
-    # write to the same freedesktop.org Trash dir) older than 20 days
     systemd.user.services.trash-cleanup.serviceConfig.ExecStart = "${pkgs.trash-cli}/bin/trash-empty 20";
     systemd.user.timers.trash-cleanup = {
         wantedBy = [ "timers.target" ];
@@ -106,8 +104,6 @@ fileSystems."/mnt/hdd" = {
         GTK_THEME = "Adwaita:dark";
         QT_QPA_PLATFORM = "wayland;xcb";
         LIBVA_DRIVER_NAME = "iHD";
-        # default apps for CLI tools (git, etc. read these; GUI file-open uses
-        # xdg.mime.defaultApplications below)
         EDITOR = "nvim";
         VISUAL = "nvim";
         BROWSER = "zen-beta";

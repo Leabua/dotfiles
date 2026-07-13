@@ -21,22 +21,6 @@ return {
 			},
 		})
 
-		-- Quickshell / QML. `-E` makes qmlls read QML2_IMPORT_PATH so it resolves the
-		-- Quickshell + Qt QML modules. Requires quickshell installed globally and
-		-- qt.enable = true (both set in configuration.nix) so those modules land on
-		-- QML2_IMPORT_PATH, which nvim inherits from the session.
-		--
-		-- root_markers: lspconfig's qmlls default roots on `.git` only, which lands on
-		-- the ~/dotfiles monorepo root for every quickshell config -> qmlls finds no
-		-- .qmlls.ini there and can't resolve any `qs.<folder>` module (reads as "Failed
-		-- to import qs.*"). Root on the per-config `.qmlls.ini` (quickshell's build-dir
-		-- marker) so each config dir (onebarV2, minimalBar, ...) gets its own root and
-		-- build dir; `.git` stays as the fallback for QML files outside a config.
-		vim.lsp.config("qmlls", {
-			cmd = { "qmlls", "-E" },
-			root_markers = { ".qmlls.ini", ".git" },
-		})
-
 		-- Servers come from Nix (environment.systemPackages), NOT Mason:
 		-- Mason ships generic-linux binaries that NixOS can't exec. vim.lsp.enable
 		-- just turns on lspconfig's built-in defaults; each starts only if its
@@ -50,7 +34,6 @@ return {
 			"tailwindcss",
 			"basedpyright",
 			"jdtls",
-			"qmlls",
 		})
 
 		vim.api.nvim_create_autocmd("LspAttach", {

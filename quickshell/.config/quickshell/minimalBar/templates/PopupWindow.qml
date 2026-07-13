@@ -65,6 +65,14 @@ PanelWindow { // qmllint disable uncreatable-type
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
+    // ~~~ publish the card's screen rect while open -> the toasts read it and drop below a menu that lands on top of them ~~~
+    Binding {
+        target: Globals
+        property: "menuCardRect"
+        value: Qt.rect(root.margins.left + card.x, root.margins.top + card.y, card.width, card.height)
+        when: root.open
+    }
+
     // forward every keypress to the owner; an unaccepted Escape closes the popup
     Item {
         focus: true
@@ -85,9 +93,20 @@ PanelWindow { // qmllint disable uncreatable-type
         id: card
         anchors.top: parent.top
         anchors.topMargin: root.cardTopMargin
-        anchors.horizontalCenter: root._align === "center" ? parent.horizontalCenter : undefined
-        anchors.left: root._align === "left" ? parent.left : undefined
-        anchors.right: root._align === "right" ? parent.right : undefined
+
+        // stay on a single left anchor and shift the card with the margin instead of
+        // swapping left / right anchors -> having both set at once (even for one frame
+        // while _align changes) hands width over to the anchor system and permanently
+        // kills the implicitWidth sizing below, leaving the card stretched full-width
+        anchors.left: parent.left
+        anchors.leftMargin: {
+            const slack = Math.max(0, root.width - card.width);
+            if (root._align === "right")
+                return slack;
+            if (root._align === "center")
+                return slack / 2;
+            return 0;
+        }
 
         // size to what ever the nested content is plus padding on every side
         implicitWidth: contentHolder.childrenRect.width + root.padding * 2

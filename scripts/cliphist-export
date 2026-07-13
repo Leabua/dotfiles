@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Export image entries from the cliphist database into ~/copies as real files.
+# cliphist keeps images as blobs inside ~/.cache/cliphist/db, so nothing is
+# browsable on disk until they are decoded back out.
+set -euo pipefail
+
+dest="${1:-$HOME/copies}"
+mkdir -p "$dest"
+
+exported=0
+while IFS=$'\t' read -r id preview; do
+	# Only image entries; the preview looks like: [[ binary data 636 KiB png 1920x1080 ]]
+	[[ $preview == *"binary data"* ]] || continue
+
+	ext=$(grep -oiE '\b(png|jpe?g|gif|bmp|webp)\b' <<<"$preview" | head -1 | tr '[:upper:]' '[:lower:]')
+	[[ -n $ext ]] || continue
+
+	# Zero-padded id keeps file managers sorting oldest -> newest.
+	out=$(printf '%s/clip-%06d.%s' "$dest" "$id" "$ext")
+	[[ -e $out ]] && continue
+
+	cliphist decode "$id" >"$out" 2>/dev/null || { rm -f "$out"; continue; }
+	[[ -s $out ]] || { rm -f "$out"; continue; }
+	exported=$((exported + 1))
+done < <(cliphist list)
+
+echo "exported $exported new image(s) to $dest"

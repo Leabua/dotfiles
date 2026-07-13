@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# wl-paste --watch hook: mirrors newly copied images into ~/copies as real files.
+#
+# The image bytes arrive on stdin, but we deliberately ignore them and re-read from
+# cliphist instead: the sibling `cliphist store` watcher assigns the id that
+# cliphist-export names files by, so going through the db keeps both in lockstep.
+# Draining stdin first stops wl-paste blocking on the unread pipe.
+cat >/dev/null
+
+# Give the sibling `cliphist store` watcher a moment to commit this entry.
+sleep 1
+
+# Idempotent, so a missed entry is picked up on the next copy rather than lost.
+exec "$HOME/dotfiles/scripts/cliphist-export" >/dev/null 2>&1

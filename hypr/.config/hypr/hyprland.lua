@@ -2,7 +2,7 @@
 --- My Default Programs ---
 ---------------------------
 
-BROWSER = "helium-browser"
+BROWSER = "zen-beta"
 FILEMANAGER = "nautilus"
 TERMINAL = "ghostty"
 

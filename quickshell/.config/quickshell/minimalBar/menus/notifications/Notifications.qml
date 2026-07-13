@@ -50,15 +50,24 @@ Scope {
 
     // incoming toast notification
     PanelWindow { // qmllint disable uncreatable-type
+        id: toast
 
         screen: Globals.focusedScreen
         visible: !root.centerOpen // don't show toasts while the notification center is open (they'd overlap if otherwise)
+
+        // ~~~ clear the bar strip when it's up ~~~
+        readonly property real barDrop: Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0
+
+        // ~~~ an open menu card overlapping the toast column pushes them below it instead ~~~
+        readonly property bool menuInWay: Globals.menuCardRect.width > 0 && Globals.menuCardRect.x < Globals.marginsLeft + toast.implicitWidth && Globals.menuCardRect.x + Globals.menuCardRect.width > Globals.marginsLeft
+        readonly property real menuDrop: toast.menuInWay ? Globals.menuCardRect.y + Globals.menuCardRect.height + Globals.hyprGaps - Globals.marginsTop : 0
+
         anchors {
             top: true
             left: true
         }
         margins {
-            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
+            top: Globals.marginsTop + Math.max(toast.barDrop, toast.menuDrop)
             left: Globals.marginsLeft
         }
         implicitWidth: 380
@@ -164,8 +173,9 @@ Scope {
         hAlign: "right"
         screen: Globals.focusedScreen // open the center on the focused monitor
 
+        // ~~~ the right island is the only bar element above a right-aligned card -> ride to the top when it's gone ~~~
         margins {
-            top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
+            top: Globals.marginsTop + (Globals.barShown && Globals.rightIslandShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
             right: Globals.marginsRight
         }
 
