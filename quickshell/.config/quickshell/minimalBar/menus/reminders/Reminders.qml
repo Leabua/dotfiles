@@ -12,6 +12,7 @@ import QtQuick.Layouts
 Scope {
     id: root
 
+    // HACK: This is where we want our reminders to be stored and how we get them into Obsidian 
     readonly property string filePath: Quickshell.env("HOME") + "/Documents/Uni Notes/Reminder Logs.md"
 
     // sizing tokens
