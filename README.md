@@ -79,7 +79,7 @@ NB: Note that quickshell replaces a tonne of these standalone packages and direc
 If you want the setup in the screenshots above, this is the whole thing:
 
 ```
-stow hypr quickshell matugen wallpapers ghostty tmux zsh nvim btop fastfetch gtk satty
+stow hypr quickshell matugen wallpapers ghostty tmux zsh nvim btop fastfetch gtk satty (recommend you get `kitty` as well initially since hyprland depends on it as the default terminal on a fresh install)
 ```
 
 Swap `hypr` for `niri` if you want the scrollable compositor instead — everything else is the same either way, and `quickshell` works under both.

@@ -2,14 +2,13 @@
 
 {
   environment.systemPackages = with pkgs; [
-# desktop / system tools
     adwaita-qt
       adwaita-qt6
       awww          
-      btop
-      brightnessctl
       bibata-cursors
-      google-chrome
+      brightnessctl
+      btop
+      bun
       claude-code
       cliphist
       fastfetch
@@ -17,9 +16,11 @@
       fzf
       gcc
       git
+      ghostty
       glib
       gnome-themes-extra
-      ghostty
+      go
+      google-chrome
       grim
       hypridle
       hyprlock
@@ -35,7 +36,7 @@
       neovim
       obs-studio
       obsidian
-      papirus-icon-theme   # complete, crisp MIME/app icons desktop-wide (see icon-theme in configuration.nix)
+      papirus-icon-theme  
       pavucontrol
       playerctl
       pnpm
