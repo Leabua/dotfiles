@@ -85,7 +85,7 @@ Scope {
         }
         margins {
             top: Globals.marginsTop + Math.max(toast.barDrop, toast.menuDrop)
-            left: Globals.marginsLeft
+            right: Globals.marginsRight
         }
         implicitWidth: 380
         implicitHeight: Math.max(1, column.implicitHeight)
@@ -118,6 +118,10 @@ Scope {
                     // the persistent low-battery warning never auto-dismisses -> only a click or charging clears it
                     readonly property bool persistent: card.modelData.appName === "Battery" && card.modelData.urgency === NotificationUrgency.Critical
 
+                    // battery alerts: amber at 20%, red at 10% -> heading + a forced 1px border share this colour
+                    readonly property bool isBattery: card.modelData.appName === "Battery"
+                    readonly property color headingColor: card.isBattery ? (card.modelData.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.warningColor) : Globals.fgColor
+
                     Timer {
                         running: !card.persistent
                         interval: card.modelData.urgency === NotificationUrgency.Critical ? 15000 : 5000
@@ -135,8 +139,9 @@ Scope {
                         implicitHeight: cardLayout.implicitHeight + 18
                         radius: Globals.radius
                         color: Globals.menuBg
-                        border.width: Globals.borderWidth
-                        border.color: card.modelData.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.fgColor
+                        // battery alerts always carry a 1px border in their heading colour, even when borders are otherwise off
+                        border.width: card.isBattery ? 1 : Globals.borderWidth
+                        border.color: card.isBattery ? card.headingColor : (card.modelData.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.fgColor)
                         layer.enabled: true // should stop screen smeer on resize
 
                         RowLayout {
@@ -156,8 +161,7 @@ Scope {
                                 Text {
                                     Layout.fillWidth: true
                                     text: card.modelData.summary
-                                    // battery warnings get a coloured heading: red when critical (10%), amber when low (20%)
-                                    color: card.modelData.appName === "Battery" ? (card.modelData.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.warningColor) : Globals.fgColor
+                                    color: card.headingColor
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize
                                     font.weight: Globals.textFont.weight
