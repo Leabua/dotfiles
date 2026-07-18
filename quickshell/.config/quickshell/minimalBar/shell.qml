@@ -46,7 +46,14 @@ ShellRoot {
                 id: defHeight
                 visible: false // fixed height anchor so the bar never jitters
                 text: " NEVER SHOW THIS"
-                font: Globals.textFont
+                // Size the anchor off the bar-icon glyph (barIconSize, textFont + 2), not the
+                // 14px body font: the centre/right islands are as tall as their 16px icons, so a
+                // 14px reference left the panel a few px shorter than those islands and layer-shell
+                // clipped their rounded bottom corners. Matching barIconSize keeps the panel >= the
+                // tallest island (still a fixed constant -> no jitter, no binding loop on children).
+                font.family: Globals.textFont.family
+                font.weight: Globals.textFont.weight
+                font.pixelSize: Globals.barIconSize
             }
 
             // ------- mirror bar height + shown-state so menus sit below the bar and shift when it hides -------

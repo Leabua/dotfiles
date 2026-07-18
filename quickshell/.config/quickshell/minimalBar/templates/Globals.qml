@@ -72,9 +72,9 @@ Singleton {
 
     // margins
     readonly property int margins: 10
-    readonly property int marginsTop: 7
-    readonly property int marginsLeft: 9
-    readonly property int marginsRight: 9
+    readonly property int marginsTop: 6
+    readonly property int marginsLeft: 8
+    readonly property int marginsRight: 8
     readonly property int marginsBottom: -4
 
     // -------- borders and radii ----------
