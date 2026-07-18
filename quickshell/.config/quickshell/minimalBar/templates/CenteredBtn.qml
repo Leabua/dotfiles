@@ -3,7 +3,7 @@ import qs.templates
 import QtQuick
 import QtQuick.Layouts
 
-// TODO this was a copy and paste so we need to see how we can make this look better
+// TODO this was a copy and paste so we need to see how we can make this look better 
 Rectangle {
     id: root
     property int largestButton

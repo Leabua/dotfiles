@@ -1,8 +1,7 @@
-theme = Aizen Dark
+# theme = Aizen Dark
 # theme = Carbonfox
-# theme = Ayu
+ theme = Ayu 
 # theme = Catppuccin Mocha
-# theme = Modus Vivendi Tinted
 # theme = Dracula
 # theme = TokyoNight Night
 
@@ -22,8 +21,8 @@ font-feature = VSAB=5
 window-padding-y = 1
 window-padding-x = 4
 resize-overlay = never
-background-opacity = 0.85
-# background-opacity = 1
+# background-opacity = 0.85
+background-opacity = 1
 window-inherit-working-directory = true
 
 # cursor
@@ -38,4 +37,3 @@ mouse-scroll-multiplier = 1
 confirm-close-surface = false
 
 window-decoration = false
-
