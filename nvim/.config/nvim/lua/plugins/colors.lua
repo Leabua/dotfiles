@@ -1,4 +1,7 @@
 return {
+	-- Transparency + "no italics except comments" + last-scheme persistence for
+	-- every colorscheme below live in lua/config/theme.lua, wired up in init.lua.
+	-- Switch live with <leader>uc (Telescope preview, <CR> applies + persists).
 	{
 		"EdenEast/nightfox.nvim",
 		lazy = false,
@@ -24,6 +27,7 @@ return {
 				},
 			})
 
+			-- Startup default; config.theme restores your last pick over this.
 			vim.cmd.colorscheme("nightfox")
 
 			local palette = require("nightfox.palette").load("nightfox")
@@ -31,92 +35,47 @@ return {
 			-- Snacks dashboard header + directory follow the colorscheme
 			vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = palette.red.base })
 			vim.api.nvim_set_hl(0, "Directory", { fg = palette.blue.base, bg = "NONE" })
-
-			local transparent_groups = {
-				-- editor core
-				"Normal",
-				"NormalNC",
-				"EndOfBuffer",
-				"MsgArea",
-				"MsgSeparator",
-				"StatusLine",
-				"StatusLineNC",
-				"WinBar",
-				"WinBarNC",
-				"WinSeparator",
-				-- floats / popups and their chrome
-				"NormalFloat",
-				"FloatBorder",
-				"FloatTitle",
-				"FloatFooter",
-				"FloatShadow",
-				"FloatShadowThrough",
-				"Pmenu",
-				"PmenuKind",
-				"PmenuExtra",
-				"PmenuSbar",
-				-- number column / gutter (LineNrAbove/Below link to LineNr)
-				"SignColumn",
-				"LineNr",
-				"CursorLineNr",
-				"FoldColumn",
-
-				-- diagnostic + git signs (themes often tint these even with
-				-- transparent = true; this is what bled into the noice borders)
-				"DiagnosticSignError",
-				"DiagnosticSignWarn",
-				"DiagnosticSignInfo",
-				"DiagnosticSignHint",
-				"DiagnosticSignOk",
-				"GitSignsAdd",
-				"GitSignsChange",
-				"GitSignsDelete",
-				"TreesitterContextLineNumber",
-				"NotifyBackground",
-			}
-
-			local function strip_backgrounds()
-				for _, group in ipairs(transparent_groups) do
-					local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-					if next(hl) ~= nil then
-						hl.bg = nil
-						hl.ctermbg = nil
-						vim.api.nvim_set_hl(0, group, hl)
-					end
-				end
-			end
-
-			strip_backgrounds()
-			vim.api.nvim_create_autocmd("ColorScheme", { callback = strip_backgrounds })
-
-			local function strip_bufferline_backgrounds()
-				for _, group in ipairs(vim.fn.getcompletion("BufferLine", "highlight")) do
-					local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-					if hl.bg then
-						vim.api.nvim_set_hl(0, group, {
-							fg = hl.fg,
-							sp = hl.sp,
-							bold = hl.bold,
-							italic = hl.italic,
-							underline = hl.underline,
-							underdouble = hl.underdouble,
-						})
-					end
-				end
-			end
-
-			vim.api.nvim_create_autocmd({ "ColorScheme", "BufWinEnter", "BufEnter" }, {
-				callback = function()
-					vim.schedule(strip_bufferline_backgrounds)
-				end,
-			})
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "LazyLoad",
-				callback = function(ev)
-					if ev.data == "bufferline.nvim" then
-						vim.schedule(strip_bufferline_backgrounds)
-					end
-				end,
+		end,
+	},
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		opts = {
+			transparent = true,
+			styles = {
+				sidebars = "transparent",
+				floats = "transparent",
+			},
+		},
+	},
+	{
+		"rose-pine/neovim",
+		name = "rose-pine",
+		lazy = false,
+		config = function()
+			require("rose-pine").setup({ styles = { transparency = true } })
+		end,
+	},
+	{
+		"projekt0n/github-nvim-theme",
+		name = "github-theme",
+		lazy = false,
+		config = function()
+			-- the colorblind variant is `github_dark_colorblind` in the picker
+			require("github-theme").setup({ options = { transparent = true } })
+		end,
+	},
+	{
+		"nyoom-engineering/oxocarbon.nvim",
+		lazy = false,
+	},
+	{
+		"olivercederborg/poimandres.nvim",
+		lazy = false,
+		config = function()
+			require("poimandres").setup({
+				disable_background = true,
+				disable_float_background = true,
 			})
 		end,
 	},

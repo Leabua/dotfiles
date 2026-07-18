@@ -42,6 +42,14 @@ return {
 			end,
 			desc = "Telescope help tags",
 		},
+		{
+			"<leader>uc",
+			function()
+				-- live-preview on move, <CR> applies; config.theme persists the pick
+				require("telescope.builtin").colorscheme({ enable_preview = true })
+			end,
+			desc = "Colorschemes (preview)",
+		},
 	},
 	config = function()
 		require("telescope").setup({
