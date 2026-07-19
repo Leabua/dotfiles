@@ -55,7 +55,7 @@ fileSystems."/mnt/hdd" = {
     services.upower.enable = true;                 # battery
     services.power-profiles-daemon.enable = true;  # power profiles
     hardware.bluetooth.enable = true;              # bluetooth
-    services.logind.powerKey = "ignore";           # stop logind powering off; let hyprland's XF86PowerOff bind open the quickshell powerMenu (long-press still forces off)
+    services.logind.settings.Login.HandlePowerKey = "ignore";           # stop logind powering off; let hyprland's XF86PowerOff bind open the quickshell powerMenu (long-press still forces off) -> changed this to the new convention
 
     users.users.leabua = {
         isNormalUser = true;

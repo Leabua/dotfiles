@@ -81,9 +81,8 @@
 
 # flakes
       inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
+      inputs.antigravity-nix.packages."${pkgs.stdenv.hostPlatform.system}".default # Base App -> not the editor 
 
-# desktop entry so GUI apps open text files in nvim inside
-# ghostty. Named nvim-terminal to avoid colliding with neovim's own nvim.desktop.
       (makeDesktopItem {
         name = "nvim-terminal";
         desktopName = "Neovim (Terminal)";
