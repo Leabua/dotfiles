@@ -80,6 +80,25 @@ return {
 		end,
 	},
 	{
+		"sainnhe/everforest",
+		lazy = false,
+		config = function()
+			-- vimscript scheme: configured via globals. Italics stay off here;
+			-- config.theme re-asserts italic comments + strips the rest.
+			vim.g.everforest_background = "medium"
+			vim.g.everforest_transparent_background = 1
+			vim.g.everforest_enable_italic = 0
+		end,
+	},
+	{
+		"vimcolorschemes/olive-crt.nvim",
+		lazy = false,
+		config = function()
+			-- module name is olive_crt (underscore), not the repo's olive-crt
+			require("olive_crt").setup({ transparent = true })
+		end,
+	},
+	{
 		"folke/todo-comments.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		event = "VeryLazy",

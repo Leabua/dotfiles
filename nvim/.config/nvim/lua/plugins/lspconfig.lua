@@ -28,6 +28,7 @@ return {
 		-- it up. Add/remove a name here to match what you install via Nix.
 		vim.lsp.enable({
 			"basedpyright",
+			"clangd",
 			"cssls",
 			"gopls",
 			"html",
