@@ -1,13 +1,9 @@
 # theme = Aizen Dark
 # theme = Carbonfox
- theme = Ayu 
-# theme = Catppuccin Mocha
-# theme = Dracula
-# theme = TokyoNight Night
+# theme = Ayu 
+theme = TokyoNight Night
 
 
-# font-family = "JetBrainsMono Nerd Font"
-# font-family = "IoskeleyMono Nerd Font"
 # font-family = "Iosevka Nerd Font"
 font-family = "Maple Mono NF"
 font-style = Regular

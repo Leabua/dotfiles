@@ -11,6 +11,7 @@
       bun
       claude-code
       cliphist
+      docker
       fastfetch
       fd
       fzf
@@ -62,9 +63,13 @@
       nodejs
       python3
 
+# c related
+      gcc
+      gnumake
+
 # lsp
       basedpyright
-      gnumake
+      clang-tools
       gopls
       jdt-language-server
       lua-language-server
