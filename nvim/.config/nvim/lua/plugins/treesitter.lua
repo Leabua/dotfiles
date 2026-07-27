@@ -16,6 +16,8 @@ return {
 			"tsx",
 			"python",
 			"java",
+			"c",
+			"cpp",
 			"bash",
 			"css",
 			"html",
