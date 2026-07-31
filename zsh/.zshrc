@@ -62,7 +62,7 @@ alias search="nix search nixpkgs"
 alias upgrade="nix flake update --flake $HOME/dotfiles/nixos && rebuild"
 
 # ── general QoL ──────────────────────────────────────────────
-alias catall="find . -type f -exec tail -n +1 {} + | nvim"
+alias catall="fd -t f -X tail -n +1 | nvim"
 alias ff="fastfetch"
 alias p="python3"
 alias py="python"

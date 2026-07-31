@@ -22,7 +22,7 @@
       jdk
       jq
       lazygit
-      libreoffice-fresh
+      libreoffice
       libnotify
       matugen
       nix-output-monitor # give me some visual for the nix rebuilds and upgrades
@@ -47,6 +47,7 @@
       gcc
       git
       ghostty
+      opencode
       neovim
       ripgrep
       pnpm

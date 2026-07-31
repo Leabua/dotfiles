@@ -36,6 +36,7 @@
 
     hardware.graphics = {
         enable = true;
+         enable32Bit = true;
         extraPackages = with pkgs; [
             intel-media-driver   
             libvdpau-va-gl       
@@ -68,7 +69,6 @@ fileSystems."/mnt/hdd" = {
         enable = true;
         xwayland.enable = true;
     };
-    programs.niri.enable = true;
 
     systemd.packages = with pkgs; [ hyprpolkitagent ];
     systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
@@ -84,6 +84,14 @@ fileSystems."/mnt/hdd" = {
 
     programs.firefox.enable = true;
     services.openssh.enable = true;
+
+    # programs.steam = {
+    #   enable = true;
+    #   extraCompatPackages = with pkgs; [
+    #     proton-ge-bin
+    #   ];
+    # };
+
 
     programs.zsh.enable = true;
     users.users.leabua.shell = pkgs.zsh;
