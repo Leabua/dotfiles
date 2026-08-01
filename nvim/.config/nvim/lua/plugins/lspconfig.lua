@@ -26,6 +26,7 @@ return {
 		-- just turns on lspconfig's built-in defaults; each starts only if its
 		-- binary is on PATH, so installing it in configuration.nix is what wires
 		-- it up. Add/remove a name here to match what you install via Nix.
+
 		vim.lsp.enable({
 			"basedpyright",
 			"clangd",
