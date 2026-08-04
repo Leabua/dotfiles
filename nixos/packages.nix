@@ -66,6 +66,12 @@
       nodejs
       python3
 
+#pyhton packages
+      python314Packages.matplotlib
+      python314Packages.numpy
+      python314Packages.pandas
+      python314Packages.yfinance
+
 # c related
       gcc
       gnumake
