@@ -99,6 +99,19 @@ RowLayout {
 
             color: isActive ? dotColor : (ws ? Qt.alpha(dotColor, 0.45) : Qt.alpha(dotColor, 0.15))
 
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -1
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (workspaceLayout.isNiri) {
+                        Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", rect.workspaceId.toString()]);
+                    } else {
+                        Hyprland.dispatch("hl.dsp.focus({ workspace = " + rect.workspaceId + " })");
+                    }
+                }
+            }
+
             Behavior on color {
                 ColorAnimation {
                     duration: 60
