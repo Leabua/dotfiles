@@ -3,6 +3,7 @@
 {
     imports =
         [
+        ./dev.nix
         ./hardware-configuration.nix
         ./packages.nix
         ];
