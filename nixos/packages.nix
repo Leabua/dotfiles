@@ -36,9 +36,8 @@
       yazi
 
 # flakes
-      inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
-      inputs.antigravity-nix.packages."${pkgs.stdenv.hostPlatform.system}".default # Base App -> not the editor 
       inputs.helium.packages."${pkgs.stdenv.hostPlatform.system}".default
+      inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
 
       (makeDesktopItem {
        name = "nvim-terminal";
