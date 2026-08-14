@@ -23,6 +23,7 @@
       tmux
       trash-cli
       tree-sitter
+      zed-editor
       zoxide
       zsh-powerlevel10k
       zsh-autosuggestions

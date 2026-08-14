@@ -1,0 +1,93 @@
+// Zed keymap - ports the Neovim bindings from ~/dotfiles/nvim to Zed's vim mode.
+//
+// The Neovim leader is `<space>`, which in Zed is expressed by binding
+// `"space ..."` key sequences. These only fire while an editor is focused and
+// vim mode is in normal mode, so bare `space` (move right) and motions like
+// `df <space>` keep their default behavior.
+//
+// Reference:
+//   - Key binding syntax:  https://zed.dev/docs/key-bindings
+//   - Vim mode & contexts: https://zed.dev/docs/vim
+//   - Default Linux keymap: assets/keymaps/default-linux.json
+[
+  {
+    "context": "Editor && vim_mode == normal && !menu",
+    "bindings": {
+      // ---- Files & search (telescope) ----
+      "space space": "file_finder::Toggle", // <leader><leader> find files
+      "space f f": "file_finder::Toggle", // <leader>ff find files
+      "space s g": "pane::DeploySearch", // <leader>sg live grep (project search)
+      "space f b": "tab_switcher::Toggle", // <leader>fb buffers (open tabs)
+      "space f l": "tab_switcher::Toggle", // <leader>fl harpoon list (open tabs)
+
+      // ---- Explorer / git ----
+      "space e": "project_panel::Toggle", // <leader>e file explorer (open/close)
+      "space g g": "git_panel::ToggleFocus", // <leader>gg lazygit (git panel)
+
+      // ---- Tab jumping ----
+      "space 1": ["pane::ActivateItem", 0], // <leader>1 -> tab 1
+      "space 2": ["pane::ActivateItem", 1], // <leader>2 -> tab 2
+      "space 3": ["pane::ActivateItem", 2], // <leader>3 -> tab 3
+      "space 4": ["pane::ActivateItem", 3], // <leader>4 -> tab 4
+      "space 5": ["pane::ActivateItem", 4], // <leader>5 -> tab 5
+      "ctrl-p": "pane::ActivatePreviousItem", // <C-p> cycle to previous tab
+      "ctrl-n": "pane::ActivateNextItem", // <C-n> cycle to next tab
+      "shift-h": "pane::ActivatePreviousItem", // H previous tab
+      "shift-l": "pane::ActivateNextItem", // L next tab
+
+      // ---- LSP ----
+      "g d": "editor::GoToDefinition", // gd goto definition (already a Zed default)
+      "space r n": "editor::Rename", // <leader>rn rename
+      "space c a": "editor::ToggleCodeActions", // <leader>ca code action
+      "shift-k": "editor::Hover", // K hover / diagnostics (already a Zed default)
+
+      // ---- Diagnostics ----
+      "space q": "diagnostics::Deploy", // <leader>q open problems (quickfix list)
+      "space ]": "editor::GoToDiagnostic", // <leader>] next diagnostic
+      "space [": "editor::GoToPreviousDiagnostic", // <leader>[ previous diagnostic
+      "space d": "editor::Hover", // <leader>d line diagnostics popup
+      "space u c": "theme_selector::Toggle", // <leader>uc theme picker
+      "space u d": "editor::ToggleDiagnostics", // <leader>ud toggle diagnostics
+      "space t t": "editor::ToggleInlineDiagnostics", // <leader>tt toggle inline diagnostics
+
+      // ---- Pane navigation (vim-tmux-navigator analog) ----
+      "alt-h": "workspace::ActivatePaneLeft",
+      "alt-j": "workspace::ActivatePaneDown",
+      "alt-k": "workspace::ActivatePaneUp",
+      "alt-l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    // Visual mode line moves: visual J/K from nvim's keymaps.lua
+    "context": "Editor && vim_mode == visual && !menu",
+    "bindings": {
+      "shift-j": "editor::MoveLineDown", // J move selected lines down
+      "shift-k": "editor::MoveLineUp" // K move selected lines up
+    }
+  },
+  {
+    // Keep leader bindings working when no editor tab is open
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      "space space": "file_finder::Toggle",
+      "space f f": "file_finder::Toggle",
+      "space e": "project_panel::Toggle",
+      "space g g": "git_panel::ToggleFocus"
+    }
+  },
+  {
+    // project_panel::Toggle needs to also fire while the panel has focus,
+    // otherwise the same key can open it but never close it.
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "space e": "project_panel::Toggle"
+    }
+  },
+  {
+    // Same for the git panel: when it has focus, space g g closes it.
+    "context": "GitPanel",
+    "bindings": {
+      "space g g": "git_panel::Close"
+    }
+  }
+]

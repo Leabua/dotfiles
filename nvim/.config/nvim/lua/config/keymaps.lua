@@ -64,6 +64,10 @@ keymap("v", "K", ":m '<-2<CR>gv=gv", { silent = true, desc = "Move selected line
 keymap("n", "<C-d>", "<C-d>zz", { desc = "Half page down stays centered" })
 keymap("n", "<C-u>", "<C-u>zz", { desc = "Half page up stays centered" })
 
+-- H/L cycle between buffers (overrides the default High/Low motions)
+keymap("n", "H", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
+keymap("n", "L", "<cmd>bnext<CR>", { desc = "Next buffer" })
+
 -- when using "/" to search this keeps the search term in the middle
 keymap("n", "n", "nzzzv")
 keymap("n", "N", "Nzzzv")
