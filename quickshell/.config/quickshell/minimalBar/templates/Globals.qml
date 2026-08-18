@@ -80,7 +80,7 @@ Singleton {
     // -------- borders and radii ----------
     readonly property int borderWidth: 0
     readonly property color borderColor: fgColor
-    readonly property int radius: 8 // change to 0 for no rounding -> 8 is the default
+    readonly property int radius: 0 // change to 0 for no rounding -> 8 is the default
 
     // ----------  animation durations -----------
     readonly property int animFast: 80

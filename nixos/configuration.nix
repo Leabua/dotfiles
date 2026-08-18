@@ -26,13 +26,14 @@
     services.pulseaudio.enable = false;
     security.rtkit.enable = true;
     services.pipewire = {
-        enable = true;
-        alsa.enable = true;
-        alsa.support32Bit = true;
-        pulse.enable = true;
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
 #jack.enable = true;
     };
-
+    # vite needed this to let me see my local dev instance on other devices 
+    networking.firewall.allowedTCPPorts = [ 5173 ];
     services.libinput.enable = true;
 
     hardware.graphics = {
