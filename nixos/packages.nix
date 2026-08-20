@@ -38,6 +38,7 @@
 # flakes
       inputs.helium.packages."${pkgs.stdenv.hostPlatform.system}".default
       inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
+      inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       (makeDesktopItem {
        name = "nvim-terminal";

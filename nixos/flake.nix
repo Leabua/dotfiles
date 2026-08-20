@@ -1,6 +1,5 @@
 {
   description = "Hyprland on Nixos";
-
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     helium = {
@@ -9,6 +8,10 @@
     };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    herdr = {
+      url = "github:herdrdev/herdr/v0.8.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
