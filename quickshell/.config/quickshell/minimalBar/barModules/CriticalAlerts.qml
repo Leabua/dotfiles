@@ -10,9 +10,10 @@ RowLayout {
     readonly property bool cpuAlert: Globals.cpuUsage > 70
     readonly property bool memAlert: Globals.memUsage > 70
     readonly property bool batteryAlert: Globals.batteryReady && ((Globals.batteryPercent <= 20 && !Globals.batteryCharging) || (Globals.batteryPercent >= 80 && Globals.batteryCharging))
+    readonly property bool caffeineOn: Globals.caffeinated
 
     // an empty RowLayout still reserves a spacing gap next to its neighbours -> only take up space when there's something to show
-    visible: !Globals.rightIslandShown && (cpuAlert || memAlert || batteryAlert)
+    visible: !Globals.rightIslandShown && (cpuAlert || memAlert || batteryAlert || caffeineOn)
 
     // ~~~ these icons sit mid-screen, so drop the button anchor (-1) -> PopupWindow falls back to its
     //     hAlign ("center") instead of snapping the card to the right edge like the right island does ~~~
@@ -78,6 +79,25 @@ RowLayout {
             anchors.margins: -1
             cursorShape: Qt.PointingHandCursor
             onClicked: root.openCentred("powerProfiles")
+        }
+    }
+
+    // ~~~ caffeine -> session-awake toggle, surfaced here while the right island is hidden ~~~
+    Item {
+        visible: root.caffeineOn
+        implicitWidth: caffeineIcon.implicitWidth
+        implicitHeight: caffeineIcon.implicitHeight
+
+        BarIcon {
+            id: caffeineIcon
+            icon: String.fromCodePoint(0xF0176)
+            color: Globals.healthy
+        }
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: -1
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Globals.toggleCaffeine()
         }
     }
 }

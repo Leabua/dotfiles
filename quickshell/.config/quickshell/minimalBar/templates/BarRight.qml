@@ -18,6 +18,7 @@ Rectangle {
         Volume {}
         Battery {} //conditional logic -> battery crit states
         Wifi {} //conditional logic -> when the wifi is off copletley  bringup
+        Caffeine {}
 
     }
 }

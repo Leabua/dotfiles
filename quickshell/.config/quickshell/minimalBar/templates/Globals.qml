@@ -142,6 +142,27 @@ Singleton {
         }
     }
 
+    // ---------- caffeine ----------
+    // off by default; re-enabled manually each session (not persisted across restarts)
+    property bool caffeinated: false
+
+    function toggleCaffeine(): void {
+        caffeinated = !caffeinated;
+        caffeineNotify.command = ["notify-send", "-a", "Caffeine", caffeinated ? "Caffeine on" : "Caffeine off", caffeinated ? "Session will stay awake" : "Session can sleep"];
+        caffeineNotify.running = true;
+    }
+
+    // hypridle honours logind idle/sleep inhibitors -> holding one keeps the session awake
+    Process {
+        command: ["systemd-inhibit", "--what=idle:sleep", "--who=quickshell", "--why=caffeine", "sleep", "infinity"]
+        running: root.caffeinated
+    }
+
+    // one-shot toast on every toggle -> picked up by the quickshell notification server
+    Process {
+        id: caffeineNotify
+    }
+
     // global initial initial tick value + timer
     property int tick: 0
 

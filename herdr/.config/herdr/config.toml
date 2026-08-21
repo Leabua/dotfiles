@@ -5,15 +5,16 @@
 onboarding = false
 
 [theme]
-name = "catppuccin"
+name = "terminal"
 
+auto_switch = false
 [terminal]
 # New panes/tabs/workspaces inherit the source pane's directory (tmux -c behaviour).
 new_cwd = "follow"
 
 [keys]
 # Easier splits (mirror tmux: `|` = side-by-side, `-` = stacked)
-split_vertical = "prefix+|"
+split_vertical = "prefix+\\"
 split_horizontal = "prefix+minus"
 
 # Switch tabs with Alt + number (mirror tmux M-1..M-9)
@@ -66,3 +67,8 @@ tab_bar_right = [
   { type = "datetime", format = "%H:%M" },
 ]
 tab_bar_right_separator = " · "
+
+show_agent_labels_on_pane_borders = false
+status_indicators = "dots"
+[ui.toast]
+delivery = "system"
