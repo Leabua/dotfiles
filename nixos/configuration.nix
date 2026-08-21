@@ -140,6 +140,7 @@
 
 # System-wide default apps (writes /etc/xdg/mimeapps.list). 
   xdg.mime.defaultApplications = {
+    "inode/directory"   = "thunar.desktop";
     "text/plain"        = "nvim-terminal.desktop";
     "text/markdown"     = "nvim-terminal.desktop";
     "text/x-python"     = "nvim-terminal.desktop";
