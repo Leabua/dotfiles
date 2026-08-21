@@ -87,3 +87,22 @@ keymap("n", "q?", ":", { noremap = true })
 
 -- Also disable the visual command-line window
 keymap("v", "q:", ":", { noremap = true })
+
+-- Smart pane navigation: alt+h/j/k/l move between nvim splits and herdr panes.
+-- When nvim is at the edge of a split layout, hand off to the neighbouring
+-- herdr pane (herdr forwards the chord here when nvim is in the foreground).
+local herdr_dir = { h = "left", j = "down", k = "up", l = "right" }
+
+local function herdr_nav(dir)
+	local before = vim.fn.winnr()
+	vim.cmd("wincmd " .. dir)
+	if vim.fn.winnr() == before then
+		vim.fn.system({ "herdr", "pane", "focus", "--direction", herdr_dir[dir], "--current" })
+	end
+end
+
+for _, dir in ipairs({ "h", "j", "k", "l" }) do
+	keymap("n", "<A-" .. dir .. ">", function()
+		herdr_nav(dir)
+	end, { silent = true, desc = "Navigate split/herdr pane " .. dir })
+end

@@ -1,0 +1,68 @@
+# herdr configuration - converted from tmux.conf
+# Place at ~/.config/herdr/config.toml (stowed from dotfiles/herdr)
+
+# Skip first-run setup; we configure below.
+onboarding = false
+
+[theme]
+name = "catppuccin"
+
+[terminal]
+# New panes/tabs/workspaces inherit the source pane's directory (tmux -c behaviour).
+new_cwd = "follow"
+
+[keys]
+# Easier splits (mirror tmux: `|` = side-by-side, `-` = stacked)
+split_vertical = "prefix+|"
+split_horizontal = "prefix+minus"
+
+# Switch tabs with Alt + number (mirror tmux M-1..M-9)
+switch_tab = "alt+1..9"
+
+# ==================================================
+# SMART PANE NAVIGATION (Neovim aware) - alt+h/j/k/l
+# herdr's vim-tmux-navigator. Each chord runs herdr-nav.sh,
+# which forwards the key into the pane when (n)vim is in the
+# foreground, otherwise focuses the herdr pane in that direction.
+# ==================================================
+[[keys.command]]
+key = "alt+h"
+type = "shell"
+command = "~/.config/herdr/scripts/herdr-nav.sh left"
+description = "navigate left (vim-aware)"
+
+[[keys.command]]
+key = "alt+j"
+type = "shell"
+command = "~/.config/herdr/scripts/herdr-nav.sh down"
+description = "navigate down (vim-aware)"
+
+[[keys.command]]
+key = "alt+k"
+type = "shell"
+command = "~/.config/herdr/scripts/herdr-nav.sh up"
+description = "navigate up (vim-aware)"
+
+[[keys.command]]
+key = "alt+l"
+type = "shell"
+command = "~/.config/herdr/scripts/herdr-nav.sh right"
+description = "navigate right (vim-aware)"
+
+# opencode 25% split (mirror tmux M-o)
+[[keys.command]]
+key = "alt+o"
+type = "shell"
+command = "pane_id=$(herdr pane split --current --direction right --ratio 0.25 | jq -r '.result.pane.pane_id') && herdr pane run \"$pane_id\" opencode"
+description = "split 25% and run opencode"
+
+[ui]
+# Ask before closing a workspace (tmux detach-on-destroy spirit).
+confirm_close = true
+
+# tmux-style status area on the right of the tab bar.
+tab_bar_right = [
+  { type = "hostname" },
+  { type = "datetime", format = "%H:%M" },
+]
+tab_bar_right_separator = " · "

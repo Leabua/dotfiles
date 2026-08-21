@@ -95,6 +95,7 @@ That leaves `alacritty`, `mako`, `rofi`, `walker` and `waybar` unstowed on purpo
 | `fastfetch` | System info on shell start | [fastfetch](https://github.com/Leabua/dotfiles/tree/master/fastfetch/.config/fastfetch) |
 | `ghostty` | Terminal emulator - the daily driver | [ghostty](https://github.com/Leabua/dotfiles/tree/master/ghostty/.config/ghostty) |
 | `gtk` | GTK 3 and GTK 4 theme settings, so GTK apps match the rest | [gtk](https://github.com/Leabua/dotfiles/tree/master/gtk/.config) |
+| `herdr` | Terminal multiplexer for AI agents, with vim-aware pane navigation (tmux replacement) | [herdr](https://github.com/Leabua/dotfiles/tree/master/herdr/.config/herdr) |
 | `hypr` | Hyprland compositor: Lua modules for bindings, monitors, tiling and window rules, plus hyprlock / hypridle / hyprpaper / hyprsunset | [hypr](https://github.com/Leabua/dotfiles/tree/master/hypr/.config/hypr) |
 | `impala` | TUI for wifi (iwd) | [impala](https://github.com/Leabua/dotfiles/tree/master/impala/.config/impala) |
 | `mako` | Lightweight Wayland notification daemon | [mako](https://github.com/Leabua/dotfiles/tree/master/mako/.config/mako) |

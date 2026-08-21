@@ -22,9 +22,10 @@ export PATH="$PATH:/home/leabua/.local/bin"
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 
 # ── tmux autostart ───────────────────────────────────────────
-if command -v tmux &>/dev/null && [[ -z "$TMUX" ]]; then
-  tmux attach 2>/dev/null || tmux new-session
-fi
+# (disabled while giving herdr a shot)
+# if command -v tmux &>/dev/null && [[ -z "$TMUX" ]]; then
+#   tmux attach 2>/dev/null || tmux new-session
+# fi
 
 # ── prompt (powerlevel10k) ───────────────────────────────────
 _src() { local f; for f in "$@"; do [[ -r $f ]] && { source "$f"; return 0; }; done; return 1 }
