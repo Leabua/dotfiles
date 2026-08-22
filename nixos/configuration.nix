@@ -63,7 +63,7 @@
 
     users.users.leabua = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" ];
+      extraGroups = [ "wheel" "networkmanager" "kvm" ];
     };
 
 # List services that you want to enable:

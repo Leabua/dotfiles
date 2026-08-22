@@ -4,7 +4,8 @@
   environment.systemPackages = with pkgs; [
 
 # dev tooling
-    antigravity
+    android-studio
+      antigravity
       bun
       docker
       fd
