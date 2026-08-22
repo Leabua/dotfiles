@@ -32,6 +32,7 @@
     pulse.enable = true;
 #jack.enable = true;
   };
+
 # vite needed this to let me see my local dev instance on other devices 
   networking.firewall.allowedTCPPorts = [ 5173 ];
   services.libinput.enable = true;
@@ -58,7 +59,7 @@
   services.upower.enable = true;                 # battery
     services.power-profiles-daemon.enable = true;  # power profiles
     hardware.bluetooth.enable = true;              # bluetooth
-    services.logind.settings.Login.HandlePowerKey = "ignore";           # stop logind powering off; let hyprland's XF86PowerOff bind open the quickshell powerMenu (long-press still forces off) -> changed this to the new convention
+    services.logind.settings.Login.HandlePowerKey = "ignore";  # stop logind powering off; let hyprland's XF86PowerOff bind open the quickshell powerMenu (long-press still forces off) -> changed this to the new convention
 
     users.users.leabua = {
       isNormalUser = true;

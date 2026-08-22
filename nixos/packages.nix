@@ -2,7 +2,6 @@
 
 {
   environment.systemPackages = with pkgs; [
-
 # QoL
     adwaita-qt
       adwaita-qt6
@@ -53,7 +52,7 @@
        })
   ];
 
-# fonts (system-wide, via fonts.packages not systemPackages)
+# fonts
   fonts.packages = with pkgs; [
     departure-mono
       maple-mono.NF
