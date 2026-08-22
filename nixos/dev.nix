@@ -4,7 +4,8 @@
   environment.systemPackages = with pkgs; [
 
 # dev tooling
-    bun
+    antigravity
+      bun
       docker
       fd
       fzf
