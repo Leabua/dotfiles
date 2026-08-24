@@ -26,8 +26,8 @@ font-feature = cv37
 window-padding-y = 1
 window-padding-x = 4
 resize-overlay = never
-background-opacity = 0.85
-# background-opacity = 1
+# background-opacity = 0.85
+background-opacity = 1
 window-inherit-working-directory = true
 
 # cursor
