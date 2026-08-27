@@ -23,8 +23,9 @@
 
   time.timeZone = "Africa/Johannesburg";
 
-  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
+
+  services.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -72,6 +73,10 @@
     enable = true;
     xwayland.enable = true;
   };
+  programs.niri = {
+    enable = true;
+  };
+
 
   systemd.packages = with pkgs; [ hyprpolkitagent ];
   systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
