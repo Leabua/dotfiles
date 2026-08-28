@@ -153,7 +153,7 @@
     "text/x-lua"        = "nvim-terminal.desktop";
     "text/javascript"   = "nvim-terminal.desktop";
     "application/json"  = "nvim-terminal.desktop";
-# browser — declarative source of truth (mirrors the per-user file)
+# browser
     "text/html"                = "zen-beta.desktop";
     "x-scheme-handler/http"    = "zen-beta.desktop";
     "x-scheme-handler/https"   = "zen-beta.desktop";

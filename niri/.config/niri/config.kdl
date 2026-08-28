@@ -32,9 +32,7 @@ spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 // hyprpolkitagent is started system-wide via a systemd user unit
 // (WantedBy=graphical-session.target), not from here — see nixos/configuration.nix
-// Main shell — same onebarV2 quickshell config Hyprland uses (noctalia-shell
-// isn't installed on this system; see hypr/.config/hypr/modules/autostart.lua)
-spawn-sh-at-startup "qs -p $HOME/.config/quickshell/onebarV2"
+spawn-at-startup "noctalia"
 
 // -------------------
 // Input Devices
@@ -83,9 +81,9 @@ output "eDP-1" {
 // -------------------
 window-rule {
     match is-focused=true
-    opacity 0.90
+    opacity 1.0
 
-    geometry-corner-radius 6
+    geometry-corner-radius 0
     clip-to-geometry true
 
     draw-border-with-background false // this solves the color issues on focused windows
@@ -104,9 +102,9 @@ window-rule {
 }
 window-rule {
     match is-focused=false
-    opacity 0.85
+    opacity 1.0
 
-    geometry-corner-radius 6
+    geometry-corner-radius 0
     clip-to-geometry true
 
     background-effect {
@@ -171,47 +169,54 @@ binds {
    // quickly mirror laptop to monitor using wl-mirror
     Mod+Ctrl+M { spawn "sh" "-c" "wl-mirror  eDP-1"; }
 
-    // -- Application Launchers --
+    // -- Application Launchers -- (aligned with Hyprland: SUPER+Return / SUPER+SHIFT+O/F)
     Mod+Return { spawn "ghostty"; }
     Mod+Shift+O { spawn "obsidian"; }
     Mod+Shift+F { spawn "nautilus"; }
-    Mod+Shift+B { spawn "zen-browser"; }
+    Mod+B { spawn "zen-beta"; } // was Mod+Shift+B — changed to Mod+B to match Hyprland SUPER+B (BROWSER=zen-beta)
 
-    // App launcher (onebarV2)
-    Mod+Space { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call launcher toggle"; }
+    // App launcher — noctalia (was quickshell onebarV2; Hyprland SUPER+SPACE)
+    Mod+Space { spawn-sh "noctalia msg panel-toggle launcher"; }
 
-    // Power menu (onebarV2 has no separate session menu — powerMenu is the closest match)
-    Mod+Alt+Space { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"; }
+    // Control center — noctalia (was quickshell powerMenu; Hyprland SUPER+ALT+SPACE rightIsland)
+    Mod+Alt+Space { spawn-sh "noctalia msg panel-toggle control-center"; }
 
-    // Clipboard picker
-    Mod+Shift+V { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle"; }
-    Mod+Shift+C { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call clipboard toggle"; }
+    // Clipboard — noctalia (was qs clipboard on Mod+Shift+V/C; Hyprland SUPER+C)
+    Mod+C { spawn-sh "noctalia msg panel-toggle clipboard"; }
+    // keep old aliases for muscle memory
+    Mod+Shift+C { spawn-sh "noctalia msg panel-toggle clipboard"; }
+    Mod+Shift+V { spawn-sh "noctalia msg panel-toggle clipboard"; }
 
-    // Wallpaper — cycle to next, same script Hyprland uses
+    // Wallpaper — cycle to next, same script Hyprland uses (was Mod+Shift+P, now Mod+P to match Hyprland SUPER+P)
+    Mod+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
+    // keep old alias
     Mod+Shift+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
 
     Mod+Shift+M { spawn-sh "chromium --app-id=blgdilankhbcpipclgpdndahbehalgkh"; }
 
-    // Bar toggle
-    Mod+Shift+Return { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call bar toggle"; }
+    // Bar toggle — noctalia (was qs bar toggle on Mod+Shift+Return; Hyprland SUPER+SHIFT+SPACE)
+    Mod+Shift+Space { spawn-sh "noctalia msg bar-toggle"; }
+    // keep old alias
+    Mod+Shift+Return { spawn-sh "noctalia msg bar-toggle"; }
 
     // Lockscreen — hyprlock implements ext-session-lock-v1, works under niri too
+    // Hyprland is SUPER+CTRL+L; niri keeps Mod+Alt+L to avoid conflict with Mod+Ctrl+L focus-monitor-right (no Hyprland equivalent, left as is)
     Mod+Alt+L { spawn "hyprlock"; }
 
-    // Control center — onebarV2 has no equivalent panel; repurposed for its closest
-    // relative, the bar-detail-level cycle (Hyprland binds this to Super+Alt+Space)
-    Mod+Alt+C { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call cycleBarLevel cycle"; }
+    // Settings — noctalia (was qs cycleBarLevel; Hyprland has no direct equivalent)
+    Mod+Alt+C { spawn-sh "noctalia msg settings-toggle"; }
 
-    // Notification history
-    Mod+Alt+N { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call notifications toggle"; }
+    // Notifications — noctalia has no dedicated notifications panel; control-center is closest (was qs notifications on Mod+Alt+N; Hyprland SUPER+N)
+    Mod+N { spawn-sh "noctalia msg panel-toggle control-center"; }
+    Mod+Alt+N { spawn-sh "noctalia msg panel-toggle control-center"; }
 
-    // System monitor (onebarV2's engineRoom panel)
-    Mod+Alt+M { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call engineRoom toggle"; }
+    // System monitor — onebarV2 engineRoom has no direct noctalia equivalent, mapped to control-center (no Hyprland equivalent, left as is)
+    Mod+Alt+M { spawn-sh "noctalia msg panel-toggle control-center"; }
 
     Print { spawn-sh "grim -g \"$(slurp)\" - | satty --filename -"; }
     Mod+Print { spawn-sh "grim - | wl-copy && notify-send 'Screenshot' 'Monitor copied to clipboard' -i clipboard"; }
 
-    // -- Audio Controls --
+    // -- Audio Controls -- (kept wpctl to match Hyprland utilities.lua; noctalia alternative is `noctalia msg volume-up/down/mute`)
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
     XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
@@ -227,9 +232,8 @@ binds {
     XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
     XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
 
-    // -- Power Menu --
-    // Hardware power button triggers power menu (onebarV2)
-    XF86PowerOff allow-when-locked=false { spawn-sh "qs -p $HOME/.config/quickshell/onebarV2 ipc call powerMenu toggle"; }
+    // -- Power Menu -- (was qs powerMenu; noctalia session menu; Hyprland XF86PowerOff -> qs powerMenu)
+    XF86PowerOff allow-when-locked=false { spawn-sh "noctalia msg panel-toggle session"; }
 
     // -- Core Window Management --
     Mod+W { close-window; }
