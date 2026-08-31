@@ -88,6 +88,9 @@ keymap("n", "q?", ":", { noremap = true })
 -- Also disable the visual command-line window
 keymap("v", "q:", ":", { noremap = true })
 
+-- lose all other buffers
+keymap("n", "<leader>ba", "<cmd>%bd|e#|bd#<cr>", { desc = "Close all other buffers" })
+
 -- Smart pane navigation: alt+h/j/k/l move between nvim splits and herdr panes.
 -- When nvim is at the edge of a split layout, hand off to the neighbouring
 -- herdr pane (herdr forwards the chord here when nvim is in the foreground).
