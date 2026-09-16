@@ -7,22 +7,14 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
+			-- Diagnostic underline colors live in lua/config/theme.lua so they
+			-- stay red/blue on EVERY scheme, not just nightfox.
 			require("nightfox").setup({
 				options = {
 					transparent = true,
 					dim_inactive = false,
 					styles = {
 						comments = "italic",
-					},
-				},
-				groups = {
-					all = {
-						-- jagged diagnostic underlines: red errors, blue everything-else
-						DiagnosticUnderlineError = { style = "undercurl", sp = "palette.red.base" },
-						DiagnosticUnderlineWarn = { style = "undercurl", sp = "palette.blue.base" },
-						DiagnosticUnderlineInfo = { style = "undercurl", sp = "palette.blue.base" },
-						DiagnosticUnderlineHint = { style = "undercurl", sp = "palette.blue.base" },
-						DiagnosticUnnecessary = { style = "undercurl", sp = "palette.blue.base" },
 					},
 				},
 			})

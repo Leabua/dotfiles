@@ -29,7 +29,10 @@ return {
 				enabled = true,
 				sources = {
 					-- show dotfiles in the explorer by default (toggle with `H`)
-					explorer = { hidden = true },
+					explorer = {
+						hidden = true,
+						layout = { layout = { width = 30 } },
+					},
 				},
 			},
 			explorer = { replace_netrw = false },

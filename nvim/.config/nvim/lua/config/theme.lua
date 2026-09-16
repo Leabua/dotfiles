@@ -108,6 +108,19 @@ local function strip_bufferline_backgrounds()
 	end
 end
 
+-- Fixed diagnostic underline colors for EVERY scheme: red errors, blue rest.
+-- Without this each scheme brings its own (often yellow/orange warns), and a
+-- scheme with no `sp` color renders the undercurl in the text's own color,
+-- which says nothing. Fixed hex so it never shifts between schemes.
+local function fix_diagnostics()
+	local underline = { undercurl = true, underline = true }
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", vim.tbl_extend("force", underline, { sp = "#ff5d5d" }))
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", vim.tbl_extend("force", underline, { sp = "#5aa9e6" }))
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", vim.tbl_extend("force", underline, { sp = "#5aa9e6" }))
+	vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", vim.tbl_extend("force", underline, { sp = "#5aa9e6" }))
+	vim.api.nvim_set_hl(0, "DiagnosticUnnecessary", vim.tbl_extend("force", underline, { sp = "#5aa9e6" }))
+end
+
 -- Where the last-picked scheme is remembered between launches.
 local persist_path = vim.fn.stdpath("state") .. "/last_colorscheme"
 
@@ -132,6 +145,7 @@ end
 local function apply_fixes()
 	pcall(strip_backgrounds)
 	pcall(fix_italics)
+	pcall(fix_diagnostics)
 	vim.schedule(strip_bufferline_backgrounds)
 end
 

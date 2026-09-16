@@ -58,6 +58,14 @@
     }
   },
   {
+    // ctrl-shift-c toggles AI inline completions (edit predictions) in any vim mode.
+    // Editor-scoped so terminal copy (ctrl-shift-c) keeps working.
+    "context": "Editor",
+    "bindings": {
+      "ctrl-shift-c": "editor::ToggleEditPrediction"
+    }
+  },
+  {
     // Visual mode line moves: visual J/K from nvim's keymaps.lua
     "context": "Editor && vim_mode == visual && !menu",
     "bindings": {

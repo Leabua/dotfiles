@@ -16,8 +16,7 @@
       jdk
       jq
       lazygit
-      inputs.opencode2.packages.${pkgs.stdenv.hostPlatform.system}.opencode2
-      (pkgs.writeShellScriptBin "opencode" "exec opencode2 \"$@\"")
+      opencode
       neovim
       ripgrep
       pnpm

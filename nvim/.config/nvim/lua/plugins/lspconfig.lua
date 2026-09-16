@@ -21,6 +21,22 @@ return {
 			},
 		})
 
+		vim.lsp.config("basedpyright", {
+			settings = {
+				basedpyright = {
+					analysis = {
+						-- "basic" stops flagging unannotated {} / [] (e.g. `bucket = {}`)
+						-- as errors while keeping real errors like undefined names.
+						typeCheckingMode = "basic",
+						diagnosticMode = "openFilesOnly",
+						autoSearchPaths = true,
+						useLibraryCodeForTypes = true,
+						autoImportCompletions = true,
+					},
+				},
+			},
+		})
+
 		-- Servers come from Nix (environment.systemPackages), NOT Mason:
 		-- Mason ships generic-linux binaries that NixOS can't exec. vim.lsp.enable
 		-- just turns on lspconfig's built-in defaults; each starts only if its
@@ -50,27 +66,14 @@ return {
 				map("<leader>rn", vim.lsp.buf.rename, "Rename")
 				map("<leader>ca", vim.lsp.buf.code_action, "Code action")
 
-				-- Smart K: shows the diagnostic if the cursor is on one, otherwise docs.
-				-- Press K again to jump into the float; q or <Esc> closes it.
+				-- K always shows hover docs. Diagnostics already have their own keys:
+				-- <leader>d (line float), <leader>[ / <leader>] (jump + auto-float).
+				-- (The old "smart K" showed the diagnostic instead of docs whenever
+				-- the cursor sat on an error, hiding signatures like list.append().
+				-- Press K again to enter the float; q or <Esc> closes it.)
 				map("K", function()
-					local line = vim.fn.line(".") - 1
-					local col = vim.fn.col(".") - 1
-					local diagnostics = vim.diagnostic.get(event.buf, { lnum = line })
-
-					local on_diagnostic = false
-					for _, d in ipairs(diagnostics) do
-						if col >= d.col and col <= d.end_col then
-							on_diagnostic = true
-							break
-						end
-					end
-
-					if on_diagnostic then
-						vim.diagnostic.open_float({ border = "rounded", scope = "cursor" })
-					else
-						vim.lsp.buf.hover({ border = "rounded" })
-					end
-				end, "Hover / diagnostic (K again to enter, q/Esc to close)")
+					vim.lsp.buf.hover({ border = "rounded" })
+				end, "Hover docs (K again to enter, q/Esc to close)")
 			end,
 		})
 	end,

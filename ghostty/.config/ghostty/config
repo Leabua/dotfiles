@@ -42,3 +42,9 @@ mouse-scroll-multiplier = 1
 confirm-close-surface = false
 
 window-decoration = false
+
+# clipboard: text paste is ctrl+shift+v (bracketed paste, works inside opencode).
+# Plain ctrl+v stays unbound so it reaches the app: vim visual-block and
+# opencode image-paste both need it. Do NOT bind ctrl+v here.
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
