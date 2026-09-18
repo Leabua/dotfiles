@@ -32,8 +32,10 @@
       zsh-history-substring-search
 
 # languages and runtimes
+      cargo
       go
       nodejs
+      rustc
       (python3.withPackages (ps: with ps; [
                              matplotlib
                              numpy
@@ -51,6 +53,7 @@
       gopls
       jdt-language-server
       lua-language-server
+      rust-analyzer
       tailwindcss-language-server
       typescript-language-server
       vscode-langservers-extracted
