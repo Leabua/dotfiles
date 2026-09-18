@@ -1,18 +1,19 @@
 # theme = Aizen Dark
 # theme = Carbonfox
 # theme = Ayu 
-# theme = TokyoNight Night
+theme = TokyoNight Night
 # theme = Sunset Drive 
-theme = cyberdream
+# theme = cyberdream
 
-# font-family = "Iosevka Nerd Font"
-font-family = "Maple Mono NF"
-font-style = Regular
-font-size = 12
+font-family = "Iosevka Nerd Font"
+# font-family = "Maple Mono NF"
+#Normal
+font-style = Medium 
+font-size = 13 
 font-feature = calt
 # Center the asterisk: Iosevka's VSAB selector. 8 = hex-mid (centered
 # 6-point). Default 1 = penta-high (sits high); 2 = penta-mid (5-point).
-font-feature = VSAB=5    
+font-feature = VSAB=3    
 
 # Plain-style italic glyphs (font.subf.dev "plain style"): upright i j k l x y.
 # cv32 left off on purpose so the cursive italic f stays.
@@ -26,8 +27,7 @@ font-feature = cv37
 window-padding-y = 1
 window-padding-x = 4
 resize-overlay = never
-# background-opacity = 0.85
-background-opacity = 1
+background-opacity = 0.85
 window-inherit-working-directory = true
 
 # cursor
