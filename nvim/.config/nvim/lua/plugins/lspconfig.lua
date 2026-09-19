@@ -43,6 +43,14 @@ return {
 		-- binary is on PATH, so installing it in configuration.nix is what wires
 		-- it up. Add/remove a name here to match what you install via Nix.
 
+		vim.lsp.config("rust_analyzer", {
+			settings = {
+				["rust-analyzer"] = {
+					check = { command = "clippy" },
+				},
+			},
+		})
+
 		vim.lsp.enable({
 			"basedpyright",
 			"clangd",
@@ -51,6 +59,7 @@ return {
 			"html",
 			"jdtls",
 			"lua_ls",
+			"rust_analyzer",
 			"tailwindcss",
 			"ts_ls",
 		})

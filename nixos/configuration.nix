@@ -3,14 +3,13 @@
 {
   imports =
     [
-    ./dev.nix
+      ./dev.nix
       ./hardware-configuration.nix
       ./packages.nix
     ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
 
 # systemwide caps <-> escape
   services.xserver.xkb.options = "caps:swapescape";
@@ -67,7 +66,7 @@
       extraGroups = [ "wheel" "networkmanager" "kvm" ];
     };
 
-# List services that you want to enable:
+# the greeter and window managers of choice
   services.displayManager.ly.enable = true;
   programs.hyprland = {
     enable = true;
@@ -159,7 +158,16 @@
     "x-scheme-handler/https"   = "zen-beta.desktop";
   };
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings = {
+    experimental-features = ["nix-command" "flakes"];
+    max-jobs = 4;
+    extra-substituters = [
+      "https://noctalia.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+    ];
+  };
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.05";
 }

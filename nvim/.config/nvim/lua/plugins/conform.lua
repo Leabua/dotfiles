@@ -13,6 +13,7 @@ return {
 			css = { "prettier" },
 			lua = { "stylua" },
 			python = { "black" },
+			rust = { "rustfmt" },
 			sh = { "shfmt" },
 		},
 		format_on_save = {

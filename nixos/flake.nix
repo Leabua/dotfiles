@@ -1,7 +1,7 @@
 {
   description = "Hyprland on Nixos";
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     helium = {
       url = "github:schembriaiden/helium-browser-nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,7 +16,13 @@
     };
     noctalia = {
       url = "github:noctalia-dev/noctalia";
-      inputs.nixpkgs.follows = "nixpkgs"; 
+    };
+    # Pin noctalia's nixpkgs to the exact rev upstream CI builds against
+    # (see their flake.lock), so its Cachix cache hits instead of missing.
+    "noctalia/nixpkgs".url = "github:NixOS/nixpkgs/eaad089433ca2bb662274377d33df3d0e51ef28b";
+    clocktui = {
+      url = "github:Leabua/ClockTUI";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   outputs = { self, nixpkgs, ... }@inputs: {

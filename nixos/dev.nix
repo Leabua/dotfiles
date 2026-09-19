@@ -9,7 +9,6 @@
       docker
       fd
       fzf
-      gcc
       git
       ghostty
       glib
@@ -62,6 +61,7 @@
 # conform -> formatters
       black
       prettier
+      rustfmt
       shfmt
       stylua
       ];
