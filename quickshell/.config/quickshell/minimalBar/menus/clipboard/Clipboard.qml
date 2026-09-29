@@ -23,6 +23,9 @@ Scope {
     // drives both the highlight and the preview pane
     property int selectedIndex: 0
 
+    // "all" | "text" | "image" — segmented filter above the list
+    property string filterMode: "all"
+
     // ----- sizing -----
     readonly property int listWidth: 300                              // left list / truncation width
     readonly property int previewWidth: Math.round(listWidth * 1.5)   // right preview pane, 1.5x the list
@@ -67,30 +70,81 @@ Scope {
         copyProc.running = true;
     }
 
+    // ----- filtering (clipModel holds everything, filteredModel drives the list) -----
+    function matchesFilter(isImage: bool): bool {
+        if (root.filterMode === "text")
+            return !isImage;
+        if (root.filterMode === "image")
+            return isImage;
+        return true;
+    }
+
+    function applyFilter(): void {
+        filteredModel.clear();
+        for (let i = 0; i < clipModel.count; i++) {
+            const it = clipModel.get(i);
+            if (root.matchesFilter(it.isImage))
+                filteredModel.append({
+                    cid: it.cid,
+                    preview: it.preview,
+                    isImage: it.isImage
+                });
+        }
+        root.selectedIndex = 0;
+        if (filteredModel.count > 0)
+            root.select(0);
+        else
+            root.clearPreview();
+    }
+
+    function setFilter(mode: string): void {
+        if (root.filterMode === mode)
+            return;
+        root.filterMode = mode;
+        root.applyFilter();
+    }
+
+    function cycleFilter(): void {
+        if (root.filterMode === "all")
+            root.setFilter("text");
+        else if (root.filterMode === "text")
+            root.setFilter("image");
+        else
+            root.setFilter("all");
+    }
+
+    function filterEmptyText(): string {
+        if (root.filterMode === "image")
+            return "No images in clipboard";
+        if (root.filterMode === "text")
+            return "No text in clipboard";
+        return "No clipboard history";
+    }
+
     // ----- selection (single source of truth, mirrors the launcher) -----
 
     // set the active row + load its preview; the hoveredId guard dedupes the
     // stream of hover events so we only re-decode when the row actually changes
     function select(index: int): void {
-        if (index < 0 || index >= clipModel.count)
+        if (index < 0 || index >= filteredModel.count)
             return;
         root.selectedIndex = index;
-        const it = clipModel.get(index);
+        const it = filteredModel.get(index);
         if (it.cid !== root.hoveredId)
             root.loadPreview(it.cid, it.isImage);
     }
 
     function moveSel(delta: int): void {
-        const n = clipModel.count;
+        const n = filteredModel.count;
         if (n === 0)
             return;
         root.select((root.selectedIndex + delta + n) % n);
     }
 
     function activateAt(index: int): void {
-        if (index < 0 || index >= clipModel.count)
+        if (index < 0 || index >= filteredModel.count)
             return;
-        root.copyEntry(clipModel.get(index).cid);
+        root.copyEntry(filteredModel.get(index).cid);
         root.clipboardOpen = false;
     }
 
@@ -111,6 +165,27 @@ Scope {
         if (k === Qt.Key_Return || k === Qt.Key_Enter) {
             root.activateAt(root.selectedIndex);
             event.accepted = true;
+            return;
+        }
+        // F cycles All -> Text -> Images; 1/2/3 jump straight there
+        if (k === Qt.Key_F) {
+            root.cycleFilter();
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_1) {
+            root.setFilter("all");
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_2) {
+            root.setFilter("text");
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_3) {
+            root.setFilter("image");
+            event.accepted = true;
         }
     }
 
@@ -124,6 +199,7 @@ Scope {
     // refresh list + reset preview/selection whenever the panel opens
     onClipboardOpenChanged: {
         if (clipboardOpen) {
+            filterMode = "all";
             selectedIndex = 0;
             clearPreview();
             refresh();
@@ -133,6 +209,11 @@ Scope {
     // ----- backend model -----
     ListModel {
         id: clipModel
+    }
+
+    // visible slice of clipModel after the type filter; the ListView binds here
+    ListModel {
+        id: filteredModel
     }
 
     Process {
@@ -162,10 +243,7 @@ Scope {
                     });
                 }
                 // select + preview the most recent entry by default
-                if (clipModel.count > 0)
-                    root.select(0);
-                else
-                    root.clearPreview();
+                root.applyFilter();
             }
         }
     }
@@ -274,11 +352,40 @@ Scope {
                 Layout.rightMargin: Globals.spacing
             }
 
+            // ---- filter: All | Text | Images (F cycles, 1/2/3 jump) ----
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.leftMargin: Globals.spacing
+                Layout.rightMargin: Globals.spacing
+                spacing: Globals.spacing
+
+                ViewSwitchBtn {
+                    label: "All"
+                    isActive: root.filterMode === "all"
+                    onClicked: root.setFilter("all")
+                }
+                ViewSwitchBtn {
+                    label: "Text"
+                    isActive: root.filterMode === "text"
+                    onClicked: root.setFilter("text")
+                }
+                ViewSwitchBtn {
+                    label: "Images"
+                    isActive: root.filterMode === "image"
+                    onClicked: root.setFilter("image")
+                }
+            }
+
+            MenuDivider {
+                Layout.leftMargin: Globals.spacing
+                Layout.rightMargin: Globals.spacing
+            }
+
             // empty state - keeps the list column's width (no preview pane) so the panel doesn't shrink horizontally when there's no history
             Text {
-                visible: clipModel.count === 0
+                visible: filteredModel.count === 0
                 Layout.preferredWidth: root.listWidth
-                text: "No clipboard history"
+                text: root.filterEmptyText()
                 color: Qt.alpha(Globals.fgColor, 0.4)
                 font.family: Globals.textFont.family
                 font.pixelSize: Globals.textFont.pixelSize - 1
@@ -288,7 +395,7 @@ Scope {
             // ---- body: list (left) + preview (right) ----
             // only present when there is history; otherwise the second column doesn't exist
             RowLayout {
-                visible: clipModel.count > 0
+                visible: filteredModel.count > 0
                 Layout.fillWidth: true
                 spacing: Globals.spacing + 2
 
@@ -298,7 +405,7 @@ Scope {
                     id: listView
                     Layout.preferredWidth: root.listWidth
                     Layout.preferredHeight: root.bodyHeight
-                    model: clipModel
+                    model: filteredModel
                     currentIndex: root.selectedIndex
                     highlightFollowsCurrentItem: false
                     boundsBehavior: Flickable.StopAtBounds

@@ -4,6 +4,7 @@
   imports =
     [
       ./dev.nix
+      ./gaming.nix
       ./hardware-configuration.nix
       ./packages.nix
     ];

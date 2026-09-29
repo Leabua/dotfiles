@@ -92,6 +92,13 @@ return {
 		end,
 	},
 	{
+		"vague-theme/vague.nvim",
+		lazy = false,
+		config = function()
+			require("vague").setup({ transparent = true })
+		end,
+	},
+	{
 		"folke/todo-comments.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		event = "VeryLazy",
