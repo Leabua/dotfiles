@@ -24,6 +24,14 @@
       url = "github:Leabua/ClockTUI";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    blip = {
+      url = "github:blip-net/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    penelope = {
+      url = "git+ssh://git@github.com/Leabua/Penelope.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = { self, nixpkgs, ... }@inputs: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
