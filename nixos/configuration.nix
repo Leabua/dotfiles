@@ -76,9 +76,6 @@
     enable = true;
     xwayland.enable = true;
   };
-  programs.niri = {
-    enable = true;
-  };
 
 
   systemd.packages = with pkgs; [ hyprpolkitagent ];
@@ -97,7 +94,6 @@
   security.pam.services.login.enableGnomeKeyring = true;
 
 
-  programs.firefox.enable = true;
   services.openssh.enable = true;
   programs.zsh.enable = true;
   users.users.leabua.shell = pkgs.zsh;
@@ -164,12 +160,6 @@
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     max-jobs = 4;
-    extra-substituters = [
-      "https://noctalia.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-    ];
   };
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.05";

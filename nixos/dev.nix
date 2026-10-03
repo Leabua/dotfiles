@@ -30,6 +30,9 @@
       zsh-syntax-highlighting
       zsh-history-substring-search
 
+      # vector graphing 
+      inkscape
+
 # languages and runtimes
       cargo
       go

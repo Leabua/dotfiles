@@ -9,7 +9,6 @@
       bibata-cursors
       brightnessctl
       btop
-      google-chrome
       cliphist
       fastfetch
       gnome-themes-extra
@@ -39,9 +38,7 @@
       inputs.helium.packages."${pkgs.stdenv.hostPlatform.system}".default
       inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
       inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
       inputs.clocktui.packages."${pkgs.stdenv.hostPlatform.system}".default
-      inputs.penelope.packages."${pkgs.stdenv.hostPlatform.system}".default
 
       (makeDesktopItem {
        name = "nvim-terminal";
