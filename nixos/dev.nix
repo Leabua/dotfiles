@@ -36,6 +36,7 @@
       nodejs
       rustc
       (python3.withPackages (ps: with ps; [
+                             openpyxl
                              matplotlib
                              numpy
                              pandas

@@ -3,11 +3,14 @@
 {
   imports =
     [
+      inputs.blip.nixosModules.default
       ./dev.nix
-      ./gaming.nix
+      # ./gaming.nix
       ./hardware-configuration.nix
       ./packages.nix
     ];
+
+  programs.blip.enable = true;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -96,7 +99,6 @@
 
   programs.firefox.enable = true;
   services.openssh.enable = true;
-
   programs.zsh.enable = true;
   users.users.leabua.shell = pkgs.zsh;
   environment.pathsToLink = [
