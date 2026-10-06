@@ -6,6 +6,7 @@
 # dev tooling
       antigravity-cli
       bun
+      codex
       docker
       fd
       fzf
