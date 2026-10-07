@@ -60,7 +60,7 @@ Singleton {
     readonly property color criticalColor: "#f38ba8" // red
 
     // menu background transparency
-    readonly property real menuTransparency: 0.9
+    readonly property real menuTransparency: 0.96
     readonly property color menuBg: Qt.alpha(bgColor, menuTransparency)
 
     // ---------spacing & layout -----------
@@ -97,6 +97,7 @@ Singleton {
     property bool powerProfilesOpen: false
     property bool powerMenuOpen: false
     property bool remindersOpen: false
+    property var activePopup: null
 
     // ---------- menu positioning support ----------
     property int currentBarHeight: 0  // mirrored from shell.qml so centered menus sit just below the bar

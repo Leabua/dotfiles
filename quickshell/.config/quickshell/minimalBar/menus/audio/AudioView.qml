@@ -90,7 +90,7 @@ ColumnLayout {
     // analog profile -- which is why HDMI never showed up here (USB cards expose a
     // standalone sink and so always do). Quickshell's Pipewire binding has no
     // device/profile API, so we surface the *other* available output profiles via
-    // pactl and switch the card profile on selection (what pavucontrol's Config
+    // pw-dump and switch the card profile on selection (what pavucontrol's Config
     // tab does), then route the default sink to the node it creates.
 
     property var profileOutputs: []
@@ -108,8 +108,11 @@ ColumnLayout {
     // flip the card to the profile behind this entry; once its sink node shows up
     // (claimTimer) we make it the default so audio actually follows
     function activateProfile(e): void {
+        if (setProfileProc.running)
+            return;
+        claimTimer.ticks = 0;
         root.pendingSinkName = e.sink;
-        setProfileProc.command = ["pactl", "set-card-profile", e.card, e.profile];
+        setProfileProc.command = ["wpctl", "set-profile", String(e.card), String(e.profile)];
         setProfileProc.running = true;
     }
 
@@ -156,12 +159,16 @@ ColumnLayout {
 
     Process {
         id: setProfileProc
-        onExited: root.refreshCards() // the switched-to profile drops out of the list
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                root.pendingSinkName = "";
+            root.refreshCards();
+        }
     }
 
     Process {
         id: cardsProc
-        command: ["pactl", "list", "cards"]
+        command: ["pw-dump"]
         stdout: StdioCollector {
             onStreamFinished: root.parseCards(text)
         }
@@ -169,19 +176,30 @@ ColumnLayout {
 
     function parseCards(text: string): void {
         const out = [];
-        let card = "", path = "", active = "", inProfiles = false;
-        let profs = [];
-
-        const flush = () => {
-            if (!card)
-                return;
-            const activeTok = root.outToken(active);
+        let objects;
+        try {
+            objects = JSON.parse(text);
+        } catch (e) {
+            return;
+        }
+        for (const device of objects) {
+            if (device.type !== "PipeWire:Interface:Device" || !device.info)
+                continue;
+            const props = device.info.props || {};
+            const cardName = props["device.name"] || "";
+            if (!cardName.startsWith("alsa_card."))
+                continue;
+            const path = cardName.slice(10);
+            const params = device.info.params || {};
+            const profiles = params.EnumProfile || [];
+            const active = (params.Profile || [])[0];
+            const activeTok = active ? root.outToken(active.name) : "";
             const groups = {}; // output token -> chosen profile (prefer the +input duplex variant)
-            for (const p of profs) {
-                if (p.name.indexOf("output:") !== 0 || p.avail !== "yes")
+            for (const p of profiles) {
+                if (!p.name.startsWith("output:") || p.available === "no")
                     continue;
                 const tok = root.outToken(p.name);
-                if (!tok.endsWith("-stereo") || tok === activeTok)
+                if (!tok.includes("stereo") || tok === activeTok)
                     continue; // skip surround clutter + the profile we're already in
                 const prev = groups[tok];
                 if (!prev || (p.name.includes("+input") && !prev.name.includes("+input")))
@@ -191,55 +209,14 @@ ColumnLayout {
                 const p = groups[tok];
                 out.push({
                     __profile: true,
-                    id: "profile:" + card + ":" + p.name,
-                    card: card,
-                    profile: p.name,
-                    sink: "alsa_output." + path + "." + tok // predicted node.name pipewire will create
-                    ,
-                    label: p.desc.split(" + ")[0] // drop the "+ Analog Stereo Input" tail
+                    id: "profile:" + device.id + ":" + p.index,
+                    card: device.id,
+                    profile: p.index,
+                    sink: "alsa_output." + path + "." + tok,
+                    label: p.description.split(" + ")[0]
                 });
             }
-        };
-
-        for (const raw of text.split("\n")) {
-            const nm = raw.match(/^\tName:\s*(.+)$/);
-            if (nm) {
-                flush();
-                card = nm[1].trim();
-                const m = card.match(/^alsa_card\.(.+)$/);
-                path = m ? m[1] : "";
-                profs = [];
-                active = "";
-                inProfiles = false;
-                continue;
-            }
-            if (/^\tProfiles:\s*$/.test(raw)) {
-                inProfiles = true;
-                continue;
-            }
-            const act = raw.match(/^\tActive Profile:\s*(.+)$/);
-            if (act) {
-                active = act[1].trim();
-                inProfiles = false;
-                continue;
-            }
-            if (/^\t\S/.test(raw)) {
-                inProfiles = false;
-                continue;
-            }
-            if (inProfiles) {
-                const pm = raw.match(/^\t\t(\S.*?):\s+(.*)$/);
-                if (pm) {
-                    const av = pm[2].match(/available:\s*(\w+)/);
-                    profs.push({
-                        name: pm[1],
-                        desc: pm[2].replace(/\s*\([^)]*\)\s*$/, ""),
-                        avail: av ? av[1] : "unknown"
-                    });
-                }
-            }
         }
-        flush();
         root.profileOutputs = out;
     }
 

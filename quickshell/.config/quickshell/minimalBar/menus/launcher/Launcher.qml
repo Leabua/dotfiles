@@ -21,8 +21,8 @@ Scope {
     // cached, pre-lowercased index of installed apps (rebuilt when the set changes)
     property var appIndex: []
 
-    readonly property int cardWidth: 480
-    readonly property int listHeight: 380
+    readonly property int cardWidth: Math.min(480, popup.availableWidth)
+    readonly property int listHeight: Math.min(380, Math.max(120, popup.availableHeight - 120))
 
     // ----- indexing + filtering -----
 
@@ -128,7 +128,7 @@ Scope {
             return;
         }
         // printable characters extend the query
-        if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 0x20) {
+        if (!(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)) && event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 0x20) {
             root.query += event.text;
             event.accepted = true;
         }
@@ -167,11 +167,12 @@ Scope {
     }
 
     PopupWindow {
+        id: popup
         open: root.open
         onDismissed: root.open = false
         hAlign: "center"
         // sit just below the bar when it's shown, shift up to the top when it's hidden
-        cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY + 250 : 250 // I wanted it centered in the screen but changing 250 to 0 makes it like any other centered menu
+        verticallyCentered: true
         padding: Globals.spacing
         onKeyDown: event => root.handleKey(event)
 

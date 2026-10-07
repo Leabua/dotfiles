@@ -23,6 +23,29 @@ ColumnLayout {
     property string focusedField: "password"   // "username" | "password"
     property bool revealPassword: false
     property string connectingKey: ""           // row with a connect/up in flight -> spinner
+    property string errorText: ""
+    readonly property bool actionBusy: actionProc.running || enterpriseProc.running || upProc.running
+    signal focusMenu
+
+    function splitFields(line: string): var {
+        const fields = [];
+        let value = "", escaped = false;
+        for (const ch of line) {
+            if (escaped) {
+                value += ch;
+                escaped = false;
+            } else if (ch === "\\") {
+                escaped = true;
+            } else if (ch === ":") {
+                fields.push(value);
+                value = "";
+            } else {
+                value += ch;
+            }
+        }
+        fields.push(value);
+        return fields;
+    }
 
     readonly property bool menuOpen: Globals.wifiMenuOpen
 
@@ -42,6 +65,7 @@ ColumnLayout {
         root.passwordText = "";
         root.usernameText = "";
         root.revealPassword = false;
+        root.focusMenu();
     }
 
     function expand(key: string, enterprise: bool): void {
@@ -49,6 +73,7 @@ ColumnLayout {
             root.collapseForm();
             return;
         }
+        root.errorText = "";
         root.expandedKey = key;
         root.passwordText = "";
         root.usernameText = "";
@@ -59,7 +84,8 @@ ColumnLayout {
     // ----- readers -----
     function refresh(): void {
         radioProc.running = true;
-        savedProc.running = true;
+        if (!savedSsidProc.running && root.savedDetailIndex >= root._saved.length)
+            savedProc.running = true;
         scanProc.running = true;
     }
 
@@ -71,20 +97,20 @@ ColumnLayout {
 
     // merge saved connections + scan results into the two section models
     function rebuild(): void {
-        const savedNames = {};
+        const savedNames = Object.create(null);
         let known = [];
         for (const s of root._saved) {
             let match = null;
             for (const n of root._scan)
-                if (n.ssid === s.name) {
+                if (n.ssid === s.ssid) {
                     match = n;
                     break;
                 }
-            savedNames[s.name] = true;
+            savedNames[s.ssid] = true;
             known.push({
                 name: s.name,
                 uuid: s.uuid,
-                ssid: s.name,
+                ssid: s.ssid,
                 signalStrength: match ? match.signalStrength : -1,
                 secured: match ? match.secured : true,
                 enterprise: match ? match.enterprise : false,
@@ -92,7 +118,7 @@ ColumnLayout {
             });
         }
         // new = scanned SSIDs not already saved, deduped keeping the strongest signal
-        let seen = {};
+        let seen = Object.create(null);
         let fresh = [];
         for (const n of root._scan) {
             if (!n.ssid || savedNames[n.ssid])
@@ -116,22 +142,34 @@ ColumnLayout {
         radioToggleProc.running = true;
     }
     function connectKnown(net): void {
+        if (root.actionBusy)
+            return;
+        root.errorText = "";
         root.connectingKey = root.keyForKnown(net.uuid);
         root.collapseForm();
         actionProc.command = ["nmcli", "connection", "up", "uuid", net.uuid];
         actionProc.running = true;
     }
     function disconnectKnown(net): void {
+        if (root.actionBusy)
+            return;
+        root.errorText = "";
         root.collapseForm();
         actionProc.command = ["nmcli", "connection", "down", "uuid", net.uuid];
         actionProc.running = true;
     }
     function forgetKnown(net): void {
+        if (root.actionBusy)
+            return;
+        root.errorText = "";
         root.collapseForm();
         actionProc.command = ["nmcli", "connection", "delete", "uuid", net.uuid];
         actionProc.running = true;
     }
     function connectNew(net): void {
+        if (root.actionBusy)
+            return;
+        root.errorText = "";
         root.connectingKey = root.keyForNew(net.ssid);
         if (!net.secured) {
             actionProc.command = ["nmcli", "device", "wifi", "connect", net.ssid];
@@ -178,26 +216,11 @@ ColumnLayout {
             event.accepted = true;
             return;
         }
-        if (k === Qt.Key_Tab) {
+        if (k === Qt.Key_Tab || k === Qt.Key_Backtab) {
             if (net.enterprise)
                 root.focusedField = root.focusedField === "username" ? "password" : "username";
             event.accepted = true;
             return;
-        }
-        if (k === Qt.Key_Backspace) {
-            if (root.focusedField === "username")
-                root.usernameText = root.usernameText.slice(0, -1);
-            else
-                root.passwordText = root.passwordText.slice(0, -1);
-            event.accepted = true;
-            return;
-        }
-        if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 0x20) {
-            if (root.focusedField === "username")
-                root.usernameText += event.text;
-            else
-                root.passwordText += event.text;
-            event.accepted = true;
         }
     }
 
@@ -229,18 +252,47 @@ ColumnLayout {
                 for (const line of text.trim().split('\n')) {
                     if (!line)
                         continue;
-                    const p = line.split(':');
+                    const p = root.splitFields(line);
                     if (p.length < 4 || p[2] !== "802-11-wireless")
                         continue;
                     out.push({
                         name: p[0],
+                        ssid: p[0],
                         uuid: p[1],
                         connected: p[3] === "yes"
                     });
                 }
                 root._saved = out;
                 root.rebuild();
+                root.savedDetailIndex = 0;
+                root.readSavedSsid();
             }
+        }
+    }
+
+    property int savedDetailIndex: 0
+    function readSavedSsid(): void {
+        if (savedSsidProc.running || root.savedDetailIndex >= root._saved.length)
+            return;
+        savedSsidProc.command = ["nmcli", "--escape", "no", "-g", "802-11-wireless.ssid", "connection", "show", "uuid", root._saved[root.savedDetailIndex].uuid];
+        savedSsidProc.running = true;
+    }
+    Process {
+        id: savedSsidProc
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const ssid = text.replace(/\n$/, "");
+                if (ssid && root.savedDetailIndex < root._saved.length) {
+                    const out = root._saved.slice();
+                    out[root.savedDetailIndex].ssid = ssid;
+                    root._saved = out;
+                    root.rebuild();
+                }
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            root.savedDetailIndex++;
+            Qt.callLater(root.readSavedSsid);
         }
     }
 
@@ -253,7 +305,7 @@ ColumnLayout {
                 for (const line of text.split('\n')) {
                     if (!line)
                         continue;
-                    const p = line.split(':');
+                    const p = root.splitFields(line);
                     if (p.length < 3 || !p[1])
                         continue;
                     const sec = (p[3] || "").trim();
@@ -285,6 +337,9 @@ ColumnLayout {
     // up / down / delete / connect; clears the spinner + refreshes on completion
     Process {
         id: actionProc
+        stderr: StdioCollector {
+            onStreamFinished: root.errorText = text.trim()
+        }
         onExited: (exitCode, exitStatus) => {
             root.connectingKey = "";
             refreshTimer.restart();
@@ -295,13 +350,24 @@ ColumnLayout {
     Process {
         id: enterpriseProc
         property string ssid: ""
+        stderr: StdioCollector {
+            onStreamFinished: root.errorText = text.trim()
+        }
         onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0) {
+                root.connectingKey = "";
+                refreshTimer.restart();
+                return;
+            }
             upProc.command = ["nmcli", "connection", "up", "id", enterpriseProc.ssid];
             upProc.running = true;
         }
     }
     Process {
         id: upProc
+        stderr: StdioCollector {
+            onStreamFinished: root.errorText = text.trim()
+        }
         onExited: (exitCode, exitStatus) => {
             root.connectingKey = "";
             refreshTimer.restart();
@@ -520,6 +586,9 @@ ColumnLayout {
             onConnectRequested: root.connectNew(modelData)
             onFocusField: field => root.focusedField = field
             onToggleReveal: root.revealPassword = !root.revealPassword
+            onPasswordEdited: value => root.passwordText = value
+            onUsernameEdited: value => root.usernameText = value
+            onKeyPressed: event => root.handleKey(event)
         }
     }
 
@@ -531,5 +600,15 @@ ColumnLayout {
         font.family: Globals.textFont.family
         font.weight: Globals.textFont.weight - 100
         font.pixelSize: Globals.textFont.pixelSize - 2
+    }
+    Text {
+        visible: root.errorText !== ""
+        Layout.fillWidth: true
+        text: root.errorText
+        textFormat: Text.PlainText
+        color: Globals.criticalColor
+        font.family: Globals.textFont.family
+        font.pixelSize: Globals.textFont.pixelSize - 2
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
     }
 }

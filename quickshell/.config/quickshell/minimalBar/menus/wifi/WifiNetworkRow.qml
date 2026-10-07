@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import qs.templates
 
 ColumnLayout {
@@ -28,6 +29,9 @@ ColumnLayout {
     signal forgetRequested
     signal focusField(string field)
     signal toggleReveal
+    signal passwordEdited(string value)
+    signal usernameEdited(string value)
+    signal keyPressed(var event)
 
     // signal-bar glyph; the lock overlay only flags NEW secured networks (you'll
     // need a password) — known nets already hold their credentials, so no lock
@@ -165,8 +169,10 @@ ColumnLayout {
             icon: 0xF0004 // account
             placeholder: "Username (e.g. you@eduroam)"
             value: root.usernameText
-            focused: root.focusedField === "username"
+            focused: Globals.wifiMenuOpen && root.expanded && !root.known && root.enterprise && root.focusedField === "username"
             onTapped: root.focusField("username")
+            onEdited: value => root.usernameEdited(value)
+            onKeyPressed: event => root.keyPressed(event)
         }
         InputField {
             id: passField
@@ -175,11 +181,13 @@ ColumnLayout {
             placeholder: "Password"
             value: root.passwordText
             masked: !root.revealPassword
-            focused: root.focusedField === "password"
+            focused: Globals.wifiMenuOpen && root.expanded && !root.known && root.secured && root.focusedField === "password"
             showReveal: true
             revealed: root.revealPassword
             onTapped: root.focusField("password")
             onToggleRevealTapped: root.toggleReveal()
+            onEdited: value => root.passwordEdited(value)
+            onKeyPressed: event => root.keyPressed(event)
         }
 
         // action buttons
@@ -255,8 +263,7 @@ ColumnLayout {
         }
     }
 
-    // ----- inline component: focus-driven text field (no Qt TextField; WifiView
-    // owns the keystrokes and feeds `value` back in) -----
+    // Native fields support pasting credentials and editing in place.
     component InputField: Rectangle {
         id: field
         property int icon: 0xF033E
@@ -268,8 +275,12 @@ ColumnLayout {
         property bool revealed: false
         signal tapped
         signal toggleRevealTapped
-
-        readonly property string shown: field.value.length === 0 ? field.placeholder : (field.masked ? "•".repeat(field.value.length) : field.value)
+        signal edited(string value)
+        signal keyPressed(var event)
+        onFocusedChanged: {
+            if (focused)
+                Qt.callLater(nativeInput.forceActiveFocus);
+        }
 
         Layout.fillWidth: true
         implicitHeight: fieldRow.implicitHeight + Globals.spacing
@@ -306,47 +317,28 @@ ColumnLayout {
                 font.weight: Globals.textFont.weight
             }
 
-            Item {
+            TextField {
+                id: nativeInput
                 Layout.fillWidth: true
-                implicitHeight: valueText.implicitHeight
-
-                Text {
-                    id: valueText
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: field.shown
-                    color: field.value.length === 0 ? Qt.alpha(Globals.fgColor, 0.4) : Globals.fgColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize
-                    font.weight: Globals.textFont.weight
-                    elide: Text.ElideRight
+                text: field.value
+                placeholderText: field.placeholder
+                placeholderTextColor: Qt.alpha(Globals.fgColor, 0.4)
+                echoMode: field.masked ? TextInput.Password : TextInput.Normal
+                selectByMouse: true
+                color: Globals.fgColor
+                selectionColor: Globals.fgColor
+                selectedTextColor: Globals.bgColor
+                font: Globals.textFont
+                padding: 4
+                background: null
+                onTextEdited: field.edited(text)
+                onActiveFocusChanged: {
+                    if (activeFocus)
+                        field.tapped();
                 }
-
-                // blinking caret riding the end of the text (matches SearchInput)
-                Rectangle {
-                    width: 2
-                    height: Globals.textFont.pixelSize + 2
-                    color: Globals.fgColor
-                    visible: field.focused
-                    anchors.verticalCenter: parent.verticalCenter
-                    x: field.value.length === 0 ? valueText.x : valueText.x + valueText.contentWidth + 2
-
-                    SequentialAnimation on opacity {
-                        running: field.focused
-                        loops: Animation.Infinite
-                        NumberAnimation {
-                            from: 1
-                            to: 0.1
-                            duration: 500
-                            easing.type: Easing.InOutSine
-                        }
-                        NumberAnimation {
-                            from: 0.1
-                            to: 1
-                            duration: 500
-                            easing.type: Easing.InOutSine
-                        }
-                    }
+                Keys.onPressed: event => {
+                    event.accepted = false;
+                    field.keyPressed(event);
                 }
             }
 

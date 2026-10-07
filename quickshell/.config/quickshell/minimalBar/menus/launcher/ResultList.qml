@@ -63,25 +63,6 @@ Item {
                 }
             }
 
-            // short colour bar on the left edge marks the active row; fades with the
-            // same timing as the row tint so the two move together
-            Rectangle {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.topMargin: Globals.spacing
-                anchors.bottomMargin: Globals.spacing
-                width: 3
-                radius: 2
-                color: Globals.fgColor
-                opacity: row.sel ? 1 : 0
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: Globals.animFast
-                    }
-                }
-            }
-
             // icon: real app icon when resolvable, else a glyph that picks up the selection colours
             Item {
                 id: iconBox
@@ -133,6 +114,7 @@ Item {
 
             Text {
                 id: catText
+                width: Math.min(implicitWidth, row.width * 0.28)
                 anchors.right: parent.right
                 anchors.rightMargin: Globals.spacing + 8
                 anchors.verticalCenter: parent.verticalCenter

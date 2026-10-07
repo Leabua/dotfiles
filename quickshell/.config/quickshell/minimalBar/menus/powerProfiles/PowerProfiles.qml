@@ -85,7 +85,7 @@ Scope {
                     largestButton: buttons.largestButton
                     runThis: ["bash", "-c", "powerprofilesctl set power-saver && notify-send -a 'Power Profile' 'Power Profile' 'Efficient'"]
                     isActive: root.activeProfile === "power-saver"
-                    onClicked: {
+                    onFinished: exitCode => {
                         getProfileCmd.running = true;
                     }
                 }
@@ -98,7 +98,7 @@ Scope {
                     largestButton: buttons.largestButton
                     runThis: ["bash", "-c", "powerprofilesctl set balanced && notify-send -a 'Power Profile' 'Power Profile' 'Balanced'"]
                     isActive: root.activeProfile === "balanced"
-                    onClicked: {
+                    onFinished: exitCode => {
                         getProfileCmd.running = true;
                     }
                 }
@@ -111,7 +111,7 @@ Scope {
                     largestButton: buttons.largestButton
                     runThis: ["bash", "-c", "powerprofilesctl set performance && notify-send -a 'Power Profile' 'Power Profile' 'Performance'"]
                     isActive: root.activeProfile === "performance"
-                    onClicked: {
+                    onFinished: exitCode => {
                         getProfileCmd.running = true;
                     }
                 }

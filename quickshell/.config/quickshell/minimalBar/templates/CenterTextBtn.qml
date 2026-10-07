@@ -10,6 +10,7 @@ Rectangle {
     property string label
     property var runThis: [] // empty by default -> view-switch buttons carry no command
     signal clicked
+    signal finished(int exitCode)
     property bool isActive: false // keep button coloured if it is already active
 
     property int contentWidth: contentCol.implicitWidth // feeding this upstream as the size of a whatever the content is in future
@@ -20,6 +21,15 @@ Rectangle {
 
     radius: Globals.radius
     color: isActive ? Globals.fgColor : (ma.containsMouse ? Globals.fgColor : "transparent")
+    opacity: enabled ? 1 : 0.4
+
+    function activate(): void {
+        if (!root.enabled || commandProcess.running)
+            return;
+        if (root.runThis && root.runThis.length > 0)
+            commandProcess.running = true;
+        root.clicked();
+    }
 
     // border.width: Globals.borderWidth //-> if I ever wanted borders for buttons again
     // border.color: Globals.borderColor
@@ -54,6 +64,7 @@ Rectangle {
     Process {
         id: commandProcess
         command: root.runThis
+        onExited: (exitCode, exitStatus) => root.finished(exitCode)
     }
 
     MouseArea {
@@ -61,11 +72,7 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        onClicked: {
-            if (root.runThis && root.runThis.length > 0) // some buttons only switch views and have no command
-                commandProcess.running = true;
-            root.clicked();
-        }
+        onClicked: root.activate()
     }
 
     Behavior on color {

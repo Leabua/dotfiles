@@ -121,7 +121,7 @@ Scope {
                     }
 
                     // the persistent low-battery warning never auto-dismisses -> only a click or charging clears it
-                    readonly property bool persistent: card.modelData.appName === "Battery" && card.modelData.urgency === NotificationUrgency.Critical
+                    readonly property bool persistent: card.modelData.expireTimeout === 0 || (card.modelData.appName === "Battery" && card.modelData.urgency === NotificationUrgency.Critical)
 
                     // battery alerts: amber at 20%, red at 10% -> heading + a forced 1px border share this colour
                     readonly property bool isBattery: card.modelData.appName === "Battery"
@@ -129,8 +129,8 @@ Scope {
 
                     Timer {
                         running: !card.persistent
-                        interval: card.modelData.urgency === NotificationUrgency.Critical ? 15000 : 5000
-                        onTriggered: card.modelData.dismiss()
+                        interval: card.modelData.expireTimeout > 0 ? card.modelData.expireTimeout * 1000 : (card.modelData.urgency === NotificationUrgency.Critical ? 15000 : 5000)
+                        onTriggered: card.modelData.expire()
                     }
 
                     Rectangle {
@@ -180,14 +180,31 @@ Scope {
                                     font.weight: Globals.textFont.weight
                                     font.pixelSize: Globals.textFont.pixelSize - 1
                                     wrapMode: Text.WordWrap
+                                    maximumLineCount: 8
+                                    elide: Text.ElideRight
                                     visible: card.modelData.body !== ""
+                                }
+                                Repeater {
+                                    model: card.modelData.actions
+                                    delegate: ViewSwitchBtn {
+                                        required property var modelData
+                                        label: modelData.text || "Open"
+                                        onClicked: modelData.invoke()
+                                    }
                                 }
                             }
                         }
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: card.modelData.dismiss()
+                            z: -1
+                            onClicked: {
+                                const action = card.modelData.actions.find(a => a.identifier === "default");
+                                if (action)
+                                    action.invoke();
+                                else
+                                    card.modelData.dismiss();
+                            }
                             cursorShape: Qt.PointingHandCursor
                         }
                     }
@@ -385,7 +402,7 @@ Scope {
                                 font.family: Globals.textFont.family
                                 font.weight: Globals.textFont.weight
                                 font.pixelSize: Globals.textFont.pixelSize - 1
-                                wrapMode: Text.WordWrap
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 Layout.fillWidth: true
                             }
 

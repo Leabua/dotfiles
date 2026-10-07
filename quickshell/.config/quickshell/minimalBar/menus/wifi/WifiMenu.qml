@@ -22,6 +22,7 @@ Scope {
     }
 
     PopupWindow {
+        id: popup
         open: Globals.wifiMenuOpen
         onDismissed: Globals.wifiMenuOpen = false
         hAlign: "center"
@@ -39,6 +40,7 @@ Scope {
 
         WifiView {
             id: wifiView
+            onFocusMenu: popup.focusMenu()
         }
     }
 }

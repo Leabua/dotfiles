@@ -23,7 +23,7 @@ ColumnLayout {
     }
     // paired row: toggle the connection
     function activatePaired(d): void {
-        if (!d)
+        if (!d || !root.poweredOn || root.deviceBusy(d))
             return;
         if (d.connected)
             d.disconnect();
@@ -32,7 +32,7 @@ ColumnLayout {
     }
     // nearby row: pair (BlueZ auto-connects trusted devices after pairing)
     function activateNearby(d): void {
-        if (!d)
+        if (!d || !root.poweredOn || root.deviceBusy(d))
             return;
         d.trusted = true;
         d.pair();
@@ -42,6 +42,13 @@ ColumnLayout {
     Component.onDestruction: {
         if (root.adapter && root.adapter.discovering)
             root.adapter.discovering = false;
+    }
+    Connections {
+        target: Globals
+        function onAudioMenuOpenChanged(): void {
+            if (!Globals.audioMenuOpen && root.adapter && root.adapter.discovering)
+                root.adapter.discovering = false;
+        }
     }
 
     spacing: Globals.spacing

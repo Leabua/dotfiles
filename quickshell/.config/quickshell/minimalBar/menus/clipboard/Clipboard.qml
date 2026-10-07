@@ -27,9 +27,10 @@ Scope {
     property string filterMode: "all"
 
     // ----- sizing -----
-    readonly property int listWidth: 300                              // left list / truncation width
-    readonly property int previewWidth: Math.round(listWidth * 1.5)   // right preview pane, 1.5x the list
-    readonly property int bodyHeight: 460                             // fixed height for both columns
+    readonly property int listWidth: Math.min(300, Math.floor((popup.availableWidth - 30) * 0.4))
+    readonly property int previewWidth: Math.min(450, popup.availableWidth - listWidth - 30)
+    readonly property int bodyHeight: Math.min(460, Math.max(120, popup.availableHeight - 140))
+    property string errorText: ""
 
     // ----- preview state -----
     property string hoveredId: ""
@@ -39,7 +40,7 @@ Scope {
     property string pendingImgPath: ""
 
     function imgPathFor(id: string): string {
-        return "/tmp/qs-clip-preview-" + id + ".img";
+        return Quickshell.env("XDG_RUNTIME_DIR") + "/qs-clip-preview-" + id + ".img";
     }
 
     function refresh(): void {
@@ -50,23 +51,33 @@ Scope {
     function loadPreview(id: string, isImage: bool): void {
         root.hoveredId = id;
         root.previewIsImage = isImage;
-        if (isImage) {
-            root.previewText = "";
-            root.previewImage = "";
+        root.previewText = "";
+        root.previewImage = "";
+        root.startPreview();
+    }
+
+    // Serialize decodes so a fast hover cannot publish an older entry's content.
+    function startPreview(): void {
+        if (!/^\d+$/.test(root.hoveredId) || textDecodeProc.running || imgDecodeProc.running)
+            return;
+        const id = root.hoveredId;
+        if (root.previewIsImage) {
             root.pendingImgPath = root.imgPathFor(id);
-            imgDecodeProc.running = false;
-            imgDecodeProc.command = ["sh", "-c", "cliphist decode " + id + " > " + root.pendingImgPath];
+            imgDecodeProc.requestId = id;
+            imgDecodeProc.command = ["sh", "-c", "umask 077; cliphist decode \"$1\" > \"$2\"", "preview", id, root.pendingImgPath];
             imgDecodeProc.running = true;
         } else {
-            root.previewImage = "";
-            textDecodeProc.running = false;
+            textDecodeProc.requestId = id;
             textDecodeProc.command = ["cliphist", "decode", id];
             textDecodeProc.running = true;
         }
     }
 
     function copyEntry(id: string): void {
-        copyProc.command = ["sh", "-c", "cliphist decode " + id + " | wl-copy"];
+        if (copyProc.running || !/^\d+$/.test(id))
+            return;
+        root.errorText = "";
+        copyProc.command = ["bash", "-o", "pipefail", "-c", "cliphist decode \"$1\" | wl-copy", "copy", id];
         copyProc.running = true;
     }
 
@@ -145,7 +156,6 @@ Scope {
         if (index < 0 || index >= filteredModel.count)
             return;
         root.copyEntry(filteredModel.get(index).cid);
-        root.clipboardOpen = false;
     }
 
     // PopupWindow forwards every keypress here; an unaccepted Escape (and an
@@ -199,6 +209,7 @@ Scope {
     // refresh list + reset preview/selection whenever the panel opens
     onClipboardOpenChanged: {
         if (clipboardOpen) {
+            errorText = "";
             filterMode = "all";
             selectedIndex = 0;
             clearPreview();
@@ -246,25 +257,46 @@ Scope {
                 root.applyFilter();
             }
         }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                root.errorText = "Could not read clipboard history";
+        }
     }
 
     Process {
         id: textDecodeProc
+        property string requestId: ""
         stdout: StdioCollector {
-            onStreamFinished: root.previewText = text
+            onStreamFinished: {
+                if (textDecodeProc.requestId === root.hoveredId && !root.previewIsImage)
+                    root.previewText = text;
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (textDecodeProc.requestId !== root.hoveredId)
+                Qt.callLater(root.startPreview);
         }
     }
 
     Process {
         id: imgDecodeProc
+        property string requestId: ""
         onExited: (exitCode, exitStatus) => {
-            if (exitCode === 0)
+            if (exitCode === 0 && imgDecodeProc.requestId === root.hoveredId && root.previewIsImage)
                 root.previewImage = "file://" + root.pendingImgPath;
+            if (imgDecodeProc.requestId !== root.hoveredId)
+                Qt.callLater(root.startPreview);
         }
     }
 
     Process {
         id: copyProc
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0)
+                root.clipboardOpen = false;
+            else
+                root.errorText = "Could not copy this entry";
+        }
     }
 
     Process {
@@ -291,6 +323,7 @@ Scope {
 
     // PopupWindow provides the full-screen catcher, keyboard focus + close-on-keypress
     PopupWindow {
+        id: popup
         open: root.clipboardOpen
         onDismissed: root.clipboardOpen = false
         onKeyDown: event => root.handleKey(event)
@@ -449,25 +482,6 @@ Scope {
                             }
                         }
 
-                        // short colour bar on the left edge of the active entry; fades
-                        // with the same timing as the row tint so the two move together
-                        Rectangle {
-                            anchors.left: parent.left
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            anchors.topMargin: Globals.spacing
-                            anchors.bottomMargin: Globals.spacing
-                            width: 3
-                            radius: 2
-                            color: Globals.fgColor
-                            opacity: entry.sel ? 1 : 0
-                            Behavior on opacity {
-                                NumberAnimation {
-                                    duration: Globals.animFast
-                                }
-                            }
-                        }
-
                         Text {
                             id: entryText
                             anchors {
@@ -478,6 +492,7 @@ Scope {
                                 rightMargin: Globals.spacing + 2
                             }
                             text: entry.preview
+                            textFormat: Text.PlainText
                             color: Globals.fgColor
                             font.family: Globals.textFont.family
                             font.pixelSize: Globals.textFont.pixelSize - 1
@@ -523,22 +538,51 @@ Scope {
                     }
 
                     // text preview - starts top-left and reads down like a book
-                    Text {
-                        anchors {
-                            top: parent.top
-                            left: parent.left
-                            right: parent.right
-                            margins: Globals.spacing
-                        }
+                    Flickable {
+                        id: previewScroll
+                        anchors.fill: parent
+                        anchors.margins: Globals.spacing
                         visible: !root.previewIsImage && root.hoveredId !== ""
-                        text: root.previewText
-                        color: Globals.fgColor
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize - 1
-                        horizontalAlignment: Text.AlignLeft
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                        clip: true
+                        contentWidth: width
+                        contentHeight: preview.contentHeight
+                        boundsBehavior: Flickable.StopAtBounds
+                        onVisibleChanged: contentY = 0
+                        Connections {
+                            target: root
+                            function onHoveredIdChanged(): void {
+                                previewScroll.contentY = 0;
+                            }
+                        }
+                        TextEdit {
+                            id: preview
+                            width: previewScroll.width
+                            text: root.previewText
+                            readOnly: true
+                            selectByMouse: true
+                            textFormat: TextEdit.PlainText
+                            color: Globals.fgColor
+                            selectionColor: Globals.fgColor
+                            selectedTextColor: Globals.bgColor
+                            font.family: Globals.textFont.family
+                            font.pixelSize: Globals.textFont.pixelSize - 1
+                            wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
+                            Keys.onPressed: event => {
+                                event.accepted = false;
+                                root.handleKey(event);
+                                if (!event.accepted && event.key === Qt.Key_Escape)
+                                    root.clipboardOpen = false;
+                            }
+                        }
                     }
                 }
+            }
+            Text {
+                visible: root.errorText !== ""
+                Layout.fillWidth: true
+                text: root.errorText
+                color: Globals.criticalColor
+                font: Globals.textFont
             }
         }
     }

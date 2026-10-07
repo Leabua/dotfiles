@@ -1,7 +1,7 @@
 import QtQuick
 import qs.templates
 
-// A display-only text field for the reminders editor.
+// Native editing supports selection, paste, cursor movement and undo.
 Item {
     id: field
 
@@ -9,88 +9,89 @@ Item {
     property string placeholder: ""
     property real pixelSize: Globals.textFont.pixelSize
     property int weight: Globals.textFont.weight
-    property bool active: false // is this the focused field
+    property bool active: false
+    property bool multiline: false
     signal tapped
+    signal edited(string value)
+    signal keyPressed(var event)
 
-    implicitHeight: line.implicitHeight + 6
-    clip: true
+    implicitHeight: Math.min(multiline ? 220 : 60, Math.max(multiline ? 120 : 34, editor.contentHeight + 16))
 
-    Row {
-        id: line
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        spacing: 1
+    onActiveChanged: {
+        if (active)
+            Qt.callLater(editor.forceActiveFocus);
+    }
+    Component.onCompleted: {
+        if (active)
+            editor.forceActiveFocus();
+    }
 
-        Text {
-            id: valueText
-            visible: field.value.length > 0
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.alpha(Globals.fgColor, field.active ? 0.08 : 0.03)
+        radius: Globals.radius
+    }
+
+    Flickable {
+        id: scroll
+        anchors.fill: parent
+        anchors.margins: 8
+        clip: true
+        contentWidth: width
+        contentHeight: editor.height
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+
+        TextEdit {
+            id: editor
+            width: scroll.width
+            height: Math.max(scroll.height, contentHeight)
             text: field.value
+            textFormat: TextEdit.PlainText
+            wrapMode: TextEdit.WrapAtWordBoundaryOrAnywhere
             color: Globals.fgColor
+            selectionColor: Globals.fgColor
+            selectedTextColor: Globals.bgColor
             font.family: Globals.textFont.family
             font.pixelSize: field.pixelSize
             font.weight: field.weight
+            selectByMouse: true
+            activeFocusOnPress: true
+            onActiveFocusChanged: {
+                if (activeFocus)
+                    field.tapped();
+            }
+            onTextChanged: {
+                if (activeFocus && text !== field.value)
+                    field.edited(text);
+            }
+            onCursorRectangleChanged: {
+                if (cursorRectangle.y < scroll.contentY)
+                    scroll.contentY = cursorRectangle.y;
+                else if (cursorRectangle.y + cursorRectangle.height > scroll.contentY + scroll.height)
+                    scroll.contentY = cursorRectangle.y + cursorRectangle.height - scroll.height;
+            }
+            Keys.onPressed: event => {
+                event.accepted = false;
+                field.keyPressed(event);
+            }
         }
 
-        // placeholder only while empty and unfocused -> vanishes on focus or typing
         Text {
-            visible: field.value.length === 0 && !field.active
+            visible: editor.text.length === 0
             text: field.placeholder
-            color: Qt.alpha(Globals.fgColor, 0.3)
+            color: Qt.alpha(Globals.fgColor, 0.4)
             font.family: Globals.textFont.family
             font.pixelSize: field.pixelSize
             font.weight: field.weight - 100
         }
-
-        Rectangle {
-            id: caret
-            width: 2
-            height: field.pixelSize + 2
-            radius: 1
-            color: Globals.fgColor
-            visible: field.active
-            anchors.verticalCenter: parent.verticalCenter
-
-            SequentialAnimation on opacity {
-                running: field.active
-                loops: Animation.Infinite
-                NumberAnimation {
-                    from: 1
-                    to: 0.1
-                    duration: 500
-                    easing.type: Easing.InOutSine
-                }
-                NumberAnimation {
-                    from: 0.1
-                    to: 1
-                    duration: 500
-                    easing.type: Easing.InOutSine
-                }
-            }
-        }
     }
 
-    // focus underline
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         height: 1
-        radius: 1
-        color: Globals.fgColor
-        opacity: field.active ? 0.4 : 0.12
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: Globals.animFast
-            }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        anchors.margins: -3
-        cursorShape: Qt.IBeamCursor
-        onClicked: field.tapped()
+        color: Qt.alpha(Globals.fgColor, field.active ? 0.5 : 0.15)
     }
 }

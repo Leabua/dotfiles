@@ -16,7 +16,7 @@ Scope {
     readonly property string filePath: Quickshell.env("HOME") + "/Documents/Uni Notes/Reminder Logs.md"
 
     // sizing tokens
-    readonly property int panelWidth: 360
+    readonly property int panelWidth: Math.min(620, (Globals.focusedScreen ? Globals.focusedScreen.width : 1920) - 48)
     readonly property int cardPadH: 10
     readonly property int cardPadV: 10
     readonly property int cardGap: 7 // breathing room each side of the between-card divider
@@ -25,7 +25,7 @@ Scope {
     property string view: "active"
     property bool loaded: false
 
-    // ----- edit state (manual-keyboard editor; only one card edits at a time) -----
+    // ----- edit state (only one card edits at a time) -----
     property bool editing: false
     property string editBucket: "priority" // which bucket the edited card lives in
     property int editIndex: -1             // its row in that bucket's model
@@ -34,6 +34,10 @@ Scope {
     property string draftTitle: ""
     property string draftSubject: ""
     property string draftDate: ""
+    onEditingChanged: {
+        if (!editing && Globals.remindersOpen)
+            Qt.callLater(popup.focusMenu);
+    }
 
     // ----- models (one row per reminder; roles are flat strings) -----
     ListModel {
@@ -130,6 +134,11 @@ Scope {
         if (!root.editing)
             return;
         const k = event.key;
+        if ((k === Qt.Key_Return || k === Qt.Key_Enter) && (event.modifiers & Qt.ControlModifier)) {
+            root.confirmEdit();
+            event.accepted = true;
+            return;
+        }
         if (k === Qt.Key_Escape) {
             root.cancelEdit();
             event.accepted = true;
@@ -139,7 +148,7 @@ Scope {
             if (root.editField === "title")
                 root.editField = "subject";
             else if (root.editField === "subject")
-                root.editField = "date";
+                return; // Enter inserts a newline in the details field.
             else
                 root.confirmEdit();
             event.accepted = true;
@@ -155,25 +164,6 @@ Scope {
             event.accepted = true;
             return;
         }
-        if (k === Qt.Key_Backspace) {
-            if (root.editField === "title")
-                root.draftTitle = root.draftTitle.slice(0, -1);
-            else if (root.editField === "subject")
-                root.draftSubject = root.draftSubject.slice(0, -1);
-            else
-                root.draftDate = root.draftDate.slice(0, -1);
-            event.accepted = true;
-            return;
-        }
-        if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 0x20) {
-            if (root.editField === "title")
-                root.draftTitle += event.text;
-            else if (root.editField === "subject")
-                root.draftSubject += event.text;
-            else
-                root.draftDate += event.text;
-            event.accepted = true;
-        }
     }
 
     // ----- completing / restoring -----
@@ -186,6 +176,9 @@ Scope {
         const it = m.get(index);
         completedModel.insert(0, {
             title: it.title,
+            subject: it.subject,
+            date: it.date,
+            bucket: bucket,
             completedAt: root.todayStr()
         });
         m.remove(index);
@@ -196,10 +189,10 @@ Scope {
         if (index < 0 || index >= completedModel.count)
             return;
         const it = completedModel.get(index);
-        priorityModel.append({
+        root.modelFor(it.bucket).append({
             title: it.title,
-            subject: "",
-            date: ""
+            subject: it.subject,
+            date: it.date
         });
         completedModel.remove(index);
         root.scheduleSave();
@@ -254,10 +247,10 @@ Scope {
     // ----- persistence: Obsidian-flavoured markdown -----
     function activeLine(it): string {
         let s = "- [ ] **" + it.title + "**";
-        if (it.subject && it.subject.length)
-            s += " — " + it.subject;
         if (it.date && it.date.length)
             s += " 📅 " + it.date; // Obsidian Tasks due-date glyph
+        if (it.subject && it.subject.length)
+            s += "\n" + it.subject.split("\n").map(line => "    " + line).join("\n");
         return s;
     }
 
@@ -281,8 +274,13 @@ Scope {
             if (!it3.title || !it3.title.trim().length)
                 continue;
             let s = "- [x] **" + it3.title + "**";
+            if (it3.date)
+                s += " 📅 " + it3.date;
             if (it3.completedAt && it3.completedAt.length)
                 s += " ✅ " + it3.completedAt; 
+            s += " <!-- bucket:" + (it3.bucket || "priority") + " -->";
+            if (it3.subject)
+                s += "\n" + it3.subject.split("\n").map(line => "    " + line).join("\n");
             out += s + "\n";
         }
         return out;
@@ -296,9 +294,17 @@ Scope {
         if (text && text.length) {
             const lines = text.split("\n");
             let section = "";
+            let lastModel = null;
+            let lastIndex = -1;
             for (const raw of lines) {
+                if (lastModel && /^ {4}/.test(raw)) {
+                    const previous = lastModel.get(lastIndex).subject;
+                    lastModel.setProperty(lastIndex, "subject", previous ? previous + "\n" + raw.substring(4) : raw.substring(4));
+                    continue;
+                }
                 const t = raw.trim();
                 if (t.startsWith("## ")) {
+                    lastModel = null;
                     const h = t.substring(3).trim().toLowerCase();
                     if (h.indexOf("complete") >= 0)
                         section = "completed";
@@ -315,6 +321,9 @@ Scope {
                     continue;
                 const checked = m[1].toLowerCase() === "x";
                 let rest = m[2];
+                const bucketMatch = rest.match(/<!-- bucket:(priority|later) -->/);
+                const bucket = bucketMatch ? bucketMatch[1] : "priority";
+                rest = rest.replace(/<!-- bucket:(priority|later) -->/, "").trim();
 
                 let completedAt = "";
                 const cm = rest.match(/✅\s*(\d{4}-\d{2}-\d{2})/);
@@ -342,34 +351,31 @@ Scope {
                 if (!title.length)
                     continue;
 
-                if (section === "completed")
+                if (section === "completed" || checked) {
                     completedModel.append({
                         title: title,
+                        subject: subject,
+                        date: date,
+                        bucket: bucket,
                         completedAt: completedAt
                     });
-                else if (section === "later")
+                    lastModel = completedModel;
+                } else if (section === "later") {
                     laterModel.append({
                         title: title,
                         subject: subject,
                         date: date
                     });
-                else if (section === "priority")
+                    lastModel = laterModel;
+                } else {
                     priorityModel.append({
                         title: title,
                         subject: subject,
                         date: date
                     });
-                else if (checked)
-                    completedModel.append({
-                        title: title,
-                        completedAt: completedAt
-                    });
-                else
-                    priorityModel.append({
-                        title: title,
-                        subject: subject,
-                        date: date
-                    });
+                    lastModel = priorityModel;
+                }
+                lastIndex = lastModel.count - 1;
             }
         }
         root.pruneCompleted();
@@ -377,6 +383,8 @@ Scope {
     }
 
     function saveNow(): void {
+        if (!root.loaded)
+            return;
         reminderFile.setText(root.serialize());
     }
     function scheduleSave(): void {
@@ -437,6 +445,7 @@ Scope {
     }
     
     PopupWindow {
+        id: popup
         open: Globals.remindersOpen
         onDismissed: {
             if (root.editing)
@@ -788,6 +797,8 @@ Scope {
                                     pixelSize: Globals.textFont.pixelSize + 1
                                     active: wrapper.isEditing && root.editField === "title"
                                     onTapped: root.editField = "title"
+                                    onEdited: value => root.draftTitle = value.replace(/\n/g, " ")
+                                    onKeyPressed: event => root.handleKey(event)
                                 }
                                 Text {
                                     Layout.fillWidth: true
@@ -797,8 +808,8 @@ Scope {
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize + 1
                                     font.weight: Globals.textFont.weight
-                                    elide: Text.ElideRight
-                                    maximumLineCount: 1
+                                    textFormat: Text.PlainText
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 }
 
                                 // subject
@@ -806,11 +817,14 @@ Scope {
                                     Layout.fillWidth: true
                                     visible: wrapper.isEditing
                                     value: root.draftSubject
-                                    placeholder: "Subject"
+                                    placeholder: "Details, notes, links..."
+                                    multiline: true
                                     pixelSize: Globals.textFont.pixelSize - 1
                                     weight: Globals.textFont.weight - 100
                                     active: wrapper.isEditing && root.editField === "subject"
                                     onTapped: root.editField = "subject"
+                                    onEdited: value => root.draftSubject = value
+                                    onKeyPressed: event => root.handleKey(event)
                                 }
                                 Text {
                                     Layout.fillWidth: true
@@ -821,9 +835,8 @@ Scope {
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize - 1
                                     font.weight: Globals.textFont.weight - 100
-                                    wrapMode: Text.WordWrap
-                                    maximumLineCount: 2
-                                    elide: Text.ElideRight
+                                    textFormat: Text.PlainText
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 }
 
                                 // date (edit row)
@@ -848,6 +861,8 @@ Scope {
                                         weight: Globals.textFont.weight - 100
                                         active: root.editField === "date"
                                         onTapped: root.editField = "date"
+                                        onEdited: value => root.draftDate = value.replace(/\n/g, " ")
+                                        onKeyPressed: event => root.handleKey(event)
                                     }
                                 }
 
@@ -886,7 +901,7 @@ Scope {
                                 Text {
                                     Layout.topMargin: 3
                                     visible: wrapper.isEditing
-                                    text: "↵ next field   ·   esc cancel"
+                                    text: "Tab: next field · Ctrl+Enter: save · Esc: cancel"
                                     color: Qt.alpha(Globals.fgColor, 0.35)
                                     font.family: Globals.textFont.family
                                     font.pixelSize: Globals.textFont.pixelSize - 4
@@ -1102,8 +1117,8 @@ Scope {
                                 font.pixelSize: Globals.textFont.pixelSize
                                 font.weight: Globals.textFont.weight
                                 font.strikeout: true
-                                elide: Text.ElideRight
-                                maximumLineCount: 1
+                                textFormat: Text.PlainText
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             }
 
                             // check -> send back to the reminders list as incomplete

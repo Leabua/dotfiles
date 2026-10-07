@@ -133,7 +133,7 @@ RowLayout {
             preventStealing: true
 
             function setFromX(mx: real): void {
-                const v = Math.max(0, Math.min(1, mx / track.width));
+                const v = Math.max(0, Math.min(1, (mx - Globals.spacing) / track.width));
                 root.moved(v);
             }
 
