@@ -38,7 +38,7 @@
   };
 
 # vite needed this to let me see my local dev instance on other devices 
-  networking.firewall.allowedTCPPorts = [ 5173 ];
+  networking.firewall.allowedTCPPorts = [ 5173 1420 ];
   services.libinput.enable = true;
 
   hardware.graphics = {
@@ -76,6 +76,8 @@
     enable = true;
     xwayland.enable = true;
   };
+
+  virtualisation.docker.enable = true;
 
 
   systemd.packages = with pkgs; [ hyprpolkitagent ];
