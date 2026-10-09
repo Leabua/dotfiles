@@ -210,6 +210,23 @@ function M.setup()
 		once = true,
 		callback = function()
 			if pending and pending ~= vim.g.colors_name then
+				local scheme_to_pkg = {
+					["tokyonight"] = "tokyonight.nvim",
+					["rose-pine"] = "rose-pine",
+					["github"] = "github-theme",
+					["oxocarbon"] = "oxocarbon.nvim",
+					["poimandres"] = "poimandres.nvim",
+					["everforest"] = "everforest",
+					["olive"] = "olive-crt.nvim",
+					["vague"] = "vague.nvim",
+					["nightfox"] = "nightfox.nvim",
+				}
+				for k, v in pairs(scheme_to_pkg) do
+					if pending:find(k) then
+						pcall(function() require("lazy").load({ plugins = { v } }) end)
+						break
+					end
+				end
 				if not pcall(vim.cmd.colorscheme, pending) then
 					pcall(vim.cmd.colorscheme, "nightfox")
 				end

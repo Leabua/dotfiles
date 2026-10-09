@@ -2,62 +2,95 @@
 
 {
   environment.systemPackages = with pkgs; [
-# QoL
+    # Desktop appearance: themes, icons, cursors, and wallpaper colors.
     adwaita-qt
-      adwaita-qt6
-      awww
-      bibata-cursors
-      brightnessctl
-      btop
-      cliphist
-      fastfetch
-      gnome-themes-extra
-      grim
-      hypridle
-      hyprlock
-      hyprpolkitagent
-      libreoffice
-      libnotify
-      matugen
-      nix-output-monitor # give me some visual for the nix rebuilds and upgrades
-      obs-studio
-      obsidian
-      papirus-icon-theme  
-      pavucontrol
-      playerctl
-      qt6.qtdeclarative   # ships the `qmlls` QML language server (for Quickshell/QML in nvim)
-      quickshell
-      slurp
-      stow
-      thunar
-      wget
-      wl-clipboard
-      yazi
+    adwaita-qt6
+    awww
+    bibata-cursors
+    gnome-themes-extra
+    matugen
+    papirus-icon-theme
 
-# flakes
-      inputs.helium.packages."${pkgs.stdenv.hostPlatform.system}".default
-      inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
-      inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
-      inputs.clocktui.packages."${pkgs.stdenv.hostPlatform.system}".default
+    # Desktop controls: notifications, media, audio, brightness, and session locking.
+    brightnessctl
+    hypridle
+    hyprlock
+    hyprpolkitagent
+    libnotify
+    pavucontrol
+    playerctl
+    quickshell
 
-      (makeDesktopItem {
-       name = "nvim-terminal";
-       desktopName = "Neovim (Terminal)";
-       genericName = "Text Editor";
-       exec = "ghostty -e nvim %F";
-       terminal = false;
-       icon = "nvim";
-       categories = [ "Utility" "TextEditor" ];
-       mimeTypes = [ "text/plain" "text/markdown" "text/x-python" "text/x-lua" "text/javascript" "application/json" ];
-       startupNotify = false;
-       })
+    # Capture and clipboard: screenshots, annotations, and clipboard history.
+    cliphist
+    grim
+    satty
+    slurp
+    wl-clipboard
+
+    # Everyday applications: terminal, file managers, productivity, and creative tools.
+    ghostty
+    inkscape
+    libreoffice
+    obs-studio
+    obsidian
+    thunar
+    yazi
+
+    # System utilities: monitoring, dotfiles, downloads, and trash management.
+    btop
+    fastfetch
+    nix-output-monitor
+    stow
+    trash-cli
+    wget
+
+    # Shell utilities: navigation, search, terminal sessions, and Zsh plugins.
+    fd
+    fzf
+    ripgrep
+    tmux
+    zoxide
+    zsh-autosuggestions
+    zsh-history-substring-search
+    zsh-powerlevel10k
+    zsh-syntax-highlighting
+
+    # External applications: packages supplied by pinned flake inputs.
+    inputs.clocktui.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    # Desktop launcher: open associated text files in terminal Neovim.
+    (makeDesktopItem {
+      name = "nvim-terminal";
+      desktopName = "Neovim (Terminal)";
+      genericName = "Text Editor";
+      exec = "ghostty -e nvim %F";
+      terminal = false;
+      icon = "nvim";
+      categories = [
+        "Utility"
+        "TextEditor"
+      ];
+      mimeTypes = [
+        "text/plain"
+        "text/markdown"
+        "text/x-python"
+        "text/x-lua"
+        "text/javascript"
+        "application/json"
+      ];
+      startupNotify = false;
+    })
   ];
 
-# fonts
+  # Fonts: regular monospace faces and Nerd Font variants.
   fonts.packages = with pkgs; [
     departure-mono
-      maple-mono.NF
-      nerd-fonts.departure-mono
-      nerd-fonts.iosevka
+    maple-mono.NF
+    nerd-fonts.departure-mono
+    nerd-fonts.iosevka
   ];
 }

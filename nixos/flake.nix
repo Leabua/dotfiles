@@ -1,5 +1,6 @@
 {
   description = "Hyprland on Nixos";
+  # Inputs: pin dependencies through flake.lock and share one nixpkgs revision.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     helium = {
@@ -23,13 +24,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, ... }@inputs: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; }; 
-      modules = [
-        ./configuration.nix
-      ];
+  # Outputs: build the host using the platform declared in its hardware module.
+  outputs =
+    { nixpkgs, ... }@inputs:
+    {
+      # Formatting: use the same Nix formatter as the development toolset.
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
+
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./configuration.nix
+        ];
+      };
     };
-  };
 }

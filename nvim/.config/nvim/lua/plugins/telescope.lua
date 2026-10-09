@@ -45,6 +45,12 @@ return {
 		{
 			"<leader>uc",
 			function()
+				local colorscheme_plugins = {
+					"tokyonight.nvim", "rose-pine", "github-theme",
+					"oxocarbon.nvim", "poimandres.nvim", "everforest",
+					"olive-crt.nvim", "vague.nvim"
+				}
+				pcall(function() require("lazy").load({ plugins = colorscheme_plugins }) end)
 				-- live-preview on move, <CR> applies; config.theme persists the pick
 				require("telescope.builtin").colorscheme({ enable_preview = true })
 			end,

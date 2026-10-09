@@ -1,73 +1,60 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
-{ 
+{
   environment.systemPackages = with pkgs; [
+    # Editors and coding agents: interactive development environments.
+    (pkgs.callPackage ./codex-package.nix { })
+    neovim
+    opencode
+    zed-editor
 
-# dev tooling
-      antigravity-cli
-      bun
-      codex
-      docker
-      fd
-      fzf
-      git
-      ghostty
-      glib
-      jdk
-      jq
-      lazygit
-      opencode
-      neovim
-      ripgrep
-      pnpm
-      satty
-      tmux
-      trash-cli
-      tree-sitter
-      zed-editor
-      zoxide
-      zsh-powerlevel10k
-      zsh-autosuggestions
-      zsh-syntax-highlighting
-      zsh-history-substring-search
+    # Development utilities: version control, JSON processing, and parsing tools.
+    git
+    jq
+    lazygit
+    tree-sitter
 
-      # vector graphing 
-      inkscape
+    # Languages and build tools: compilers, runtimes, and package managers.
+    bun
+    cargo
+    gcc
+    glib
+    gnumake
+    go
+    jdk
+    nodejs
+    pnpm
+    rustc
 
-# languages and runtimes
-      cargo
-      go
-      nodejs
-      rustc
-      (python3.withPackages (ps: with ps; [
-                             openpyxl
-                             matplotlib
-                             numpy
-                             pandas
-                             yfinance
-      ]))
+    # Python environment: data analysis, plotting, spreadsheets, and market data.
+    (python3.withPackages (
+      ps: with ps; [
+        matplotlib
+        numpy
+        openpyxl
+        pandas
+        yfinance
+      ]
+    ))
 
-# c related
-      gcc
-      gnumake
+    # Language servers: diagnostics, completion, and editor navigation.
+    basedpyright
+    clang-tools
+    gopls
+    jdt-language-server
+    lua-language-server
+    qt6.qtdeclarative # Provides qmlls for Quickshell/QML editing.
+    rust-analyzer
+    tailwindcss-language-server
+    typescript-language-server
+    vscode-langservers-extracted
 
-# lsp
-      basedpyright
-      clang-tools
-      gopls
-      jdt-language-server
-      lua-language-server
-      rust-analyzer
-      tailwindcss-language-server
-      typescript-language-server
-      vscode-langservers-extracted
-
-
-# conform -> formatters
-      black
-      prettier
-      rustfmt
-      shfmt
-      stylua
-      ];
+    # Formatters: consistent source formatting across languages.
+    black
+    nixfmt
+    prettier
+    rustfmt
+    shfmt
+    stylua
+  ];
 }

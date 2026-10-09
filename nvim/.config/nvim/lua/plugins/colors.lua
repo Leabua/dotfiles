@@ -31,7 +31,7 @@ return {
 	},
 	{
 		"folke/tokyonight.nvim",
-		lazy = false,
+		lazy = true,
 		opts = {
 			transparent = true,
 			styles = {
@@ -43,7 +43,7 @@ return {
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",
-		lazy = false,
+		lazy = true,
 		config = function()
 			require("rose-pine").setup({ styles = { transparency = true } })
 		end,
@@ -51,7 +51,7 @@ return {
 	{
 		"projekt0n/github-nvim-theme",
 		name = "github-theme",
-		lazy = false,
+		lazy = true,
 		config = function()
 			-- the colorblind variant is `github_dark_colorblind` in the picker
 			require("github-theme").setup({ options = { transparent = true } })
@@ -59,12 +59,12 @@ return {
 	},
 	{
 		"nyoom-engineering/oxocarbon.nvim",
-		lazy = false,
+		lazy = true,
 		build = false,
 	},
 	{
 		"olivercederborg/poimandres.nvim",
-		lazy = false,
+		lazy = true,
 		config = function()
 			require("poimandres").setup({
 				disable_background = true,
@@ -74,7 +74,7 @@ return {
 	},
 	{
 		"sainnhe/everforest",
-		lazy = false,
+		lazy = true,
 		config = function()
 			-- vimscript scheme: configured via globals. Italics stay off here;
 			-- config.theme re-asserts italic comments + strips the rest.
@@ -85,7 +85,7 @@ return {
 	},
 	{
 		"vimcolorschemes/olive-crt.nvim",
-		lazy = false,
+		lazy = true,
 		config = function()
 			-- module name is olive_crt (underscore), not the repo's olive-crt
 			require("olive_crt").setup({ transparent = true })
@@ -93,7 +93,7 @@ return {
 	},
 	{
 		"vague-theme/vague.nvim",
-		lazy = false,
+		lazy = true,
 		config = function()
 			require("vague").setup({ transparent = true })
 		end,

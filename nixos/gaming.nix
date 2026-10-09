@@ -1,6 +1,7 @@
 { pkgs, ... }:
 
 {
+  # Steam: client, network features, and declarative Proton-GE compatibility.
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -11,19 +12,19 @@
     ];
   };
 
-  # CPU governor / priority tweaks requested by games via gamemoderun
+  # Performance: CPU governor and process priority requested through gamemoderun.
   programs.gamemode.enable = true;
 
-  # Vulkan micro-compositor: upscaling + vsync control.
-  # Useful on the UHD 620 iGPU; also powers the "gamescope session" option.
+  # Gamescope: Vulkan compositor for upscaling and frame pacing on the Intel GPU.
   programs.gamescope = {
     enable = true;
     capSysNice = true;
   };
 
-  # udev rules + permissions for Steam controllers, PS/Xbox/Nintendo pads, VR
+  # Controllers: udev rules and permissions for gamepads and VR devices.
   hardware.steam-hardware.enable = true;
 
+  # Utilities: performance overlay and optional manual Proton version management.
   environment.systemPackages = with pkgs; [
     mangohud # FPS / frame-time overlay, works with gamescope and gamemode
     protonup-qt # optionally manage extra Proton-GE versions imperatively
