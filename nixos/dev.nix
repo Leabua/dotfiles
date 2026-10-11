@@ -3,7 +3,8 @@
 {
   environment.systemPackages = with pkgs; [
     # Editors and coding agents: interactive development environments.
-    (pkgs.callPackage ./codex-package.nix { })
+    claude-code
+    codex
     neovim
     opencode
     zed-editor
