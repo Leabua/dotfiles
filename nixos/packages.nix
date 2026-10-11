@@ -29,6 +29,7 @@
     wl-clipboard
 
     # Everyday applications: terminal, file managers, productivity, and creative tools.
+    google-chrome
     ghostty
     inkscape
     libreoffice

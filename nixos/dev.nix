@@ -10,6 +10,7 @@
     zed-editor
 
     # Development utilities: version control, JSON processing, and parsing tools.
+    gh
     git
     jq
     lazygit
