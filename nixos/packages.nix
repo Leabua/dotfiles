@@ -36,6 +36,7 @@
     obs-studio
     obsidian
     thunar
+    t3code
     yazi
 
     # System utilities: monitoring, dotfiles, downloads, and trash management.

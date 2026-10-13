@@ -10,6 +10,13 @@
     inputs.blip.nixosModules.default
   ];
 
+  # Package: locally pinned upstream T3 Code AppImage.
+  nixpkgs.overlays = [
+    (final: prev: {
+      t3code = final.callPackage ./t3code.nix { };
+    })
+  ];
+
   # Boot: UEFI bootloader and compressed RAM swap.
   boot.loader = {
     systemd-boot.enable = true;
