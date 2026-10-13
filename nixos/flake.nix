@@ -23,6 +23,10 @@
       url = "github:blip-net/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    apple-fonts = {
+      url = "github:Lyndeno/apple-fonts.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   # Outputs: build the host using the platform declared in its hardware module.
   outputs =

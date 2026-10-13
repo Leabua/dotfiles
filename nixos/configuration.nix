@@ -5,6 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ./packages.nix
+    ./fonts.nix
     ./dev.nix
     # ./gaming.nix
     inputs.blip.nixosModules.default
