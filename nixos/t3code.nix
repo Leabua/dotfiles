@@ -9,10 +9,10 @@
 
 let
   pname = "t3code";
-  version = "0.0.45";
+  version = "0.0.46-nightly.20261013.3080";
   src = fetchurl {
     url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-${version}-x86_64.AppImage";
-    hash = "sha256-q3sKhtHqZXzMFitgt3LGH3C8fIueJZtGk51Tuzj6oCo=";
+    hash = "sha256-GOhRzvoerNl/VtCCqn9NGKP584hTQr8bYhl9gKOduwQ=";
   };
   appimageContents = appimageTools.extract {
     inherit pname version src;
@@ -59,7 +59,7 @@ appimageTools.wrapType2 {
   '';
 
   meta = {
-    description = "T3 Code desktop app";
+    description = "T3 Code desktop app (Orchestrator V2 nightly)";
     homepage = "https://github.com/pingdotgg/t3code";
     license = lib.licenses.mit;
     mainProgram = pname;

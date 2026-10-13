@@ -14,6 +14,7 @@
   # Package: locally pinned upstream T3 Code AppImage.
   nixpkgs.overlays = [
     (final: prev: {
+      opencodeV2 = final.callPackage ./opencode-v2.nix { };
       t3code = final.callPackage ./t3code.nix { };
     })
   ];

@@ -6,7 +6,7 @@
     claude-code
     codex
     neovim
-    opencode
+    opencodeV2
     zed-editor
 
     # Development utilities: version control, JSON processing, and parsing tools.
