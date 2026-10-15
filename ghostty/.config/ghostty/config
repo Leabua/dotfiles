@@ -7,10 +7,11 @@ theme = cyberdream
 
 # font-family = "Iosevka Nerd Font"
 font-family = "Maple Mono NF"
-#Normal
-
+# font-family = "SF Mono"
+ 
+# font-style = Normal
 font-style = Normal
-font-size = 12 
+font-size = 14 
 font-feature = calt
 # Center the asterisk: Iosevka's VSAB selector. 
 font-feature = VSAB=3    
