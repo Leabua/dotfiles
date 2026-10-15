@@ -21,9 +21,10 @@ Singleton {
     // ------- font --------
     readonly property font textFont: Qt.font({
         // family: "DepartureMono Nerd Font",
-        family: "Maple Mono NF",
+        // family: "Maple Mono NF",
+        family: "SF Pro Display",
         letterSpacing: 0,
-        pixelSize: 14,
+        pixelSize: 15,
         weight: 700
     })
 

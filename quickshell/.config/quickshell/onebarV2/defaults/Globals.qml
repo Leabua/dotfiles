@@ -22,14 +22,10 @@ Singleton {
 
     // default font params
     readonly property font textFont: Qt.font({
-        // Use the Nerd-patched build so text + icons come from one file (plain
-        // "Departure Mono" has no icon glyphs and Qt guesses a per-glyph fallback).
-        // Must be the NON-Mono variant: "... Nerd Font Mono" squeezes every symbol
-        // into a single monospace cell, which shrinks wide glyphs (wifi, nix logo,
-        // speaker) to a fraction of their size while narrow ones (battery) survive.
-        family: "DepartureMono Nerd Font",
+        // family: "DepartureMono Nerd Font",
+        family: "SF Pro Display",
         letterSpacing: 0,
-        pixelSize: 14 // -> this is what you use to make things compact
+        pixelSize: 15 // -> this is what you use to make things compact
         ,
         weight: 700
     })
