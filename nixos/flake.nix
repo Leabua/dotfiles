@@ -1,6 +1,6 @@
 {
   description = "Hyprland on Nixos";
-  # Inputs: pin dependencies through flake.lock and share one nixpkgs revision.
+  # Inputs: pin dependencies through flake.lock.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     helium = {
@@ -26,6 +26,10 @@
     apple-fonts = {
       url = "github:Lyndeno/apple-fonts.nix";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    penelope = {
+      # Private repo: fetched over SSH, so rebuild without sudo (use --sudo).
+      url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=main";
     };
   };
   # Outputs: build the host using the platform declared in its hardware module.

@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     # Editors and coding agents: interactive development environments.
+    antigravity-cli
     claude-code
     codex
     neovim

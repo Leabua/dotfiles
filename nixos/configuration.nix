@@ -7,15 +7,31 @@
     ./packages.nix
     ./fonts.nix
     ./dev.nix
+    ./penelope.nix
     # ./gaming.nix
     inputs.blip.nixosModules.default
   ];
 
-  # Package: locally pinned upstream T3 Code AppImage.
+  # Packages: local application pins and temporary upstream build fixes.
   nixpkgs.overlays = [
     (final: prev: {
       opencodeV2 = final.callPackage ./opencode-v2.nix { };
       t3code = final.callPackage ./t3code.nix { };
+      # Correct the pnpm dependency hash for the pinned language server.
+      # Stop overriding once Nixpkgs changes this version or dependency hash.
+      typescript-language-server = prev.typescript-language-server.overrideAttrs (
+        oldAttrs:
+        prev.lib.optionalAttrs
+          (
+            oldAttrs.version == "6.0.2"
+            && oldAttrs.pnpmDeps.outputHash == "sha256-MUSxDMlbG21KSesGdEvqa2kEpuVfLlXRUX1qV/FGsSo="
+          )
+          {
+            pnpmDeps = oldAttrs.pnpmDeps.overrideAttrs {
+              outputHash = "sha256-xR/EF60lVBsITKgH7wCM2wHM46PFQevD51KfCENSUH4=";
+            };
+          }
+      );
     })
   ];
 
