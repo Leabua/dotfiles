@@ -27,11 +27,7 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
 #   tmux attach 2>/dev/null || tmux new-session
 # fi
 
-# ── herdr TERM fix ────────────────────────────────────────────
-# herdr hardcodes TERM=xterm-256color for its panes, but its VT is ghostty's.
-# xterm-256color's terminfo lacks Smulx, so nvim falls back to plain white
-# underlines for diagnostics instead of coloured undercurls. Point TERM at
-# ghostty's entry (tmux-256color as a fallback) to restore undercurls.
+# ── herdr TERM fix (needed for neovim) ───────────────────────
 if [[ "$HERDR_ENV" == "1" ]]; then
   if infocmp xterm-ghostty >/dev/null 2>&1; then
     export TERM=xterm-ghostty
@@ -40,7 +36,7 @@ if [[ "$HERDR_ENV" == "1" ]]; then
   fi
 fi
 
-# ── prompt (powerlevel10k) ───────────────────────────────────
+# ── prompt (p10k) ────────────────────────────────────────────
 _src() { local f; for f in "$@"; do [[ -r $f ]] && { source "$f"; return 0; }; done; return 1 }
 
 _src \
