@@ -31,8 +31,11 @@ bind("SUPER + SHIFT + code:21", hl.dsp.window.resize({ x = 0, y = 100, relative 
 
 -- switch workspaces
 for i = 1, 9 do
+	-- go to workspace
 	bind("SUPER +" .. i, hl.dsp.focus({ workspace = i }))
+	-- move app to workspace and follow
 	bind("SUPER + SHIFT +" .. i, hl.dsp.window.move({ workspace = i }))
+	-- move app to workspace and do not follow (silently)
 	bind("SUPER + SHIFT + CTRL +" .. i, hl.dsp.window.move({ workspace = i, follow = false }))
 end
 

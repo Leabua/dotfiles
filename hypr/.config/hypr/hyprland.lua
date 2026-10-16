@@ -2,8 +2,11 @@
 --- My Default Programs ---
 ---------------------------
 
+-- These need to go before the source files otherwise they will not load
+-- and if they dont load hyprland will fell broken
+
 BROWSER = "zen-beta"
-FILEMANAGER = "nautilus"
+FILEMANAGER = "thunar"
 TERMINAL = "ghostty"
 
 ---------------------

@@ -2,6 +2,7 @@
 ---- LOOK AND FEEL ----
 -----------------------
 
+-- this is for the backgrounds and borders to match
 local function matugen_border()
 	local home = os.getenv("HOME")
 	if home then
@@ -71,7 +72,7 @@ hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })
 -- Default springs
 hl.curve("easy", { type = "spring", mass = 1, stiffness = 71.2633, dampening = 15.8273644 })
 
--- basically the default but the lua default changed some animation bezier and I went back to the hyprlang default
+-- basically the default from the hyprlang setup that I used to have
 hl.animation({ leaf = "global", enabled = true, speed = 10, bezier = "default" })
 hl.animation({ leaf = "border", enabled = true, speed = 5.39, bezier = "easeOutQuint" })
 hl.animation({ leaf = "windows", enabled = true, speed = 4.79, bezier = "easeOutQuint" })

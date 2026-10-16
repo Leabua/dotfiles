@@ -28,7 +28,7 @@ bind(
 	{ locked = true }
 )
 
--- screenshots
+-- screenshots (TODO: find a compontent screenshot tool this works for quickscreenshots though)
 -- bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | satty --filename -'))
 bind(
 	"Print",
