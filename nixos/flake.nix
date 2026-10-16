@@ -1,6 +1,5 @@
 {
   description = "Hyprland on Nixos";
-  # Inputs: pin dependencies through flake.lock.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     helium = {
@@ -28,13 +27,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     penelope = {
-      # Private repo: fetched over SSH, so rebuild without sudo (use --sudo).
-      # Chromium desktop app before PRs #102/#104 merge; switch back to
-      # ?ref=main and run `nix flake update penelope` once they do.
-      url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=chore/remove-tauri";
+      # Private repo: fetched over SSH
+      url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=main";
     };
   };
-  # Outputs: build the host using the platform declared in its hardware module.
   outputs =
     { nixpkgs, ... }@inputs:
     {

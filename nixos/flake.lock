@@ -266,16 +266,16 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1792165862,
-        "narHash": "sha256-oUZu7u6sF8Hnx9lV2pb1yAkWB9xswpS7CoBAn9Fhndk=",
-        "ref": "chore/remove-tauri",
-        "rev": "a1302dff54bbe295f9cbb610d6a7a01902d8a89f",
-        "revCount": 551,
+        "lastModified": 1792182268,
+        "narHash": "sha256-8YRaYEVh08MF9Aj5ATNlCQNj7/bHkq8Q/4FqDkYEaQQ=",
+        "ref": "main",
+        "rev": "d30f658c1e72ee6bb1eca764cb7a5558f2c8ffb3",
+        "revCount": 557,
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       },
       "original": {
-        "ref": "chore/remove-tauri",
+        "ref": "main",
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       }
