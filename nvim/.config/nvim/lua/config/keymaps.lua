@@ -1,26 +1,5 @@
 local keymap = vim.keymap.set
 
-vim.diagnostic.config({
-	update_in_insert = false,
-	severity_sort = true,
-	float = { border = "rounded", source = "if_many" },
-	underline = true, -- jagged lines for every severity (red errors, blue hints/info/warns)
-
-	signs = false, -- no E/W letters in the sign column (keeps it for gitsigns only)
-	virtual_text = false,
-	virtual_lines = false,
-
-	jump = {
-		on_jump = function(_, bufnr)
-			vim.diagnostic.open_float({
-				bufnr = bufnr,
-				scope = "cursor",
-				focus = false,
-			})
-		end,
-	},
-})
-
 keymap("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
 
 -- Jump between diagnostics (uses jump.on_jump above to pop the float open)
@@ -88,8 +67,11 @@ keymap("n", "q?", ":", { noremap = true })
 -- Also disable the visual command-line window
 keymap("v", "q:", ":", { noremap = true })
 
--- lose all other buffers
+-- close all other buffers
 keymap("n", "<leader>ba", "<cmd>%bd|e#|bd#<cr>", { desc = "Close all other buffers" })
+--
+-- close current  buffers
+keymap("n", "<leader>bd", "<cmd>bd<cr>", { desc = "Close current bugger" })
 
 -- Smart pane navigation: alt+h/j/k/l move between nvim splits and herdr panes.
 -- When nvim is at the edge of a split layout, hand off to the neighbouring

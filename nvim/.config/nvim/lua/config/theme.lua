@@ -1,10 +1,11 @@
--- Shared colorscheme behaviour, applied to EVERY scheme (not just nightfox):
---   * strip the "canvas" backgrounds so the terminal shows through (transparency)
---   * kill italics everywhere except comments
---   * remember the last-picked scheme and restore it on the next launch
+-- Shared colorscheme behaviour, applied to EVERY scheme
+--  * strip the "canvas" backgrounds so the terminal shows through (transparency)
+--  * kill italics everywhere except comments
+--  * remember the last-picked scheme and restore it on the next launch
 --
 -- Registered from init.lua *before* lazy loads any plugin, so the very first
 -- colorscheme of the session already goes through here.
+
 local M = {}
 
 -- Groups whose background we blank out. These are the editor "canvas" + chrome;
@@ -64,16 +65,11 @@ end
 
 -- Comments stay italic; strip italic from everything else. Runs over every
 -- highlight group the active scheme defines, so it works for any colorscheme
--- without per-theme configuration. Groups whose name mentions comment / italic /
--- emphasis are left alone (that's semantic italic we want to keep).
+-- without per-theme configuration.
+
 local function fix_italics()
 	for name, def in pairs(vim.api.nvim_get_hl(0, {})) do
-		if
-			def.italic
-			and not name:find("omment")
-			and not name:find("[Ii]talic")
-			and not name:find("[Ee]mphasis")
-		then
+		if def.italic and not name:find("omment") and not name:find("[Ii]talic") and not name:find("[Ee]mphasis") then
 			def.italic = nil
 			-- pcall so one group whose def can't round-trip through nvim_set_hl
 			-- can't abort the sweep and leave later groups (e.g. @variable) italic.
@@ -81,8 +77,9 @@ local function fix_italics()
 		end
 	end
 
-	-- ...and make sure comments *are* italic, even on schemes that don't do it
+	-- Make sure comments *are* italic, even on schemes that don't do it
 	-- by default (github, poimandres), so comments are the one italic exception.
+
 	for _, name in ipairs({ "Comment", "@comment", "@comment.documentation" }) do
 		local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
 		if next(hl) ~= nil then
@@ -112,6 +109,7 @@ end
 -- Without this each scheme brings its own (often yellow/orange warns), and a
 -- scheme with no `sp` color renders the undercurl in the text's own color,
 -- which says nothing. Fixed hex so it never shifts between schemes.
+
 local function fix_diagnostics()
 	local underline = { undercurl = true, underline = true }
 	vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", vim.tbl_extend("force", underline, { sp = "#ff5d5d" }))
@@ -142,6 +140,7 @@ end
 -- independent, so a single un-settable highlight group can't abort the rest
 -- (that was leaving code italic when a scheme loaded in a fully-populated
 -- session with lots of plugin/LSP highlight groups).
+
 local function apply_fixes()
 	pcall(strip_backgrounds)
 	pcall(fix_italics)
@@ -154,6 +153,7 @@ end
 -- Esc-restore -- and the immediate ColorScheme pass can race that, leaving the
 -- scheme that's actually on screen un-stripped and the wrong name persisted.
 -- Renormalise + persist ~50ms after the last change, from whatever won.
+
 local reassert_gen = 0
 local function schedule_reassert()
 	reassert_gen = reassert_gen + 1
@@ -223,7 +223,9 @@ function M.setup()
 				}
 				for k, v in pairs(scheme_to_pkg) do
 					if pending:find(k) then
-						pcall(function() require("lazy").load({ plugins = { v } }) end)
+						pcall(function()
+							require("lazy").load({ plugins = { v } })
+						end)
 						break
 					end
 				end

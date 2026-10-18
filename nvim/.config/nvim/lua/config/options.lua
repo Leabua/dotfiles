@@ -57,3 +57,24 @@ vim.o.scrolloff = 8
 vim.o.confirm = true
 
 vim.opt.termguicolors = true -- 24 bit color
+
+vim.diagnostic.config({
+	update_in_insert = false,
+	severity_sort = true,
+	float = { border = "rounded", source = "if_many" },
+	underline = true, -- jagged lines for every severity (red errors, blue hints/info/warns)
+
+	signs = false, -- no E/W letters in the sign column (keeps it for gitsigns only)
+	virtual_text = false,
+	virtual_lines = false,
+
+	jump = {
+		on_jump = function(_, bufnr)
+			vim.diagnostic.open_float({
+				bufnr = bufnr,
+				scope = "cursor",
+				focus = false,
+			})
+		end,
+	},
+})
