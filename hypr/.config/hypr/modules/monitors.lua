@@ -24,20 +24,24 @@ local ws = hl.workspace_rule
 
 ws({
 	workspace = "1",
-	monitor = "HDMI-A-1",
+	monitor = "eDP-1",
 })
+
 ws({
 	workspace = "2",
-	monitor = "HDMI-A-1",
+	monitor = "eDP-1",
 })
+
 ws({
 	workspace = "3",
-	monitor = "eDP-1",
+	monitor = "HDMI-A-1",
 })
+
 ws({
 	workspace = "4",
-	monitor = "eDP-1",
+	monitor = "HDMI-A-1",
 })
+
 ws({
 	workspace = "5",
 	monitor = "eDP-1",
