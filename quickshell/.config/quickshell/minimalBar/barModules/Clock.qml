@@ -25,6 +25,9 @@ Item {
         cursorShape: Qt.PointingHandCursor
 
         //click to show longdate
-        onClicked: root.showDate = !root.showDate
+        onClicked: {
+            Globals.dismissPopup();
+            root.showDate = !root.showDate;
+        }
     }
 }

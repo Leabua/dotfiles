@@ -18,7 +18,24 @@ PanelWindow { // qmllint disable uncreatable-type
     property bool open: false
     signal dismissed
 
-    readonly property bool useFocusGrab: !!Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
+    readonly property bool isHyprland: !!Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
+    readonly property bool useFocusGrab: isHyprland && !Globals.popupClickThrough
+    property bool focusGrabReady: false
+
+    function containsGlobalPoint(x: real, y: real): bool {
+        if (!screen)
+            return false;
+        const px = x - screen.x - margins.left - card.x;
+        const py = y - screen.y - margins.top - card.y;
+        if (px < 0 || py < 0 || px >= card.width || py >= card.height)
+            return false;
+
+        // Match the rounded input mask, including clicks through its corners.
+        const r = Math.min(card.radius, card.width / 2, card.height / 2);
+        const dx = px - Math.max(r, Math.min(card.width - r, px));
+        const dy = py - Math.max(r, Math.min(card.height - r, py));
+        return dx * dx + dy * dy <= r * r;
+    }
 
     // every key press is forwarded here; accept the event to consume it, otherwise an unaccepted Escape dismisses the popup
     signal keyDown(var event)
@@ -55,6 +72,8 @@ PanelWindow { // qmllint disable uncreatable-type
 
     visible: open
     onOpenChanged: {
+        if (!open)
+            focusGrabReady = false;
         if (open) {
             if (Globals.activePopup && Globals.activePopup !== root)
                 Globals.activePopup.dismissed();
@@ -80,30 +99,38 @@ PanelWindow { // qmllint disable uncreatable-type
         right: true
     }
 
-    // On Hyprland only the visible card receives pointer input; outside clicks
-    // reach the bar / other apps and the compositor dismisses the focus grab.
-    // Keep the outside-click catcher for compositors without that protocol.
+    // Only the card receives pointer input on Hyprland. PopupInput observes
+    // outside presses without taking the original click away from other apps.
+    // Other compositors keep the full outside-click catcher.
     mask: Region {
-        item: root.useFocusGrab ? card : null
-        radius: root.useFocusGrab ? card.radius : 0
+        item: root.isHyprland ? card : null
+        radius: root.isHyprland ? card.radius : 0
         x: 0
         y: 0
         width: root.width
         height: root.height
     }
 
-    // Exclusive layer focus also captures pointer input outside the mask on
-    // Hyprland. The focus grab keeps typing in the menu while allowing bar input.
+    // OnDemand accepts keyboard focus without blocking pointer input elsewhere.
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: root.useFocusGrab ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive
+    WlrLayershell.namespace: "minimalbar-popup"
+    WlrLayershell.keyboardFocus: root.isHyprland ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive
 
     HyprlandFocusGrab {
-        active: root.useFocusGrab && root.open && root.backingWindowVisible
+        id: focusGrab
+        active: root.useFocusGrab && root.open && root.backingWindowVisible && root.focusGrabReady
         windows: [root, ...Globals.barWindows]
         onCleared: {
             if (root.open && Globals.activePopup === root)
                 root.dismissed();
         }
+    }
+
+    // Let the opening button finish handling its release before taking focus.
+    Timer {
+        interval: 0
+        running: root.useFocusGrab && root.open && root.backingWindowVisible
+        onTriggered: root.focusGrabReady = true
     }
 
     // ~~~ publish the card's screen rect while open -> the toasts read it and drop below a menu that lands on top of them ~~~
@@ -129,7 +156,7 @@ PanelWindow { // qmllint disable uncreatable-type
     // close on click outside the card
     MouseArea {
         anchors.fill: parent
-        enabled: !root.useFocusGrab
+        enabled: !root.isHyprland
         acceptedButtons: Qt.AllButtons
         onClicked: root.dismissed()
     }

@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import QtQuick
 import qs.templates
 import qs.barModules
@@ -17,6 +18,8 @@ ShellRoot {
     property bool barVisible: true          // whole bar -> super + shift + space
     property bool rightIslandVisible: true  // right cluster only -> super + alt + space (visible by default)
 
+    PopupInput {}
+
     Variants {
         id: bars
         model: Quickshell.screens
@@ -24,6 +27,7 @@ ShellRoot {
             property var modelData
             screen: modelData
             color: "transparent"
+            WlrLayershell.namespace: "minimalbar-bar"
 
             visible: root.barVisible
 
@@ -43,22 +47,12 @@ ShellRoot {
             }
             implicitHeight: defHeight.implicitHeight + Globals.vertPadding
 
-            // Observe bar clicks without taking them away from the buttons. Wait for
-            // their handlers so switching menus and toggling the same menu still work.
-            TapHandler {
+            // Empty space on the bar also dismisses the current menu. Buttons
+            // above this area keep handling their own clicks normally.
+            MouseArea {
+                anchors.fill: parent
                 acceptedButtons: Qt.AllButtons
-                property var popupOnPress: null
-                onPressedChanged: {
-                    if (pressed)
-                        popupOnPress = Globals.activePopup;
-                }
-                onTapped: {
-                    const popup = popupOnPress;
-                    Qt.callLater(() => {
-                        if (popup && Globals.activePopup === popup)
-                            popup.dismissed();
-                    });
-                }
+                onClicked: Globals.dismissPopup()
             }
 
             Text {

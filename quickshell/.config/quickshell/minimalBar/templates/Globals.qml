@@ -102,6 +102,12 @@ Singleton {
     property bool remindersOpen: false
     property var activePopup: null
     property var barWindows: [] // panels allowed to receive input while a popup owns focus
+    property bool popupClickThrough: false // enabled after the compositor observer is installed
+
+    function dismissPopup(): void {
+        if (activePopup)
+            activePopup.dismissed();
+    }
 
     // ---------- menu positioning support ----------
     property int currentBarHeight: 0  // mirrored from shell.qml so centered menus sit just below the bar

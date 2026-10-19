@@ -104,6 +104,7 @@ RowLayout {
                 anchors.margins: -1
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
+                    Globals.dismissPopup();
                     if (workspaceLayout.isNiri) {
                         Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", rect.workspaceId.toString()]);
                     } else {

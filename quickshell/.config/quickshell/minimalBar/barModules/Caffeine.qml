@@ -19,6 +19,9 @@ Item {
         anchors.fill: parent
         anchors.margins: -1
         cursorShape: Qt.PointingHandCursor
-        onClicked: Globals.toggleCaffeine()
+        onClicked: {
+            Globals.dismissPopup();
+            Globals.toggleCaffeine();
+        }
     }
 }
