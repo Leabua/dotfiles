@@ -321,7 +321,7 @@ Scope {
         }
     }
 
-    // PopupWindow provides the full-screen catcher, keyboard focus + close-on-keypress
+    // PopupWindow provides outside-click dismissal, keyboard focus + close-on-keypress
     PopupWindow {
         id: popup
         open: root.clipboardOpen

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.templates
 
@@ -16,6 +17,8 @@ PanelWindow { // qmllint disable uncreatable-type
     // bind this to the owning open-state; dismissed() fires on outside-click / Escape
     property bool open: false
     signal dismissed
+
+    readonly property bool useFocusGrab: !!Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")
 
     // every key press is forwarded here; accept the event to consume it, otherwise an unaccepted Escape dismisses the popup
     signal keyDown(var event)
@@ -77,17 +80,31 @@ PanelWindow { // qmllint disable uncreatable-type
         right: true
     }
 
-    // ~~~ leave the bar strip out of the input region so bar icons stay clickable while a menu is open ~~~
+    // On Hyprland only the visible card receives pointer input; outside clicks
+    // reach the bar / other apps and the compositor dismisses the focus grab.
+    // Keep the outside-click catcher for compositors without that protocol.
     mask: Region {
+        item: root.useFocusGrab ? card : null
+        radius: root.useFocusGrab ? card.radius : 0
         x: 0
-        y: root.margins.top
+        y: 0
         width: root.width
-        height: root.height - root.margins.top
+        height: root.height
     }
 
-    // force Wayland to send keyboard events here so the popup can capture typing
+    // Exclusive layer focus also captures pointer input outside the mask on
+    // Hyprland. The focus grab keeps typing in the menu while allowing bar input.
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    WlrLayershell.keyboardFocus: root.useFocusGrab ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive
+
+    HyprlandFocusGrab {
+        active: root.useFocusGrab && root.open && root.backingWindowVisible
+        windows: [root, ...Globals.barWindows]
+        onCleared: {
+            if (root.open && Globals.activePopup === root)
+                root.dismissed();
+        }
+    }
 
     // ~~~ publish the card's screen rect while open -> the toasts read it and drop below a menu that lands on top of them ~~~
     Binding {
@@ -112,6 +129,8 @@ PanelWindow { // qmllint disable uncreatable-type
     // close on click outside the card
     MouseArea {
         anchors.fill: parent
+        enabled: !root.useFocusGrab
+        acceptedButtons: Qt.AllButtons
         onClicked: root.dismissed()
     }
 

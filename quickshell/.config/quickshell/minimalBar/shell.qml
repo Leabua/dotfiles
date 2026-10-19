@@ -18,6 +18,7 @@ ShellRoot {
     property bool rightIslandVisible: true  // right cluster only -> super + alt + space (visible by default)
 
     Variants {
+        id: bars
         model: Quickshell.screens
         PanelWindow { // qmllint disable uncreatable-type
             property var modelData
@@ -41,6 +42,24 @@ ShellRoot {
                 bottom: Globals.marginsBottom
             }
             implicitHeight: defHeight.implicitHeight + Globals.vertPadding
+
+            // Observe bar clicks without taking them away from the buttons. Wait for
+            // their handlers so switching menus and toggling the same menu still work.
+            TapHandler {
+                acceptedButtons: Qt.AllButtons
+                property var popupOnPress: null
+                onPressedChanged: {
+                    if (pressed)
+                        popupOnPress = Globals.activePopup;
+                }
+                onTapped: {
+                    const popup = popupOnPress;
+                    Qt.callLater(() => {
+                        if (popup && Globals.activePopup === popup)
+                            popup.dismissed();
+                    });
+                }
+            }
 
             Text {
                 id: defHeight
@@ -94,6 +113,12 @@ ShellRoot {
                 }
             }
         }
+    }
+
+    Binding {
+        target: Globals
+        property: "barWindows"
+        value: bars.instances
     }
 
     // ------- single-instance low-battery notifier (fires once, not per-screen) -------

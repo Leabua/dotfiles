@@ -24,7 +24,7 @@ Singleton {
         // family: "Maple Mono NF",
         family: "SF Pro Display",
         letterSpacing: 0,
-        pixelSize: 15,
+        pixelSize: 16,
         weight: 700
     })
 
@@ -35,8 +35,10 @@ Singleton {
     // --------- colors -----------------
     //  ~~~~~~ dynamic colors ~~~~~~~
     //  material UI colors generated with matugen
-    readonly property alias fgColor: jsonParser.primary
-    readonly property alias fgColor2: jsonParser.tertiary
+    // readonly property alias fgColor: jsonParser.primary
+    // readonly property alias fgColor2: jsonParser.tertiary
+    readonly property color fgColor: "#FFFFFF"
+    readonly property color fgColor2: "#FFFFFF"
 
     // translate mutagen JSON to qml
     FileView {
@@ -68,7 +70,7 @@ Singleton {
     //spacing
     readonly property int spacing: 6
     readonly property int padding: spacing * 2
-    readonly property int vertPadding: spacing * 2 - 6
+    readonly property int vertPadding: spacing * 2 - 4
     readonly property int horiPadding: spacing * 2 + 5
 
     // margins
@@ -81,7 +83,7 @@ Singleton {
     // -------- borders and radii ----------
     readonly property int borderWidth: 0
     readonly property color borderColor: fgColor
-    readonly property int radius: 0 // change to 0 for no rounding -> 8 is the default
+    readonly property int radius: 16 // change to 0 for no rounding -> 8 is the default
 
     // ----------  animation durations -----------
     readonly property int animFast: 80
@@ -99,11 +101,12 @@ Singleton {
     property bool powerMenuOpen: false
     property bool remindersOpen: false
     property var activePopup: null
+    property var barWindows: [] // panels allowed to receive input while a popup owns focus
 
     // ---------- menu positioning support ----------
     property int currentBarHeight: 0  // mirrored from shell.qml so centered menus sit just below the bar
     property bool barShown: true       // minimalBar is always shown; kept so ported menus' show / hide maths resolve
-    readonly property int hyprGaps: 3  // match hyprland window gaps so menus sit flush with tiled windows
+    readonly property int hyprGaps: 4  // match hyprland window gaps so menus sit flush with tiled windows
     readonly property int cardY: 24    // vertical nudge applied to menu cards under the bar
     readonly property bool headerIcons: true // flip to preview menu headers with / without their glyph
     readonly property bool buttonIcons: true // flip to preview menu buttons with / without their glyph
