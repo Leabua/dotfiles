@@ -44,7 +44,7 @@ Singleton {
     readonly property int barIslandInset: 2 // pill -> island top / bottom edge, so the two radii nest
     readonly property int barIslandSidePadding: 6 // pill -> island left / right end; roomier than the inset so the ends breathe
     readonly property int barIslandHeight: barItemHeight + barIslandInset * 2
-    readonly property int barIslandRadius: 10 // a touch squarer than a full pill (13)
+    readonly property int barIslandRadius: 11 // a touch squarer than a full pill (13)
     readonly property int barItemRadius: barIslandRadius - barIslandInset // concentric with the island's corners
 
     // --------- colors -----------------
