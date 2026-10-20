@@ -10,7 +10,6 @@ BarButton {
 
     menu: "wifi"
     active: Globals.wifiMenuOpen
-    iconOnly: true
 
     property int sharedTick: Globals.tick
     onSharedTickChanged: wifiProc.running = true

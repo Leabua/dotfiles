@@ -10,11 +10,10 @@ Rectangle {
     property string menu: ""             // Globals.toggleMenu name; empty -> handle clicked() yourself
     property bool anchorToButton: true   // card opens under this button; false -> the menu's own default spot
     property bool active: false          // bind to the menu's open-state
-    property bool iconOnly: false        // no value text -> a circle, like the menus' square icon buttons
     default property alias content: row.data
     signal clicked
 
-    implicitWidth: iconOnly ? Globals.barItemHeight : row.implicitWidth + Globals.barItemPadding * 2
+    implicitWidth: row.implicitWidth + Globals.barItemPadding * 2
     implicitHeight: Globals.barItemHeight
     radius: height / 2
     color: Qt.alpha(Globals.fgColor, active ? 0.11 : mouse.pressed ? 0.1 : mouse.containsMouse ? 0.06 : 0)

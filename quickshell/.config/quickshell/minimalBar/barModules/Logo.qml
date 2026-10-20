@@ -25,7 +25,6 @@ BarButton {
     menu: "powerMenu"
     anchorToButton: false
     active: Globals.powerMenuOpen
-    iconOnly: true
 
     BarValue {
         id: value
