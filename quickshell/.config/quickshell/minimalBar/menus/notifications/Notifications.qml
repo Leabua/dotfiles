@@ -339,7 +339,7 @@ Scope {
                             radius: 9
                             color: Qt.alpha(Globals.fgColor, rowHover.hovered ? 0.04 : 0)
 
-                            ColumnLayout {
+                            RowLayout {
                                 id: historyLayout
                                 anchors {
                                     left: parent.left
@@ -349,11 +349,12 @@ Scope {
                                     rightMargin: 6
                                     topMargin: 10
                                 }
-                                spacing: 4
+                                spacing: 8
 
-                                RowLayout {
+                                ColumnLayout {
                                     Layout.fillWidth: true
-                                    spacing: 8
+                                    Layout.alignment: Qt.AlignTop
+                                    spacing: 4
 
                                     Text {
                                         Layout.fillWidth: true
@@ -366,16 +367,42 @@ Scope {
                                     }
 
                                     Text {
-                                        text: delegateWrapper.time
-                                        color: Qt.alpha(Globals.fgColor, 0.45)
+                                        Layout.fillWidth: true
+                                        text: delegateWrapper.summary
+                                        textFormat: Text.PlainText
+                                        // keep battery headings coloured in the history list too
+                                        color: delegateWrapper.appName === "Battery" ? (delegateWrapper.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.warningColor) : Globals.fgColor
                                         font.family: Globals.textFont.family
-                                        font.pixelSize: 12
+                                        font.pixelSize: 14
+                                        font.weight: Font.Medium
+                                        elide: Text.ElideRight
                                     }
+
+                                    Text {
+                                        Layout.fillWidth: true
+                                        visible: delegateWrapper.body !== ""
+                                        text: delegateWrapper.body
+                                        textFormat: Text.PlainText
+                                        color: Qt.alpha(Globals.fgColor, 0.7)
+                                        font.family: Globals.textFont.family
+                                        font.pixelSize: 13
+                                        lineHeight: 1.15
+                                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                        maximumLineCount: 6
+                                        elide: Text.ElideRight
+                                    }
+                                }
+
+                                // ~~~ dismiss up top, arrival time pinned to the bottom right beneath it ~~~
+                                ColumnLayout {
+                                    Layout.fillHeight: true
+                                    spacing: 0
 
                                     // dismiss surfaces on hover so a quiet list stays quiet
                                     MenuButton {
                                         icon: "close"
                                         opacity: rowHover.hovered ? 1 : 0
+                                        Layout.alignment: Qt.AlignRight
                                         Layout.preferredHeight: 22
                                         Layout.preferredWidth: 22
                                         onClicked: {
@@ -390,34 +417,19 @@ Scope {
                                         interval: Globals.animDuration + 30
                                         onTriggered: history.remove(delegateWrapper.index)
                                     }
-                                }
 
-                                Text {
-                                    Layout.fillWidth: true
-                                    Layout.rightMargin: 4
-                                    text: delegateWrapper.summary
-                                    textFormat: Text.PlainText
-                                    // keep battery headings coloured in the history list too
-                                    color: delegateWrapper.appName === "Battery" ? (delegateWrapper.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.warningColor) : Globals.fgColor
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: 14
-                                    font.weight: Font.Medium
-                                    elide: Text.ElideRight
-                                }
+                                    Item {
+                                        Layout.fillHeight: true
+                                    }
 
-                                Text {
-                                    Layout.fillWidth: true
-                                    Layout.rightMargin: 4
-                                    visible: delegateWrapper.body !== ""
-                                    text: delegateWrapper.body
-                                    textFormat: Text.PlainText
-                                    color: Qt.alpha(Globals.fgColor, 0.7)
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: 13
-                                    lineHeight: 1.15
-                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                    maximumLineCount: 6
-                                    elide: Text.ElideRight
+                                    Text {
+                                        Layout.alignment: Qt.AlignRight
+                                        Layout.rightMargin: 4
+                                        text: delegateWrapper.time
+                                        color: Qt.alpha(Globals.fgColor, 0.45)
+                                        font.family: Globals.textFont.family
+                                        font.pixelSize: 12
+                                    }
                                 }
                             }
                         }
