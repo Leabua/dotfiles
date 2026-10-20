@@ -69,6 +69,7 @@ ColumnLayout {
     property string pairingName: ""
     property string pairingStage: ""     // "pair" | "connect" while pairProc runs
     property string pairOutput: ""       // unconsumed bluetoothctl output
+    property bool triedPin: false        // answered a legacy PIN prompt with 0000 this attempt
     property string connectingAddress: "" // paired device we asked to connect; watched for a failed attempt
     property string notice: ""           // what went wrong last, in plain words
 
@@ -81,6 +82,7 @@ ColumnLayout {
         root.pairingName = device.name;
         root.pairingStage = "pair";
         root.pairOutput = "";
+        root.triedPin = false;
         pairProc.running = true;
     }
 
@@ -91,6 +93,11 @@ ColumnLayout {
         if (/Confirm passkey|Authorize service|Request authorization/.test(out)) {
             root.pairOutput = "";
             pairProc.write("yes\n");
+        } else if (/Enter PIN code/.test(out)) {
+            // pre-2.1 devices (older headsets, car kits) ask for a fixed PIN, nearly always 0000
+            root.pairOutput = "";
+            root.triedPin = true;
+            pairProc.write("0000\n");
         } else if (root.pairingStage === "pair" && out.includes("Pairing successful")) {
             root.pairOutput = "";
             root.pairingStage = "connect";
@@ -99,7 +106,7 @@ ColumnLayout {
         } else if (out.includes("Connection successful")) {
             root.finishPairing("");
         } else if (out.includes("Failed to pair")) {
-            root.finishPairing("Couldn't pair with " + root.pairingName + ". Put it in pairing mode, disconnect it from any other phone or computer, and try again.");
+            root.finishPairing(root.triedPin ? root.pairingName + " needs a PIN other than 0000. Check its manual for the pairing PIN." : "Couldn't pair with " + root.pairingName + ". Put it in pairing mode, disconnect it from any other phone or computer, and try again.");
         } else if (out.includes("Failed to connect")) {
             root.finishPairing("Paired with " + root.pairingName + ", but it didn't connect. Make sure it's on and not playing from another device, then click it again.");
         }

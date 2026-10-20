@@ -9,8 +9,10 @@ import qs.templates
 RowLayout {
     id: workspaceLayout
     spacing: Globals.spacing
-    // dots aren't pills, so they carry the pills' padding themselves to sit on the same inset
-    Layout.leftMargin: Globals.barItemPadding
+    // dots aren't pills, so they carry the pills' padding themselves to sit on the same inset. On the
+    // left they tuck under the clock's padding instead, to look as far from the time as the logo is.
+    // Tabular digits carry ~4px of side bearing the solid dots don't, so the dots sit that much further out
+    Layout.leftMargin: Globals.barGlyphGap + 4 - Globals.barItemPadding
     Layout.rightMargin: Globals.barItemPadding
 
     property string screenName: ""

@@ -16,7 +16,7 @@ RowLayout {
 
     readonly property color iconColor: Qt.colorEqual(tint, Globals.fgColor) ? Qt.alpha(Globals.fgColor, Globals.barIconAlpha) : tint
 
-    spacing: 4
+    spacing: Globals.barGlyphGap
 
     MenuIcon {
         visible: root.icon !== ""

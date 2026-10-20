@@ -83,6 +83,7 @@ ShellRoot {
             // ------- centre: power menu, clock, workspaces, alerts mirrored while the right island is hidden -------
             BarIsland {
                 anchors.centerIn: parent
+                padding: Globals.barIslandInset // tighter ends than the side islands
 
                 Logo {}
                 Clock {}

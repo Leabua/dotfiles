@@ -41,6 +41,7 @@ Singleton {
     readonly property real barIconAlpha: 0.7 // same tier as the menu rows' icons
     readonly property int barItemHeight: 22 // hover / open pill around each bar entry
     readonly property int barItemPadding: 6 // pill's horizontal padding
+    readonly property int barGlyphGap: 4 // icon -> value, and neighbours that read as one unit (logo, clock, workspaces)
     readonly property int barIslandInset: 2 // pill -> island top / bottom edge, so the two radii nest
     readonly property int barIslandSidePadding: 6 // pill -> island left / right end; roomier than the inset so the ends breathe
     readonly property int barIslandHeight: barItemHeight + barIslandInset * 2
