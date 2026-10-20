@@ -73,7 +73,7 @@ ShellRoot {
             BarIsland {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                padding: Globals.barIslandInset + Globals.barItemPadding
+                padding: Globals.barIslandSidePadding + Globals.barItemPadding
 
                 VolumeOSD {}
                 BrightnessOSD {}

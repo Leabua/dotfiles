@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import Quickshell.Io
 import QtQuick
+import QtQuick.Layouts
 import qs.templates
 
 // distro mark -> opens the power menu (centred, so not anchored to this button)
@@ -25,6 +26,9 @@ BarButton {
     menu: "powerMenu"
     anchorToButton: false
     active: Globals.powerMenuOpen
+    // the mark reads with the time like an icon with its value, so its pill tucks under the clock's padding
+    // until the gap matches BarValue's icon -> text spacing (4px) instead of two paddings stacked (12px)
+    Layout.rightMargin: -(Globals.barItemPadding * 2 - 4)
 
     BarValue {
         id: value
