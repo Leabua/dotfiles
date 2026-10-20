@@ -16,7 +16,14 @@ ColumnLayout {
     readonly property bool hasAdapter: root.adapter !== null && root.adapter !== undefined
     readonly property bool poweredOn: root.hasAdapter && root.adapter.enabled
     readonly property var pairedDevices: root.allDevices.filter(device => device && device.paired && device.adapter === root.adapter)
-    readonly property var nearbyDevices: root.allDevices.filter(device => device && !device.paired && device.adapter === root.adapter)
+    // a scan picks up every anonymous BLE beacon in range, and with no advertised name BlueZ aliases them
+    // to their MAC -> only list devices that name themselves (anything you'd actually pair does)
+    readonly property var nearbyDevices: root.allDevices.filter(device => device && !device.paired && device.adapter === root.adapter && root.isNamed(device))
+
+    function isNamed(device): bool {
+        const name = (device.deviceName || "").trim();
+        return name !== "" && !/^([0-9A-F]{2}[-:]){5}[0-9A-F]{2}$/i.test(name);
+    }
 
     width: root.menuWidth
     spacing: 16
