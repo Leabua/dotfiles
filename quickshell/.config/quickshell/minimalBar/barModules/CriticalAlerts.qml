@@ -2,102 +2,67 @@ import QtQuick
 import QtQuick.Layouts
 import qs.templates
 
-// ----- critical metrics surfaced in the centre island while the right cluster is hidden -----
+// ----- readings worth seeing, surfaced in the centre island while the right island is hidden -----
+// the menus open centred (anchorToButton: false) rather than snapping to the right edge like the right island does
 RowLayout {
     id: root
-    spacing: Globals.spacing
+    spacing: 0
 
-    readonly property bool cpuAlert: Globals.cpuUsage > 70
-    readonly property bool memAlert: Globals.memUsage > 70
-    readonly property bool batteryAlert: Globals.batteryReady && ((Globals.batteryPercent <= 20 && !Globals.batteryCharging) || (Globals.batteryPercent >= 80 && Globals.batteryCharging))
-    readonly property bool caffeineOn: Globals.caffeinated
+    readonly property bool cpuAlert: Globals.cpuUsage > Globals.loadWarning
+    readonly property bool memAlert: Globals.memUsage > Globals.loadWarning
+    readonly property bool batteryAlert: Globals.batteryReady && (Globals.batteryCharging ? Globals.batteryPercent >= Globals.batteryFull : Globals.batteryPercent <= Globals.batteryLow)
 
     // an empty RowLayout still reserves a spacing gap next to its neighbours -> only take up space when there's something to show
-    visible: !Globals.rightIslandShown && (cpuAlert || memAlert || batteryAlert || caffeineOn)
+    visible: !Globals.rightIslandShown && (cpuAlert || memAlert || batteryAlert || Globals.caffeinated)
 
-    // ~~~ these icons sit mid-screen, so drop the button anchor (-1) -> PopupWindow falls back to its
-    //     hAlign ("center") instead of snapping the card to the right edge like the right island does ~~~
-    function openCentred(menu: string): void {
-        Globals.menuAnchorX = -1;
-        Globals.toggleMenu(menu);
-    }
+    BarButton {
+        visible: root.cpuAlert || root.memAlert
+        menu: "engineRoom"
+        anchorToButton: false
+        active: Globals.engineRoomOpen
 
-    // ~~~ cpu -> engine room ~~~
-    Item {
-        visible: root.cpuAlert
-        implicitWidth: cpuIcon.implicitWidth
-        implicitHeight: cpuIcon.implicitHeight
-
-        BarIcon {
-            id: cpuIcon
-            icon: String.fromCodePoint(0xF2DB)
-            displayText: Globals.cpuUsage + "%"
-            color: Globals.cpuUsage > 85 ? Globals.criticalColor : Globals.warningColor
+        BarValue {
+            visible: root.cpuAlert
+            icon: "cpu"
+            text: Globals.cpuUsage + "%"
+            tint: Globals.loadTint(Globals.cpuUsage)
         }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.openCentred("engineRoom")
+        BarValue {
+            visible: root.memAlert
+            icon: "memory"
+            text: Globals.memUsage + "%"
+            tint: Globals.loadTint(Globals.memUsage)
         }
     }
 
-    // ~~~ ram -> engine room ~~~
-    Item {
-        visible: root.memAlert
-        implicitWidth: memIcon.implicitWidth
-        implicitHeight: memIcon.implicitHeight
-
-        BarIcon {
-            id: memIcon
-            icon: "󰘚"
-            displayText: Globals.memUsage + "%"
-            color: Globals.memUsage > 85 ? Globals.criticalColor : Globals.warningColor
-        }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.openCentred("engineRoom")
-        }
-    }
-
-    // ~~~ battery -> power profiles: low / critical while draining, or topped up while charging ~~~
-    Item {
+    BarButton {
         visible: root.batteryAlert
-        implicitWidth: batteryIcon.implicitWidth
-        implicitHeight: batteryIcon.implicitHeight
+        menu: "powerProfiles"
+        anchorToButton: false
+        active: Globals.powerProfilesOpen
 
-        BarIcon {
-            id: batteryIcon
-            icon: Globals.batteryCharging ? "󰂅" : (Globals.batteryPercent <= 10 ? "󰁺" : "󰁻")
-            displayText: Globals.batteryPercent + "%"
-            color: (Globals.batteryPercent <= 10 && !Globals.batteryCharging) ? Globals.criticalColor : (Globals.batteryPercent <= 20 && !Globals.batteryCharging) ? Globals.warningColor : Globals.healthy
-        }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.openCentred("powerProfiles")
+        BarValue {
+            id: battery
+            text: Globals.batteryPercent + "%"
+            tint: Globals.batteryTint(Globals.batteryPercent, Globals.batteryCharging)
+
+            BatteryGlyph {
+                anchors.fill: parent
+                level: Globals.batteryPercent / 100
+                charging: Globals.batteryCharging
+                color: battery.iconColor
+                strokeWidth: Globals.barIconStroke
+            }
         }
     }
 
-    // ~~~ caffeine -> session-awake toggle, surfaced here while the right island is hidden ~~~
-    Item {
-        visible: root.caffeineOn
-        implicitWidth: caffeineIcon.implicitWidth
-        implicitHeight: caffeineIcon.implicitHeight
+    BarButton {
+        visible: Globals.caffeinated
+        onClicked: Globals.toggleCaffeine()
 
-        BarIcon {
-            id: caffeineIcon
-            icon: String.fromCodePoint(0xF0176)
-            color: Globals.healthy
-        }
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: -1
-            cursorShape: Qt.PointingHandCursor
-            onClicked: Globals.toggleCaffeine()
+        BarValue {
+            icon: "coffee"
+            tint: Globals.healthy
         }
     }
 }

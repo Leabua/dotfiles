@@ -28,9 +28,21 @@ Singleton {
         weight: 700
     })
 
-    // bar entry icons sit a touch larger than their value text -> one knob to tune -> convenient fix
-    readonly property int barIconSize: textFont.pixelSize 
-    readonly property int bigIcon: textFont.pixelSize + 28
+    // ------- bar --------
+    // the bar speaks the menus' language: semibold values, line icons dimmed one tier below them
+    readonly property font barFont: Qt.font({
+        family: textFont.family,
+        pixelSize: 15,
+        weight: Font.DemiBold,
+        features: { "tnum": 1 } // tabular digits -> 9% -> 10% doesn't shove the island sideways
+    })
+    readonly property int barIconSize: 16
+    readonly property real barIconStroke: 2 // a touch heavier than the menus' 1.7 so 16px icons hold up next to semibold text
+    readonly property real barIconAlpha: 0.7 // same tier as the menu rows' icons
+    readonly property int barItemHeight: 24 // hover / open pill around each bar entry
+    readonly property int barItemPadding: 6 // pill's horizontal padding
+    readonly property int barIslandInset: 2 // pill -> island edge, so the two radii nest
+    readonly property int barIslandHeight: barItemHeight + barIslandInset * 2
 
     // --------- colors -----------------
     //  ~~~~~~ dynamic colors ~~~~~~~
@@ -67,14 +79,10 @@ Singleton {
     readonly property color menuBg: Qt.alpha(bgColor, menuTransparency)
 
     // ---------spacing & layout -----------
-    //spacing
     readonly property int spacing: 6
-    readonly property int padding: spacing * 2
-    readonly property int vertPadding: spacing * 2 - 4
-    readonly property int horiPadding: spacing * 2 + 5
 
-    // margins
-    readonly property int margins: 10
+    // bar window margins against the screen edge; the negative bottom pulls tiled windows up under the islands
+    readonly property int margins: 10 // default card padding + bottom clearance for menus
     readonly property int marginsTop: 4
     readonly property int marginsLeft: 8
     readonly property int marginsRight: 8
@@ -88,7 +96,6 @@ Singleton {
     // ----------  animation durations -----------
     readonly property int animFast: 80
     readonly property int animDuration: 150
-    readonly property int animSlow: 250
     readonly property int animPress: 120 // press feedback (scale-down on click)
     // strong ease-out: responds instantly, lands softly -> use for anything entering or unfolding
     readonly property var easeOut: [0.23, 1, 0.32, 1, 1, 1]
@@ -113,8 +120,8 @@ Singleton {
     }
 
     // ---------- menu positioning support ----------
-    property int currentBarHeight: 0  // mirrored from shell.qml so centered menus sit just below the bar
-    property bool barShown: true       // minimalBar is always shown; kept so ported menus' show / hide maths resolve
+    readonly property int currentBarHeight: barIslandHeight // menus sit just below the bar
+    property bool barShown: true       // mirrored from shell.qml -> menus slide up to the top edge while the bar is hidden
     readonly property int hyprGaps: 4  // match hyprland window gaps so menus sit flush with tiled windows
     readonly property int cardY: 24    // vertical nudge applied to menu cards under the bar
     readonly property bool headerIcons: true // flip to preview menu headers with / without their glyph
@@ -134,26 +141,46 @@ Singleton {
     property bool batteryCharging: false
     property bool batteryReady: false
 
+    // ----- status thresholds: the right island and the centre-island alerts read the same numbers -----
+    readonly property int loadWarning: 70
+    readonly property int loadCritical: 85
+    readonly property int batteryLow: 20
+    readonly property int batteryCritical: 10
+    readonly property int batteryFull: 80 // charging past this turns the battery green
+
+    function loadTint(percent: int): color {
+        if (percent > loadCritical)
+            return criticalColor;
+        if (percent > loadWarning)
+            return warningColor;
+        return fgColor;
+    }
+
+    function batteryTint(percent: int, charging: bool): color {
+        if (charging)
+            return percent >= batteryFull ? healthy : fgColor;
+        if (percent <= batteryCritical)
+            return criticalColor;
+        if (percent <= batteryLow)
+            return warningColor;
+        return fgColor;
+    }
+
     // ----- one bar menu open at a time; clicking another bar icon switches -----
-    function toggleMenu(name) {
-        const wasOpen = (name === "wifi" && wifiMenuOpen) || (name === "audio" && audioMenuOpen) || (name === "engineRoom" && engineRoomOpen) || (name === "powerProfiles" && powerProfilesOpen) || (name === "powerMenu" && powerMenuOpen);
-        wifiMenuOpen = false;
-        audioMenuOpen = false;
-        engineRoomOpen = false;
-        powerProfilesOpen = false;
-        powerMenuOpen = false;
-        if (!wasOpen) {
-            if (name === "wifi")
-                wifiMenuOpen = true;
-            else if (name === "audio")
-                audioMenuOpen = true;
-            else if (name === "engineRoom")
-                engineRoomOpen = true;
-            else if (name === "powerProfiles")
-                powerProfilesOpen = true;
-            else if (name === "powerMenu")
-                powerMenuOpen = true;
-        }
+    readonly property var barMenus: ({
+            wifi: "wifiMenuOpen",
+            audio: "audioMenuOpen",
+            engineRoom: "engineRoomOpen",
+            powerProfiles: "powerProfilesOpen",
+            powerMenu: "powerMenuOpen"
+        })
+
+    function toggleMenu(name: string): void {
+        const wasOpen = root[barMenus[name]];
+        for (const key in barMenus)
+            root[barMenus[key]] = false;
+        if (!wasOpen)
+            root[barMenus[name]] = true;
     }
 
     // ---------- caffeine ----------

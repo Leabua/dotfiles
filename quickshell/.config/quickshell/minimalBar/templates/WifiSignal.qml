@@ -9,6 +9,7 @@ Item {
     property int strength: -1   // 0..100, -1 = out of range
     property bool sweeping: false
     property color color: Globals.fgColor
+    property real strokeWidth: 1.9
 
     readonly property int level: strength < 0 ? -1 : strength > 80 ? 3 : strength > 55 ? 2 : strength > 30 ? 1 : 0 // NetworkManager's bar cut-offs
     property int sweepStep: 0
@@ -38,7 +39,7 @@ Item {
             sourceSize.width: Math.ceil(width)
             sourceSize.height: Math.ceil(height)
             // drawn opaque in the hue, alpha applied through opacity so each arc can fade on its own
-            source: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + root.hue + '" stroke-width="1.9" stroke-linecap="round">' + modelData.replace("currentColor", root.hue) + '</svg>')
+            source: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="' + root.hue + '" stroke-width="' + root.strokeWidth + '" stroke-linecap="round">' + modelData.replace("currentColor", root.hue) + '</svg>')
             opacity: root.color.a * (index === 0 ? (root.level < 0 && !root.sweeping ? 0.35 : 1) : (index <= root.litArcs ? 1 : 0.16))
 
             Behavior on opacity {

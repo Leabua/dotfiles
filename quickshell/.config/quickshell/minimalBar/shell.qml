@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import QtQuick
 import qs.templates
 import qs.barModules
+import qs.osd
 // ------- menu modules: registered so the path-loaded menus can self-import their siblings -------
 import qs.menus.wifi
 import qs.menus.audio
@@ -46,7 +47,7 @@ ShellRoot {
                 right: Globals.marginsRight
                 bottom: Globals.marginsBottom
             }
-            implicitHeight: defHeight.implicitHeight + Globals.vertPadding
+            implicitHeight: Globals.barIslandHeight // fixed -> the bar never jitters with its content
 
             // Empty space on the bar also dismisses the current menu. Buttons
             // above this area keep handling their own clicks normally.
@@ -56,26 +57,7 @@ ShellRoot {
                 onClicked: Globals.dismissPopup()
             }
 
-            Text {
-                id: defHeight
-                visible: false // fixed height anchor so the bar never jitters
-                text: " NEVER SHOW THIS"
-                // Size the anchor off the bar-icon glyph (barIconSize, textFont + 2), not the
-                // 14px body font: the centre/right islands are as tall as their 16px icons, so a
-                // 14px reference left the panel a few px shorter than those islands and layer-shell
-                // clipped their rounded bottom corners. Matching barIconSize keeps the panel >= the
-                // tallest island (still a fixed constant -> no jitter, no binding loop on children).
-                font.family: Globals.textFont.family
-                font.weight: Globals.textFont.weight
-                font.pixelSize: Globals.barIconSize
-            }
-
-            // ------- mirror bar height + shown-state so menus sit below the bar and shift when it hides -------
-            Binding {
-                target: Globals
-                property: "currentBarHeight"
-                value: defHeight.implicitHeight + Globals.vertPadding // bar strip height (leftIsland is OSD-only -> 0 when idle)
-            }
+            // ------- mirror shown-state so menus slide up when the bar hides -------
             Binding {
                 target: Globals
                 property: "barShown"
@@ -87,25 +69,38 @@ ShellRoot {
                 value: root.rightIslandVisible
             }
 
-            // literally some rectangles with positions -> refer to the actual files for whats going on
-            BarLeft {
-                id: leftIsland
-                anchors {
-                    left: parent.left
-                    verticalCenter: parent.verticalCenter
-                }
+            // ------- left: OSDs + now playing; only one shows at a time, and the island vanishes when none do -------
+            BarIsland {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                padding: Globals.barIslandInset + Globals.barItemPadding
+
+                VolumeOSD {}
+                BrightnessOSD {}
+                MediaScriptOSD {}
             }
 
-            BarMiddle {
+            // ------- centre: power menu, clock, workspaces, alerts mirrored while the right island is hidden -------
+            BarIsland {
                 anchors.centerIn: parent
+
+                Logo {}
+                Clock {}
+                Workspaces {}
+                CriticalAlerts {}
             }
 
-            BarRight {
+            // ------- right: status, one pill per menu -------
+            BarIsland {
                 visible: root.rightIslandVisible
-                anchors {
-                    right: parent.right
-                    verticalCenter: parent.verticalCenter
-                }
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+
+                SystemLoad {}
+                Volume {}
+                Battery {}
+                Wifi {}
+                Caffeine {}
             }
         }
     }

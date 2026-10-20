@@ -9,11 +9,13 @@ import qs.templates
 RowLayout {
     id: workspaceLayout
     spacing: Globals.spacing
+    // dots aren't pills, so they carry the pills' padding themselves to sit on the same inset
+    Layout.leftMargin: Globals.barItemPadding
+    Layout.rightMargin: Globals.barItemPadding
 
     property string screenName: ""
 
     // defaults -> check Globals.qml
-    property color bgColor: Globals.bgColor
     property color fgColor: Globals.fgColor
     property color fgColor2: Globals.fgColor2
 
@@ -84,10 +86,11 @@ RowLayout {
             // How many dots to show. Niri essentially does last occupied window + 1 and hyprland is my pref for 5 persistant workspaces
             visible: workspaceLayout.isNiri ? true : workspaceId <= Math.max(5, workspaceLayout.maxWorkspaceId)
 
-            // spherical indicators -> a circle is just a square where the radius = 0.5 x height ie make them equal to get a circle
-            implicitWidth: isActive ? Globals.textFont.pixelSize + 12 : Globals.textFont.pixelSize // decrease to make more vertical
-            implicitHeight: isActive ? Globals.textFont.pixelSize - 0 : Globals.textFont.pixelSize // decrease to make more flat -> could be without ternaries for no IsActive conditon
-            radius: implicitHeight / 2
+            // dots, with the focused workspace stretched into a pill. Switching is keyboard-driven and happens
+            // hundreds of times a day, so the stretch is instant on purpose -> no width animation to sit through
+            implicitWidth: isActive ? Globals.barIconSize + 12 : Globals.barIconSize
+            implicitHeight: Globals.barIconSize
+            radius: height / 2
 
             property color dotColor: {
                 if (workspaceLayout.isNiri)
@@ -97,11 +100,13 @@ RowLayout {
                 return ws.monitor.name.startsWith("eDP") ? workspaceLayout.fgColor : workspaceLayout.fgColor2;
             }
 
-            color: isActive ? dotColor : (ws ? Qt.alpha(dotColor, 0.45) : Qt.alpha(dotColor, 0.15))
+            color: isActive ? dotColor : Qt.alpha(dotColor, (ws ? 0.45 : 0.15) + (mouse.containsMouse ? 0.15 : 0))
 
             MouseArea {
+                id: mouse
                 anchors.fill: parent
                 anchors.margins: -1
+                hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
                     Globals.dismissPopup();
@@ -115,7 +120,7 @@ RowLayout {
 
             Behavior on color {
                 ColorAnimation {
-                    duration: 60
+                    duration: Globals.animFast
                 }
             }
         }

@@ -7,7 +7,9 @@ import qs.osd
 
 RowLayout {
     id: root
-    spacing: Globals.spacing / 3
+    spacing: Globals.spacing
+    Layout.maximumWidth: OsdState.fixedWidth
+    opacity: root.playing ? 1 : 0.45 // paused -> the whole line steps back
 
     // last player that emitted an event -> mirrors `playerctl --all-players --follow`
     property var lastPlayer: null
@@ -23,17 +25,28 @@ RowLayout {
 
     visible: OsdState.active === "" && player !== null // only show if volume or brightness is not being shown AND the player has something.
 
+    // title leads, artist sits a tier quieter -> hierarchy instead of an "artist - title" string
     Text {
-        text: {
-            if (!root.player)
-                return "";
-            return root.player.trackArtist ? root.player.trackArtist + " - " + root.player.trackTitle : root.player.trackTitle;
-        }
-        font: Globals.textFont
+        Layout.fillWidth: true
+        Layout.maximumWidth: implicitWidth
+        text: root.player ? root.player.trackTitle : ""
+        textFormat: Text.PlainText
+        font: Globals.barFont
         color: Globals.fgColor
-        opacity: root.playing ? 1 : 0.4 // paused -> dimmed, like waybar
         elide: Text.ElideRight
-        Layout.maximumWidth: OsdState.fixedWidth
+    }
+
+    Text {
+        visible: text !== ""
+        Layout.fillWidth: true
+        Layout.maximumWidth: implicitWidth
+        text: root.player ? root.player.trackArtist : ""
+        textFormat: Text.PlainText
+        font.family: Globals.barFont.family
+        font.pixelSize: Globals.barFont.pixelSize
+        font.weight: Font.Medium
+        color: Qt.alpha(Globals.fgColor, 0.55)
+        elide: Text.ElideRight
     }
 
     // one silent watcher per player so status/track events pick the shown player

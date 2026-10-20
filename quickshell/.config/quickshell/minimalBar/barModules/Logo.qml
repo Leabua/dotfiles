@@ -3,13 +3,12 @@ import Quickshell.Io
 import QtQuick
 import qs.templates
 
-Item {
+// distro mark -> opens the power menu (centred, so not anchored to this button)
+BarButton {
     id: root
 
     property string distroId: ""
-
-    property string icon: {
-        const glyphs = {
+    readonly property var glyphs: ({
             "arch": "󰣇",
             "ubuntu": "󰕈",
             "fedora": "󰣛",
@@ -21,31 +20,30 @@ Item {
             "gentoo": "󰣨",
             "endeavouros": "󰣇",
             "pop": "󰣇"
-        };
-        return glyphs[distroId] ?? "󰻀"; //fallback
-    }
+        })
 
-    implicitHeight: content.implicitHeight
-    implicitWidth: content.implicitWidth
+    menu: "powerMenu"
+    anchorToButton: false
+    active: Globals.powerMenuOpen
 
-    BarIcon {
-        id: content
-        icon: root.icon
-    }
-    MouseArea {
-        anchors.fill: parent
-        anchors.margins: -1
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            Globals.toggleMenu("powerMenu"); // power menu is centred, not anchored to this icon
+    BarValue {
+        id: value
+
+        // a brand mark stays a font glyph rather than a redrawn line icon
+        Text {
+            anchors.centerIn: parent
+            text: root.glyphs[root.distroId] ?? "󰻀"
+            color: value.iconColor
+            font.family: Globals.textFont.family
+            font.pixelSize: Globals.barIconSize
         }
     }
+
     Process {
-        id: osProc
         command: ["sh", "-c", ". /etc/os-release && echo $ID"]
+        running: true
         stdout: StdioCollector {
             onStreamFinished: root.distroId = text.trim()
         }
-        Component.onCompleted: running = true
     }
 }

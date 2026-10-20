@@ -2,32 +2,19 @@ import Quickshell
 import QtQuick
 import qs.templates
 
-Item {
+// click to add the date
+BarButton {
     id: root
     property bool showDate: false
 
-    implicitHeight: content.implicitHeight
-    implicitWidth: content.implicitWidth
+    onClicked: showDate = !showDate
 
     SystemClock {
         id: clock
         precision: SystemClock.Minutes
     }
 
-    BarIcon {
-        id: content
-        displayText: root.showDate ? Qt.formatDateTime(clock.date, "hh:mm - dd MMM") : Qt.formatDateTime(clock.date, "hh:mm")
-    }
-    MouseArea {
-        id: mouse
-        anchors.fill: parent
-        anchors.margins: -1
-        cursorShape: Qt.PointingHandCursor
-
-        //click to show longdate
-        onClicked: {
-            Globals.dismissPopup();
-            root.showDate = !root.showDate;
-        }
+    BarValue {
+        text: Qt.formatDateTime(clock.date, root.showDate ? "ddd d MMM  hh:mm" : "hh:mm")
     }
 }
