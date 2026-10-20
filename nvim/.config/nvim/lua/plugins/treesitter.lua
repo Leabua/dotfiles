@@ -1,6 +1,6 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
-	branch = "main", -- the supported branch for Neovim 0.11+/0.12 (master is legacy)
+	branch = "main", -- the supported branch for Neovim 0.12+ (master is legacy)
 	build = ":TSUpdate",
 	lazy = false,
 	config = function()
@@ -15,6 +15,8 @@ return {
 			"typescript",
 			"tsx",
 			"python",
+			"go",
+			"rust",
 			"java",
 			"c",
 			"cpp",

@@ -98,7 +98,15 @@ return {
 					local col = vim.fn.col(".") - 1
 					local at_cursor = {}
 					for _, d in ipairs(vim.diagnostic.get(bufnr, { lnum = line })) do
-						if col >= d.col and col <= d.end_col then
+						-- End positions are exclusive; point diagnostics still match their cursor position.
+						if
+							(line ~= d.lnum or col >= d.col)
+							and (
+								line ~= d.end_lnum
+								or col < d.end_col
+								or (d.lnum == d.end_lnum and d.col == d.end_col and col == d.col)
+							)
+						then
 							table.insert(at_cursor, d)
 						end
 					end
@@ -118,7 +126,9 @@ return {
 						end
 					end
 
-					local params = vim.lsp.util.make_position_params(0, "utf-8")
+					local params = function(client)
+						return vim.lsp.util.make_position_params(0, client.offset_encoding)
+					end
 					vim.lsp.buf_request_all(bufnr, "textDocument/hover", params, function(results)
 						local hover_lines = {}
 						for _, res in pairs(results or {}) do

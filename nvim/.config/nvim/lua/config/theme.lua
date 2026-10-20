@@ -48,8 +48,6 @@ local transparent_groups = {
 	"GitSignsAdd",
 	"GitSignsChange",
 	"GitSignsDelete",
-	"TreesitterContextLineNumber",
-	"NotifyBackground",
 }
 
 local function strip_backgrounds()
@@ -85,22 +83,6 @@ local function fix_italics()
 		if next(hl) ~= nil then
 			hl.italic = true
 			pcall(vim.api.nvim_set_hl, 0, name, hl)
-		end
-	end
-end
-
-local function strip_bufferline_backgrounds()
-	for _, group in ipairs(vim.fn.getcompletion("BufferLine", "highlight")) do
-		local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-		if hl.bg then
-			vim.api.nvim_set_hl(0, group, {
-				fg = hl.fg,
-				sp = hl.sp,
-				bold = hl.bold,
-				italic = hl.italic,
-				underline = hl.underline,
-				underdouble = hl.underdouble,
-			})
 		end
 	end
 end
@@ -145,7 +127,6 @@ local function apply_fixes()
 	pcall(strip_backgrounds)
 	pcall(fix_italics)
 	pcall(fix_diagnostics)
-	vim.schedule(strip_bufferline_backgrounds)
 end
 
 -- Re-assert the fixes once the dust settles, debounced. Telescope's colorscheme
@@ -184,23 +165,6 @@ function M.setup()
 			-- ...and re-assert once the picker's async churn settles, so a scheme
 			-- applied in a racy context is still normalised + persisted correctly.
 			schedule_reassert()
-		end,
-	})
-
-	-- bufferline can load after the colorscheme; re-strip when it does / on buffer changes
-	vim.api.nvim_create_autocmd({ "BufWinEnter", "BufEnter" }, {
-		group = group,
-		callback = function()
-			vim.schedule(strip_bufferline_backgrounds)
-		end,
-	})
-	vim.api.nvim_create_autocmd("User", {
-		group = group,
-		pattern = "LazyLoad",
-		callback = function(ev)
-			if ev.data == "bufferline.nvim" then
-				vim.schedule(strip_bufferline_backgrounds)
-			end
 		end,
 	})
 
