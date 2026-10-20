@@ -18,13 +18,17 @@ BarButton {
         id: value
         icon: root.connected ? "" : "wifiOff"
 
-        // same fan + cut-offs as the network rows in the wifi menu
+        // same fan + cut-offs as the network rows in the wifi menu. Open arcs carry less ink than the
+        // closed icons beside them, so the bar draws them a touch heavier and lifts them off the bottom-heavy dot
         WifiSignal {
             visible: root.connected
             anchors.fill: parent
+            anchors.topMargin: -1
+            anchors.bottomMargin: 1
             strength: root.strength
             color: value.iconColor
-            strokeWidth: Globals.barIconStroke
+            strokeWidth: Globals.barIconStroke + 0.2
+            unlitOpacity: 0.35 // keeps the full fan visible at any signal, so the icon doesn't shrink with the level
         }
     }
 

@@ -60,8 +60,8 @@ Item {
         phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/>',
         computer: '<rect x="3" y="3" width="18" height="13" rx="2"/><path d="M12 16v5m-5 0h10"/>',
         watch: '<rect x="6" y="6" width="12" height="12" rx="4"/><path d="M9 6V2h6v4m-6 12v4h6v-4m-3-9v3l2 1"/>',
-        coffee: '<path d="M4 10h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16M8 3v3m4-3v3"/>',
-        cup: '<path d="M4 10h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/>',
+        coffee: '<path d="M4 6h12v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M16 8h1.5a2.5 2.5 0 0 1 0 5H16M8 1.5v2m4-2v2"/>',
+        cup: '<path d="M4 6h12v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M16 8h1.5a2.5 2.5 0 0 1 0 5H16"/>',
         sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
         sunDim: '<circle cx="12" cy="12" r="4"/><path d="M12 4h.01M12 20h.01M4 12h.01M20 12h.01M6.3 6.3h.01M17.7 17.7h.01M6.3 17.7h.01M17.7 6.3h.01"/>',
         controller: '<path d="M7 7h10c3 0 5 10 3 12-2 1-4-3-5-3H9c-1 0-3 4-5 3C2 17 4 7 7 7Z"/><path d="M7 10v4m-2-2h4m6-1h.1m3 2h.1"/>'
