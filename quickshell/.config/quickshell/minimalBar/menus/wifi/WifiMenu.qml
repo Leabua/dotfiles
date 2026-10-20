@@ -29,7 +29,8 @@ Scope {
         anchorCenterX: Globals.menuAnchorX // open under the bar button that toggled it
         // sit just below the bar when it's shown, shift up to the top when it's hidden
         cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
-        padding: Globals.spacing
+        padding: 16
+        backgroundColor: Globals.bgColor
         onKeyDown: event => wifiView.handleKey(event)
 
         margins {
@@ -40,6 +41,7 @@ Scope {
 
         WifiView {
             id: wifiView
+            availableWidth: popup.availableWidth
             onFocusMenu: popup.focusMenu()
         }
     }

@@ -12,10 +12,11 @@ import QtQuick.Layouts
 ColumnLayout {
     id: root
 
-    // fixed card body width so the sliders have a consistent length
-    readonly property int menuWidth: 280
+    property int availableWidth: 360
+    readonly property int menuWidth: Math.min(360, availableWidth)
 
-    spacing: Globals.spacing
+    width: root.menuWidth
+    spacing: 16
 
     // ----- pipewire helpers -----
     readonly property var sink: Pipewire.defaultAudioSink
@@ -62,18 +63,6 @@ ColumnLayout {
         const ico = p["application.icon-name"];
         return ico ? Quickshell.iconPath(ico, "") : "";
     }
-    //
-    // pick a speaker glyph that matches the current output level / mute state
-    function sinkGlyph(): int {
-        if (!root.sink || !root.sink.audio || root.sink.audio.muted || root.sink.audio.volume <= 0)
-            return 0xF075F; // volume off
-        if (root.sink.audio.volume < 0.34)
-            return 0xF057F;
-        if (root.sink.audio.volume < 0.67)
-            return 0xF0580;
-        return 0xF057E;
-    }
-
     readonly property var outputs: Pipewire.nodes.values.filter(n => root.isOutput(n))
     readonly property var inputs: Pipewire.nodes.values.filter(n => root.isInput(n))
     readonly property var playbackApps: Pipewire.nodes.values.filter(n => root.isPlayback(n))
@@ -220,130 +209,108 @@ ColumnLayout {
         root.profileOutputs = out;
     }
 
-    // strut that pins the whole card body to menuWidth (fillWidth children stretch to it)
-    Item {
-        Layout.preferredWidth: root.menuWidth
-        Layout.preferredHeight: 0
+    MenuHeader {
+        title: "Audio"
+        icon: "speaker"
+        actionText: "Bluetooth"
+        actionIcon: "bluetooth"
+        onActionClicked: Globals.audioMenuView = "bluetooth"
+        onCloseRequested: Globals.audioMenuOpen = false
     }
 
-    // ----- header -----
-    RowLayout {
+    ColumnLayout {
         Layout.fillWidth: true
-        Text {
-            text: String.fromCodePoint(0xF0F70) // treble clef
-            visible: Globals.headerIcons
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 6
-            font.weight: Globals.textFont.weight
-        }
-        Text {
-            Layout.fillWidth: true
-            text: "Audio"
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 2
-            font.weight: Globals.textFont.weight
-        }
-    }
+        spacing: 6
 
-    MenuDivider {}
-
-    // ----- output -----
-    DeviceSelector {
-        Layout.fillWidth: true
-        icon: 0xF057E // speaker
-        devices: root.outputs.concat(root.profileOutputs)
-        currentNode: root.sink
-        currentName: root.devName(root.sink)
-        nameFor: n => n && n.__profile ? n.label : root.devName(n)
-        onSelected: n => {
-            if (n && n.__profile)
-                root.activateProfile(n);
-            else
-                Pipewire.preferredDefaultAudioSink = n;
+        DeviceSelector {
+            label: "Output"
+            iconName: "speaker"
+            devices: root.outputs.concat(root.profileOutputs)
+            currentNode: root.sink
+            currentName: root.pendingSinkName !== "" ? "Switching output…" : root.devName(root.sink)
+            nameFor: node => node && node.__profile ? node.label : root.devName(node)
+            onSelected: node => {
+                if (node && node.__profile)
+                    root.activateProfile(node);
+                else
+                    Pipewire.preferredDefaultAudioSink = node;
+            }
         }
-    }
 
-    // master output volume (the "global" slider that moves everything on this sink)
-    VolumeSliderRow {
-        Layout.fillWidth: true
-        visible: root.sink && root.sink.ready
-        icon: root.sinkGlyph()
-        value: root.sink && root.sink.audio ? root.sink.audio.volume : 0
-        muted: root.sink && root.sink.audio ? root.sink.audio.muted : false
-        onMoved: v => {
-            if (root.sink && root.sink.audio)
-                root.sink.audio.volume = v;
-        }
-        onIconClicked: {
-            if (root.sink && root.sink.audio)
-                root.sink.audio.muted = !root.sink.audio.muted;
-        }
-    }
-
-    // one slider per application currently playing
-    Repeater {
-        model: root.playbackApps
-        delegate: VolumeSliderRow {
-            required property var modelData
-            Layout.fillWidth: true
-            icon: 0xF08C6
-            iconSource: root.appIcon(modelData)
-            value: modelData.audio ? modelData.audio.volume : 0
-            muted: modelData.audio ? modelData.audio.muted : false
-            onMoved: v => {
-                if (modelData.audio)
-                    modelData.audio.volume = v;
+        VolumeSliderRow {
+            visible: root.sink && root.sink.ready
+            iconName: "speaker"
+            value: root.sink && root.sink.audio ? root.sink.audio.volume : 0
+            muted: root.sink && root.sink.audio ? root.sink.audio.muted : false
+            onMoved: value => {
+                if (root.sink && root.sink.audio)
+                    root.sink.audio.volume = value;
             }
             onIconClicked: {
-                if (modelData.audio)
-                    modelData.audio.muted = !modelData.audio.muted;
+                if (root.sink && root.sink.audio)
+                    root.sink.audio.muted = !root.sink.audio.muted;
             }
         }
     }
 
-    MenuDivider {}
-
-    // ----- input -----
-    DeviceSelector {
+    ColumnLayout {
         Layout.fillWidth: true
-        Layout.topMargin: Globals.spacing
-        icon: 0xF036C // microphone
-        devices: root.inputs
-        currentNode: root.source
-        currentName: root.devName(root.source)
-        nameFor: n => root.devName(n)
-        onSelected: n => Pipewire.preferredDefaultAudioSource = n
+        visible: root.playbackApps.length > 0
+        spacing: 8
+
+        MenuSectionLabel {
+            text: "Applications"
+        }
+
+        Repeater {
+            model: root.playbackApps
+
+            delegate: VolumeSliderRow {
+                required property var modelData
+                label: root.appName(modelData)
+                iconSource: root.appIcon(modelData)
+                iconName: "speaker"
+                value: modelData.audio ? modelData.audio.volume : 0
+                muted: modelData.audio ? modelData.audio.muted : false
+                onMoved: value => {
+                    if (modelData.audio)
+                        modelData.audio.volume = value;
+                }
+                onIconClicked: {
+                    if (modelData.audio)
+                        modelData.audio.muted = !modelData.audio.muted;
+                }
+            }
+        }
     }
 
-    // master input (mic) volume
-    VolumeSliderRow {
+    ColumnLayout {
         Layout.fillWidth: true
-        visible: root.source && root.source.ready
-        icon: (root.source && root.source.audio && (root.source.audio.muted || root.source.audio.volume <= 0)) ? 0xF036D : 0xF036C
-        value: root.source && root.source.audio ? root.source.audio.volume : 0
-        muted: root.source && root.source.audio ? root.source.audio.muted : false
-        onMoved: v => {
-            if (root.source && root.source.audio)
-                root.source.audio.volume = v;
+        spacing: 6
+
+        DeviceSelector {
+            label: "Input"
+            iconName: "microphone"
+            devices: root.inputs
+            currentNode: root.source
+            currentName: root.devName(root.source)
+            nameFor: node => root.devName(node)
+            onSelected: node => Pipewire.preferredDefaultAudioSource = node
         }
-        onIconClicked: {
-            if (root.source && root.source.audio)
-                root.source.audio.muted = !root.source.audio.muted;
-        }
-    }
-    //  footer: switch to the bluetooth card (toggle hugs the right edge)
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.topMargin: Globals.spacing
-        Item {
-            Layout.fillWidth: true
-        } // push the button to the right edge
-        ViewSwitchBtn {
-            icon: String.fromCodePoint(0xF293) // bluetooth
-            label: "Bluetooth"
-            onClicked: Globals.audioMenuView = "bluetooth"
+
+        VolumeSliderRow {
+            visible: root.source && root.source.ready
+            iconName: "microphone"
+            value: root.source && root.source.audio ? root.source.audio.volume : 0
+            muted: root.source && root.source.audio ? root.source.audio.muted : false
+            onMoved: value => {
+                if (root.source && root.source.audio)
+                    root.source.audio.volume = value;
+            }
+            onIconClicked: {
+                if (root.source && root.source.audio)
+                    root.source.audio.muted = !root.source.audio.muted;
+            }
         }
     }
 }

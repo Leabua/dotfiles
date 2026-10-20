@@ -3,9 +3,12 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import qs.menus.wifi
 import qs.templates
 
-ColumnLayout {
+// one network: saved ones get the two-line row (mirrors BtDeviceRow), nearby ones a
+// tighter single line with a lock; secured nearby networks unfold an inline password form
+Rectangle {
     id: root
 
     property string ssid: ""
@@ -23,250 +26,237 @@ ColumnLayout {
     property string focusedField: "password"   // "username" | "password"
     property bool revealPassword: false
 
-    signal toggleExpand
-    signal connectRequested
-    signal disconnectRequested
+    signal activated
     signal forgetRequested
+    signal connectRequested
+    signal cancelRequested
     signal focusField(string field)
     signal toggleReveal
     signal passwordEdited(string value)
     signal usernameEdited(string value)
     signal keyPressed(var event)
 
-    // signal-bar glyph; the lock overlay only flags NEW secured networks (you'll
-    // need a password) — known nets already hold their credentials, so no lock
-    function signalGlyph(): int {
-        if (root.signalStrength < 0)
-            return 0xF092F; // wifi-strength-outline (saved, out of range)
-        const lvl = root.signalStrength > 80 ? 4 : root.signalStrength > 55 ? 3 : root.signalStrength > 30 ? 2 : 1;
-        if (root.secured && !root.known)
-            return [0, 0xF0921, 0xF0924, 0xF0927, 0xF092A][lvl]; // wifi-strength-N-lock
-        return [0, 0xF091F, 0xF0922, 0xF0925, 0xF0928][lvl];     // wifi-strength-N
-    }
+    readonly property bool inRange: signalStrength >= 0
+    readonly property int rowHeight: known ? 54 : 44
+    readonly property bool canSubmit: passwordText !== "" && (!enterprise || usernameText !== "")
+    readonly property string statusText: root.busy ? "Connecting…" : root.connected ? "Connected" : root.inRange ? "Saved" : "Out of range"
 
     Layout.fillWidth: true
-    spacing: Globals.spacing
+    implicitHeight: root.rowHeight + formClip.height
+    radius: 9
+    color: Qt.alpha(Globals.fgColor, root.expanded || root.connected ? 0.06 : headerArea.containsMouse ? 0.04 : 0)
+
+    // press feedback: the row gives a little under the pointer
+    scale: headerArea.pressed ? 0.985 : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Globals.animPress
+            easing.type: Easing.OutCubic
+        }
+    }
 
     // ----- header row -----
-    Rectangle {
-        Layout.fillWidth: true
-        implicitHeight: headerRow.implicitHeight + Globals.spacing
-        radius: Globals.radius
-        color: root.expanded ? Qt.alpha(Globals.fgColor, 0.12) : (headerArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.1) : "transparent")
+    MouseArea {
+        id: headerArea
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: root.rowHeight
+        enabled: !root.busy
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.activated()
+    }
 
-        Behavior on color {
-            ColorAnimation {
-                duration: Globals.animFast
-            }
+    RowLayout {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: root.rowHeight
+        anchors.leftMargin: 10
+        anchors.rightMargin: 6
+        spacing: 10
+        // saved-but-absent networks recede so the reachable ones lead
+        opacity: root.known && !root.inRange && !root.connected ? 0.5 : 1
+
+        WifiSignal {
+            strength: root.signalStrength
+            sweeping: root.busy
+            color: Qt.alpha(Globals.fgColor, root.connected || root.busy ? 1 : 0.8)
         }
 
-        RowLayout {
-            id: headerRow
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: Globals.spacing
-            anchors.rightMargin: Globals.spacing
-            spacing: Globals.spacing
-
-            // signal icon, filled box when connected (mirrors BtDeviceRow)
-            // fixed square so every row's icon reads at the same size regardless
-            // of which wifi-strength glyph (which vary in visual weight) is shown
-            Rectangle {
-                implicitWidth: Globals.barIconSize + Globals.spacing * 2
-                implicitHeight: Globals.barIconSize + Globals.spacing * 2
-                radius: Globals.radius
-                color: root.connected ? Globals.fgColor : "transparent"
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: Globals.animFast
-                    }
-                }
-
-                Text {
-                    id: glyph
-                    anchors.centerIn: parent
-                    text: String.fromCodePoint(root.signalGlyph())
-                    color: root.connected ? Globals.bgColor : Globals.fgColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.barIconSize
-                    font.weight: Globals.textFont.weight
-                }
-            }
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 4
 
             Text {
                 Layout.fillWidth: true
                 text: root.ssid === "" ? "Hidden network" : root.ssid
+                textFormat: Text.PlainText
                 color: Globals.fgColor
                 font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
+                font.pixelSize: 14
+                font.weight: Font.Medium
                 elide: Text.ElideRight
             }
 
-            // enterprise tag so eduroam-style nets read clearly before expanding
             Text {
-                visible: root.enterprise && !root.busy
-                text: "802.1X"
-                color: Qt.alpha(Globals.fgColor, 0.5)
+                Layout.fillWidth: true
+                visible: root.known
+                text: root.statusText
+                color: Qt.alpha(Globals.fgColor, 0.45)
                 font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 4
-                font.weight: Globals.textFont.weight
+                font.pixelSize: 12
+                elide: Text.ElideRight
+            }
+        }
+
+        // nearby: connecting note, else a lock when it takes credentials
+        Text {
+            visible: !root.known && root.busy
+            text: "Connecting…"
+            color: Qt.alpha(Globals.fgColor, 0.45)
+            font.family: Globals.textFont.family
+            font.pixelSize: 12
+        }
+        MenuIcon {
+            visible: !root.known && !root.busy && root.secured
+            Layout.preferredWidth: 14
+            Layout.preferredHeight: 14
+            Layout.rightMargin: 4
+            name: "lock"
+            color: Qt.alpha(Globals.fgColor, 0.4)
+        }
+
+        MenuButton {
+            visible: root.known
+            enabled: !root.busy
+            icon: "trash"
+            destructive: true
+            onClicked: root.forgetRequested()
+        }
+    }
+
+    // ----- inline connect form (new secured networks only) -----
+    Item {
+        id: formClip
+        anchors.left: parent.left
+        anchors.right: parent.right
+        y: root.rowHeight
+        height: root.expanded ? form.implicitHeight + 12 : 0
+        visible: height > 0
+        clip: true
+        opacity: root.expanded ? 1 : 0
+
+        // open at a readable pace, close quicker -> the system answering, not deliberating
+        Behavior on height {
+            NumberAnimation {
+                duration: root.expanded ? 220 : 150
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Globals.easeOut
+            }
+        }
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.expanded ? 180 : 100
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        ColumnLayout {
+            id: form
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.leftMargin: 42 // under the network name, past the signal fan
+            anchors.rightMargin: 10
+            spacing: 6
+
+            InputField {
+                visible: root.enterprise
+                placeholder: "Username"
+                value: root.usernameText
+                focused: Globals.wifiMenuOpen && root.expanded && root.enterprise && root.focusedField === "username"
+                onTapped: root.focusField("username")
+                onEdited: value => root.usernameEdited(value)
+                onKeyPressed: event => root.keyPressed(event)
+            }
+            InputField {
+                placeholder: "Password"
+                value: root.passwordText
+                masked: !root.revealPassword
+                focused: Globals.wifiMenuOpen && root.expanded && root.focusedField === "password"
+                showReveal: true
+                revealed: root.revealPassword
+                onTapped: root.focusField("password")
+                onToggleRevealTapped: root.toggleReveal()
+                onEdited: value => root.passwordEdited(value)
+                onKeyPressed: event => root.keyPressed(event)
             }
 
-            // connected marker
-            Text {
-                visible: root.connected && !root.busy
-                text: "Connected"
-                color: Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 3
-                font.weight: Globals.textFont.weight
-            }
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 4
+                spacing: 6
 
-            // busy spinner while connecting
-            Text {
-                visible: root.busy
-                text: String.fromCodePoint(0xF06B0) // sync
-                color: Qt.alpha(Globals.fgColor, 0.7)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
-
-                RotationAnimation on rotation {
-                    running: root.busy
-                    from: 0
-                    to: 360
-                    duration: 1000
-                    loops: Animation.Infinite
+                Item {
+                    Layout.fillWidth: true
+                }
+                MenuButton {
+                    text: "Cancel"
+                    onClicked: root.cancelRequested()
+                }
+                PrimaryButton {
+                    text: "Connect"
+                    enabled: root.canSubmit
+                    onClicked: root.connectRequested()
                 }
             }
         }
-
-        MouseArea {
-            id: headerArea
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.toggleExpand()
-        }
     }
 
-    // ----- expanded action / connect form (excluded from layout when collapsed) -----
-    ColumnLayout {
-        Layout.fillWidth: true
-        Layout.leftMargin: Globals.spacing
-        Layout.rightMargin: Globals.spacing
-        visible: root.expanded
-        spacing: Globals.spacing
+    // ----- inline component: filled button, same metrics as MenuButton -----
+    component PrimaryButton: Rectangle {
+        id: primary
+        property string text: ""
+        signal clicked
 
-        // username (enterprise only) + password, for NEW secured networks; saved
-        // networks already hold their credentials so they show no fields
-        InputField {
-            id: userField
-            visible: !root.known && root.secured && root.enterprise
-            icon: 0xF0004 // account
-            placeholder: "Username (e.g. you@eduroam)"
-            value: root.usernameText
-            focused: Globals.wifiMenuOpen && root.expanded && !root.known && root.enterprise && root.focusedField === "username"
-            onTapped: root.focusField("username")
-            onEdited: value => root.usernameEdited(value)
-            onKeyPressed: event => root.keyPressed(event)
-        }
-        InputField {
-            id: passField
-            visible: !root.known && root.secured
-            icon: 0xF033E // lock
-            placeholder: "Password"
-            value: root.passwordText
-            masked: !root.revealPassword
-            focused: Globals.wifiMenuOpen && root.expanded && !root.known && root.secured && root.focusedField === "password"
-            showReveal: true
-            revealed: root.revealPassword
-            onTapped: root.focusField("password")
-            onToggleRevealTapped: root.toggleReveal()
-            onEdited: value => root.passwordEdited(value)
-            onKeyPressed: event => root.keyPressed(event)
-        }
+        implicitWidth: primaryText.implicitWidth + 20
+        implicitHeight: 28
+        radius: 7
+        opacity: enabled ? 1 : 0.35
+        color: Qt.alpha(Globals.fgColor, primaryArea.containsMouse ? 0.85 : 1)
+        scale: primaryArea.pressed ? 0.97 : 1
 
-        // action buttons
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Globals.spacing
-
-            PillButton {
-                visible: !root.connected && !root.busy
-                label: "Connect"
-                primary: true
-                onTapped: root.connectRequested()
-            }
-            PillButton {
-                visible: root.connected && !root.busy
-                label: "Disconnect"
-                onTapped: root.disconnectRequested()
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            PillButton {
-                visible: root.known && !root.busy
-                label: "Forget"
-                danger: true
-                onTapped: root.forgetRequested()
-            }
-            PillButton {
-                visible: !root.known && !root.busy
-                label: "Cancel"
-                onTapped: root.toggleExpand()
-            }
-        }
-    }
-
-    // ----- inline component: compact pill button -----
-    component PillButton: Rectangle {
-        id: pill
-        property string label: ""
-        property bool primary: false
-        property bool danger: false
-        signal tapped
-
-        implicitWidth: pillText.implicitWidth + Globals.spacing * 3
-        implicitHeight: pillText.implicitHeight + Globals.spacing
-        radius: Globals.radius
-        color: pill.primary ? (pillArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.85) : Globals.fgColor) : (pillArea.containsMouse ? Qt.alpha(pill.danger ? Globals.criticalColor : Globals.fgColor, 0.18) : Qt.alpha(Globals.fgColor, 0.07))
-
-        Behavior on color {
-            ColorAnimation {
-                duration: Globals.animFast
+        Behavior on scale {
+            NumberAnimation {
+                duration: 120
+                easing.type: Easing.OutCubic
             }
         }
 
         Text {
-            id: pillText
+            id: primaryText
             anchors.centerIn: parent
-            text: pill.label
-            color: pill.primary ? Globals.bgColor : (pill.danger ? Globals.criticalColor : Globals.fgColor)
+            text: primary.text
+            color: Globals.bgColor
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize - 1
-            font.weight: Globals.textFont.weight
+            font.pixelSize: 12
+            font.weight: Font.DemiBold
         }
 
         MouseArea {
-            id: pillArea
+            id: primaryArea
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: pill.tapped()
+            onClicked: primary.clicked()
         }
     }
 
-    // Native fields support pasting credentials and editing in place.
+    // native fields support pasting credentials and editing in place
     component InputField: Rectangle {
         id: field
-        property int icon: 0xF033E
         property string placeholder: ""
         property string value: ""
         property bool masked: false
@@ -283,53 +273,40 @@ ColumnLayout {
         }
 
         Layout.fillWidth: true
-        implicitHeight: fieldRow.implicitHeight + Globals.spacing
-        radius: Globals.radius
-        color: Qt.alpha(Globals.fgColor, field.focused ? 0.14 : 0.07)
-
-        Behavior on color {
-            ColorAnimation {
-                duration: Globals.animFast
-            }
-        }
+        implicitHeight: 34
+        radius: 7
+        color: Qt.alpha(Globals.fgColor, field.focused ? 0.1 : 0.06)
+        border.width: 1
+        border.color: Qt.alpha(Globals.fgColor, field.focused ? 0.3 : 0)
 
         // full-field tap target sits below the row so the eye toggle can sit on top
         MouseArea {
             anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
+            cursorShape: Qt.IBeamCursor
             onClicked: field.tapped()
         }
 
         RowLayout {
-            id: fieldRow
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: Globals.spacing
-            anchors.rightMargin: Globals.spacing
-            spacing: Globals.spacing
-
-            Text {
-                text: String.fromCodePoint(field.icon)
-                color: Qt.alpha(Globals.fgColor, 0.7)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
-            }
+            anchors.fill: parent
+            anchors.leftMargin: 10
+            anchors.rightMargin: 8
+            spacing: 6
 
             TextField {
                 id: nativeInput
                 Layout.fillWidth: true
                 text: field.value
                 placeholderText: field.placeholder
-                placeholderTextColor: Qt.alpha(Globals.fgColor, 0.4)
+                placeholderTextColor: Qt.alpha(Globals.fgColor, 0.35)
                 echoMode: field.masked ? TextInput.Password : TextInput.Normal
                 selectByMouse: true
                 color: Globals.fgColor
                 selectionColor: Globals.fgColor
                 selectedTextColor: Globals.bgColor
-                font: Globals.textFont
-                padding: 4
+                font.family: Globals.textFont.family
+                font.pixelSize: 13
+                font.weight: Font.Medium
+                padding: 0
                 background: null
                 onTextEdited: field.edited(text)
                 onActiveFocusChanged: {
@@ -343,18 +320,17 @@ ColumnLayout {
             }
 
             // reveal-password eye toggle (password field only)
-            Text {
+            MenuIcon {
                 visible: field.showReveal
-                text: String.fromCodePoint(field.revealed ? 0xF0209 : 0xF0208) // eye-off / eye
-                color: revealArea.containsMouse ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
+                Layout.preferredWidth: 16
+                Layout.preferredHeight: 16
+                name: field.revealed ? "eyeOff" : "eye"
+                color: Qt.alpha(Globals.fgColor, revealArea.containsMouse ? 0.9 : 0.5)
 
                 MouseArea {
                     id: revealArea
                     anchors.fill: parent
-                    anchors.margins: -Globals.spacing / 2
+                    anchors.margins: -6
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: field.toggleRevealTapped()

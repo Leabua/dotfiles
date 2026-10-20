@@ -15,7 +15,7 @@ Item {
     signal edited(string value)
     signal keyPressed(var event)
 
-    implicitHeight: Math.min(multiline ? 220 : 60, Math.max(multiline ? 120 : 34, editor.contentHeight + 16))
+    implicitHeight: Math.min(multiline ? 220 : 60, Math.max(multiline ? 96 : 32, editor.contentHeight + 16))
 
     onActiveChanged: {
         if (active)
@@ -28,8 +28,10 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Qt.alpha(Globals.fgColor, field.active ? 0.08 : 0.03)
-        radius: Globals.radius
+        color: Qt.alpha(Globals.fgColor, field.active ? 0.1 : 0.05)
+        radius: 7
+        border.width: 1
+        border.color: Qt.alpha(Globals.fgColor, field.active ? 0.3 : 0)
     }
 
     Flickable {
@@ -80,18 +82,10 @@ Item {
         Text {
             visible: editor.text.length === 0
             text: field.placeholder
-            color: Qt.alpha(Globals.fgColor, 0.4)
+            color: Qt.alpha(Globals.fgColor, 0.35)
             font.family: Globals.textFont.family
             font.pixelSize: field.pixelSize
-            font.weight: field.weight - 100
+            font.weight: field.weight
         }
-    }
-
-    Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 1
-        color: Qt.alpha(Globals.fgColor, field.active ? 0.5 : 0.15)
     }
 }

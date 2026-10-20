@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.templates
 
-// One btop-style stat row: dim key on the left, value hugging the right edge.
+// A quiet label with its reading aligned to the section's right edge.
 RowLayout {
     id: root
 
@@ -17,8 +17,8 @@ RowLayout {
         text: root.key
         color: Qt.alpha(Globals.fgColor, 0.55)
         font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize - 3
-        font.weight: Globals.textFont.weight
+        font.pixelSize: 12
+        font.weight: Font.Normal
     }
     Item {
         Layout.fillWidth: true
@@ -27,7 +27,7 @@ RowLayout {
         text: root.val
         color: root.valColor
         font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize - 3
-        font.weight: Globals.textFont.weight
+        font.pixelSize: 12
+        font.weight: Font.Medium
     }
 }

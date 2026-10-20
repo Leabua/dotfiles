@@ -4,6 +4,7 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 import qs.menus.engineRoom
 import qs.templates
+import "BatteryMath.js" as BatteryMath
 
 import QtQuick
 import QtQuick.Layouts
@@ -11,11 +12,11 @@ import QtQuick.Layouts
 ColumnLayout {
     id: root
 
-    // fixed card body width -> four even gauge columns
-    readonly property int cardWidth: 684
-    readonly property int gaugeSize: 104
+    property int availableWidth: 680
+    readonly property int cardWidth: Math.min(680, availableWidth)
 
-    spacing: Globals.spacing
+    width: root.cardWidth
+    spacing: 20
 
     // ---------- colour helpers ----------
     function lerpColor(a: color, b: color, t: real): color {
@@ -38,7 +39,6 @@ ColumnLayout {
     property var _lastIdle: ({})
     property var _lastTotal: ({})
 
-    // pure vibecoding
     function parseCpu(text: string): void {
         const cores = [];
         let overall = root.cpuOverall;
@@ -75,7 +75,7 @@ ColumnLayout {
 
     function fmtGiB(kib: real): string {
         const gib = kib / 1048576;
-        return (gib >= 10 ? gib.toFixed(0) : gib.toFixed(1)) + "G";
+        return (gib >= 10 ? gib.toFixed(0) : gib.toFixed(1)) + " GiB";
     }
     function parseMem(text: string): void {
         const field = k => {
@@ -89,7 +89,7 @@ ColumnLayout {
         const cached = field("Cached");
         const used = total - avail;
         root.memUsedFrac = total > 0 ? used / total : 0;
-        root.memUsedStr = root.fmtGiB(used) + " / " + root.fmtGiB(total) + " (" + Math.round(root.memUsedFrac * 100) + "%)";
+        root.memUsedStr = root.fmtGiB(used) + " / " + root.fmtGiB(total);
         root.cacheStr = root.fmtGiB(cached);
         root.swapFrac = swapTotal > 0 ? (swapTotal - swapFree) / swapTotal : 0;
         root.swapStr = swapTotal > 0 ? root.fmtGiB(swapTotal - swapFree) + " / " + root.fmtGiB(swapTotal) : "off";
@@ -128,24 +128,55 @@ ColumnLayout {
     }
 
     // ---------- Battery ----------
-    readonly property var bat: UPower.displayDevice
+    // The aggregate display device omits health; use the actual laptop battery.
+    readonly property var bat: BatteryMath.pickBattery(UPower.devices.values, UPower.displayDevice)
     readonly property bool batReady: bat && bat.ready
     readonly property bool charging: root.batReady && bat.state === UPowerDeviceState.Charging
     readonly property bool full: root.batReady && bat.state === UPowerDeviceState.FullyCharged
     readonly property int batPercent: root.batReady ? Math.round(bat.percentage * 100) : 0
     readonly property real batFrac: root.batReady ? bat.percentage : 0
+    property real energySample: -1
+    property double energySampleTime: 0
+    property int energySampleState: -1
+    property real sampledRate: 0
+    readonly property bool rateIsEstimate: root.batReady && bat.changeRate <= 0.05 && root.sampledRate > 0
+    readonly property real batteryRate: !root.batReady ? 0 : bat.changeRate > 0.05 ? bat.changeRate : root.sampledRate
 
-    readonly property var chargingIcons: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
-    readonly property var defaultIcons: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-
-    function batGlyph(): string {
-        if (!root.batReady)
-            return "󰂃";
-        if (root.full || (root.charging && root.batPercent === 100))
-            return "󰂅";
-        const idx = Math.min(Math.floor(root.batPercent / 10), 9);
-        return (root.charging ? root.chargingIcons[idx] : root.defaultIcons[idx]).trim();
+    function recordBatteryEnergy(): void {
+        const now = Date.now();
+        if (!root.batReady || (bat.state !== UPowerDeviceState.Charging && bat.state !== UPowerDeviceState.Discharging)) {
+            root.energySample = -1;
+            root.sampledRate = 0;
+            return;
+        }
+        if (root.energySample < 0 || root.energySampleState !== bat.state) {
+            root.energySample = bat.energy;
+            root.energySampleTime = now;
+            root.energySampleState = bat.state;
+            root.sampledRate = 0;
+            return;
+        }
+        const elapsed = now - root.energySampleTime;
+        if (elapsed < 30000)
+            return;
+        if (bat.energy === root.energySample && elapsed < 120000)
+            return;
+        const rate = BatteryMath.rateFromEnergy(root.energySample, bat.energy, elapsed, root.charging);
+        root.sampledRate = rate > 0 && root.sampledRate > 0 ? root.sampledRate * 0.5 + rate * 0.5 : rate;
+        root.energySample = bat.energy;
+        root.energySampleTime = now;
     }
+
+    onBatChanged: Qt.callLater(root.recordBatteryEnergy)
+    Component.onCompleted: root.recordBatteryEnergy()
+
+    Connections {
+        target: root.bat
+        function onEnergyChanged(): void { root.recordBatteryEnergy(); }
+        function onStateChanged(): void { root.recordBatteryEnergy(); }
+        function onReadyChanged(): void { root.recordBatteryEnergy(); }
+    }
+
     // mirror BatteryIcons.displayColor exactly so the gauge matches the bar icon
     function batColor(): color {
         if (!root.batReady)
@@ -168,21 +199,31 @@ ColumnLayout {
     function rateStr(): string {
         if (!root.batReady)
             return "—";
-        const w = bat.changeRate;
+        if (root.full)
+            return "0 W";
+        const w = root.batteryRate;
         if (!w || w <= 0.05)
-            return "—";
-        return (root.charging ? "+" : "-") + w.toFixed(1) + " W";
+            return "Measuring…";
+        return (root.rateIsEstimate ? "≈ " : "") + w.toFixed(1) + " W";
     }
     function timeStr(): string {
         if (!root.batReady)
             return "—";
-        return root.charging ? root.fmtTime(bat.timeToFull) : root.fmtTime(bat.timeToEmpty);
+        if (root.full)
+            return "Charged";
+        if (bat.state === UPowerDeviceState.PendingCharge || bat.state === UPowerDeviceState.PendingDischarge)
+            return "Paused";
+        const reported = root.charging ? bat.timeToFull : bat.timeToEmpty;
+        if (reported > 0)
+            return root.fmtTime(reported);
+        const estimate = BatteryMath.remainingSeconds(bat.energy, bat.energyCapacity, root.batteryRate, root.charging);
+        return estimate > 0 ? "≈ " + root.fmtTime(estimate) : "Estimating…";
     }
     function healthStr(): string {
-        if (!root.batReady || !bat.healthPercentage)
+        if (!root.batReady || !bat.healthSupported)
             return "—";
-        const raw = bat.healthPercentage;
-        return Math.round(raw <= 1.5 ? raw * 100 : raw) + "%"; // normalise 0..1 or 0..100
+        const health = BatteryMath.healthPercent(bat.healthPercentage);
+        return health >= 0 ? health + "%" : "—";
     }
     function stateStr(): string {
         if (!root.batReady)
@@ -195,8 +236,11 @@ ColumnLayout {
         case UPowerDeviceState.FullyCharged:
             return "Full";
         case UPowerDeviceState.PendingCharge:
+            return "Waiting to charge";
         case UPowerDeviceState.PendingDischarge:
-            return "Pending";
+            return "Waiting to discharge";
+        case UPowerDeviceState.Empty:
+            return "Empty";
         default:
             return "—";
         }
@@ -204,6 +248,7 @@ ColumnLayout {
 
     // ---------- sampling (only while open) ----------
     function refresh(): void {
+        root.recordBatteryEnergy();
         cpuFile.reload();
         memFile.reload();
         loadFile.reload();
@@ -256,263 +301,259 @@ ColumnLayout {
         }
     }
 
-    // strut: pins the card body width so the three columns divide evenly
-    Item {
-        Layout.preferredWidth: root.cardWidth
-        Layout.preferredHeight: 0
+    MenuHeader {
+        title: "Engine Room"
+        icon: "activity"
+        onCloseRequested: Globals.engineRoomOpen = false
     }
 
-    // ---------- header ----------
-    RowLayout {
+    GridLayout {
         Layout.fillWidth: true
-        Text {
-            text: "󰇺" // nf-md-engine (f01fa)
-            visible: Globals.headerIcons
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 6
-            font.weight: Globals.textFont.weight
-        }
-        Text {
-            Layout.fillWidth: true
-            text: "Engine Room"
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 2
-            font.weight: Globals.textFont.weight
-        }
-    }
+        Layout.leftMargin: 10 // meters share the header glyph's column
+        Layout.rightMargin: 10
+        columns: root.cardWidth >= 560 ? 3 : 1
+        columnSpacing: 24
+        rowSpacing: 24
 
-    MenuDivider {}
-
-    // ---------- the three columns ----------
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.topMargin: Globals.spacing
-        spacing: Globals.spacing + 6 // clear the CPU values off the next column's labels
-
-        // ===== CPU =====
         ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
             Layout.alignment: Qt.AlignTop
-            spacing: Globals.spacing
+            spacing: 16
 
-            RadialGauge {
-                Layout.alignment: Qt.AlignHCenter
-                diameter: root.gaugeSize
-                glyph: String.fromCodePoint(0xF2DB)
+            EngineMeter {
+                Layout.fillWidth: true
+                label: "Processor"
+                icon: "cpu"
                 value: root.cpuOverall
-                caption: Math.round(root.cpuOverall * 100) + "%"
-                arcColor: root.heatColor(root.cpuOverall)
-            }
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "CPU"
-                color: Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 3
-                font.letterSpacing: 2
-                font.weight: Globals.textFont.weight
+                accent: root.heatColor(root.cpuOverall)
             }
 
-            // per-core equaliser
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                StatLine {
+                    key: "Temperature"
+                    val: root.cpuTemp > 0 ? root.cpuTemp + "°C" : "—"
+                    valColor: root.cpuTemp >= 80 ? root.heatColor((root.cpuTemp - 40) / 50) : Globals.fgColor
+                }
+                StatLine {
+                    key: "Load average"
+                    val: root.loadAvg
+                }
+            }
+
             RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: 2
-                Layout.bottomMargin: 2
+                Layout.fillWidth: true
                 spacing: 3
+
                 Repeater {
                     model: root.coreUsages
                     delegate: Rectangle {
                         id: coreBar
                         required property var modelData
-                        width: 7
-                        height: 30
-                        radius: 3
-                        color: Qt.alpha(Globals.fgColor, 0.15)
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.preferredHeight: 20
+                        radius: 2
+                        color: Qt.alpha(Globals.fgColor, 0.06)
+
                         Rectangle {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.bottom: parent.bottom
-                            height: parent.height * Math.max(0, Math.min(1, coreBar.modelData))
+                            height: Math.max(1, parent.height * Math.max(0, Math.min(1, coreBar.modelData)))
                             radius: parent.radius
                             color: root.heatColor(coreBar.modelData)
-                            Behavior on height {
-                                NumberAnimation {
-                                    duration: Globals.animDuration
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
                         }
                     }
                 }
             }
-
-            StatLine {
-                key: "Temp"
-                val: root.cpuTemp > 0 ? root.cpuTemp + "°C" : "—"
-                valColor: root.heatColor((root.cpuTemp - 40) / 50) // ~40°C cool .. ~90°C hot
-            }
-            StatLine {
-                key: "Load"
-                val: root.loadAvg
-            }
         }
 
-        Rectangle {
-            Layout.fillHeight: true
-            Layout.preferredWidth: 1
-            color: Qt.alpha(Globals.fgColor, 0.12)
-        }
-
-        // ===== GPU =====
         ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
             Layout.alignment: Qt.AlignTop
-            spacing: Globals.spacing
+            spacing: 16
 
-            RadialGauge {
-                Layout.alignment: Qt.AlignHCenter
-                diameter: root.gaugeSize
-                glyph: "󰢮" // nf-md-expansion-card (graphics card)
+            EngineMeter {
+                Layout.fillWidth: true
+                label: "Graphics"
+                icon: "gpu"
                 value: root.gpuBusy
-                caption: Math.round(root.gpuBusy * 100) + "%"
-                arcColor: root.heatColor(root.gpuBusy)
-            }
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "GPU"
-                color: Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 3
-                font.letterSpacing: 2
-                font.weight: Globals.textFont.weight
+                accent: root.heatColor(root.gpuBusy)
             }
 
-            StatLine {
-                key: "Clock"
-                val: root.gpuCurFreq > 0 ? root.gpuCurFreq + " MHz" : "—"
-            }
-            StatLine {
-                key: "Max"
-                val: root.gpuMaxFreq > 0 ? root.gpuMaxFreq + " MHz" : "—"
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                StatLine {
+                    key: "Clock"
+                    val: root.gpuCurFreq > 0 ? root.gpuCurFreq + " MHz" : "—"
+                }
+                StatLine {
+                    key: "Maximum"
+                    val: root.gpuMaxFreq > 0 ? root.gpuMaxFreq + " MHz" : "—"
+                }
             }
         }
 
-        Rectangle {
-            Layout.fillHeight: true
-            Layout.preferredWidth: 1
-            color: Qt.alpha(Globals.fgColor, 0.12)
-        }
-
-        // ===== Memory =====
         ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredWidth: 1
             Layout.alignment: Qt.AlignTop
-            spacing: Globals.spacing
+            spacing: 16
 
-            RadialGauge {
-                Layout.alignment: Qt.AlignHCenter
-                diameter: root.gaugeSize
-                glyph: "󰘚"
+            EngineMeter {
+                Layout.fillWidth: true
+                label: "Memory"
+                icon: "memory"
                 value: root.memUsedFrac
-                caption: Math.round(root.memUsedFrac * 100) + "%"
-                arcColor: root.heatColor(root.memUsedFrac)
-            }
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "MEM"
-                color: Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 3
-                font.letterSpacing: 2
-                font.weight: Globals.textFont.weight
+                accent: root.heatColor(root.memUsedFrac)
             }
 
-            StatLine {
-                key: "Used"
-                val: root.memUsedStr
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 10
+
+                StatLine {
+                    key: "Used"
+                    val: root.memUsedStr
+                }
+                StatLine {
+                    key: "Cache"
+                    val: root.cacheStr
+                }
+                StatLine {
+                    key: "Swap"
+                    val: root.swapStr
+                }
             }
-            StatLine {
-                key: "Cache"
-                val: root.cacheStr
-            }
-            StatLine {
-                key: "Swap"
-                val: root.swapStr
-            }
-            // swap meter
+
             Rectangle {
                 Layout.fillWidth: true
-                height: 5
-                radius: 3
-                color: Qt.alpha(Globals.fgColor, 0.15)
+                implicitHeight: 3
+                radius: 2
+                color: Qt.alpha(Globals.fgColor, 0.08)
+
                 Rectangle {
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
                     width: parent.width * Math.max(0, Math.min(1, root.swapFrac))
+                    height: parent.height
                     radius: parent.radius
                     color: root.heatColor(root.swapFrac)
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: Globals.animDuration
-                        }
-                    }
                 }
             }
         }
+    }
 
-        Rectangle {
-            Layout.fillHeight: true
-            Layout.preferredWidth: 1
-            color: Qt.alpha(Globals.fgColor, 0.12)
-        }
+    Rectangle {
+        Layout.fillWidth: true
+        implicitHeight: batteryBody.implicitHeight + 32
+        visible: root.batReady
+        radius: 12
+        color: Qt.darker(Globals.bgColor, 1.2)
 
-        // ===== Battery =====
         ColumnLayout {
-            Layout.fillWidth: true
-            Layout.preferredWidth: 1
-            Layout.alignment: Qt.AlignTop
-            spacing: Globals.spacing
+            id: batteryBody
+            anchors.fill: parent
+            anchors.margins: 16
+            anchors.leftMargin: 10 // same inset as the meters above -> one left edge down the card
+            anchors.rightMargin: 10
+            spacing: 16
 
-            RadialGauge {
-                Layout.alignment: Qt.AlignHCenter
-                diameter: root.gaugeSize
-                glyph: root.batGlyph()
-                value: root.batFrac
-                caption: root.batPercent + "%"
-                arcColor: root.batColor()
-            }
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "BAT"
-                color: Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 3
-                font.letterSpacing: 2
-                font.weight: Globals.textFont.weight
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                MenuIcon {
+                    name: "battery"
+                    color: Qt.alpha(Globals.fgColor, 0.7)
+                }
+
+                Text {
+                    text: "Battery"
+                    color: Globals.fgColor
+                    font.family: Globals.textFont.family
+                    font.pixelSize: 14
+                    font.weight: Font.Medium
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: root.stateStr()
+                    color: root.charging ? Globals.healthy : Qt.alpha(Globals.fgColor, 0.5)
+                    font.family: Globals.textFont.family
+                    font.pixelSize: 12
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    text: root.batPercent + "%"
+                    color: Globals.fgColor
+                    font.family: Globals.textFont.family
+                    font.pixelSize: 22
+                    font.weight: Font.Medium
+                }
             }
 
-            StatLine {
-                key: root.charging ? "Charge" : "Drain"
-                val: root.rateStr()
-                valColor: root.charging ? Globals.healthy : Globals.fgColor
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 4
+                radius: 2
+                color: Qt.alpha(Globals.fgColor, 0.08)
+
+                Rectangle {
+                    width: parent.width * Math.max(0, Math.min(1, root.batFrac))
+                    height: parent.height
+                    radius: parent.radius
+                    color: root.batColor()
+                }
             }
-            StatLine {
-                key: root.charging ? "Full in" : "Left"
-                val: root.timeStr()
-            }
-            StatLine {
-                key: "Health"
-                val: root.healthStr()
-            }
-            StatLine {
-                key: "State"
-                val: root.stateStr()
+
+            GridLayout {
+                Layout.fillWidth: true
+                columns: root.cardWidth >= 560 ? 4 : 2
+                columnSpacing: 20
+                rowSpacing: 16
+
+                Repeater {
+                    model: [
+                        { label: root.charging ? "Charge rate" : "Discharge rate", value: root.rateStr() },
+                        { label: root.charging ? "Until full" : "Remaining", value: root.timeStr() },
+                        { label: "Health", value: root.healthStr() },
+                        { label: "Stored energy", value: root.batReady ? bat.energy.toFixed(1) + " / " + bat.energyCapacity.toFixed(1) + " Wh" : "—" }
+                    ]
+
+                    delegate: ColumnLayout {
+                        id: batteryStat
+                        required property var modelData
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        spacing: 7
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: batteryStat.modelData.label
+                            color: Qt.alpha(Globals.fgColor, 0.45)
+                            font.family: Globals.textFont.family
+                            font.pixelSize: 11
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: batteryStat.modelData.value
+                            color: Globals.fgColor
+                            font.family: Globals.textFont.family
+                            font.pixelSize: 14
+                            font.weight: Font.Medium
+                            elide: Text.ElideRight
+                        }
+                    }
+                }
             }
         }
     }

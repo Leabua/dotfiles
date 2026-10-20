@@ -173,7 +173,8 @@ Scope {
         hAlign: "center"
         // sit just below the bar when it's shown, shift up to the top when it's hidden
         verticallyCentered: true
-        padding: Globals.spacing
+        padding: 12
+        backgroundColor: Globals.bgColor
         onKeyDown: event => root.handleKey(event)
 
         margins {
@@ -182,35 +183,10 @@ Scope {
             right: Globals.marginsRight
         }
 
+        // no title bar: a palette opened all day leads with the thing you type into
         ColumnLayout {
             width: root.cardWidth
-            spacing: Globals.spacing
-
-            // heading
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Globals.spacing
-
-                Text {
-                    text: "󰀻" // nf-md-apps
-                    visible: Globals.headerIcons
-                    color: Globals.fgColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 8
-                    font.weight: Globals.textFont.weight
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    text: "App Menu"
-                    color: Globals.fgColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 2
-                    font.weight: Globals.textFont.weight
-                }
-            }
-
-            MenuDivider {}
+            spacing: 8
 
             SearchInput {
                 Layout.fillWidth: true
@@ -218,9 +194,8 @@ Scope {
                 active: root.open
             }
 
-            MenuDivider {}
-
             ResultList {
+                id: resultList
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.listHeight
                 results: root.results

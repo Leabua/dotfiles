@@ -102,7 +102,7 @@ Scope {
         ColumnLayout {
             id: column
             width: parent.width
-            spacing: Globals.spacing - 2
+            spacing: 8
 
             Repeater {
                 model: server.trackedNotifications
@@ -141,54 +141,88 @@ Scope {
                             top: parent.top
                         }
                         height: parent.Layout.preferredHeight
-                        implicitHeight: cardLayout.implicitHeight + 18
+                        implicitHeight: cardLayout.implicitHeight + 28
                         radius: Globals.radius
-                        color: Globals.menuBg
+                        color: Globals.bgColor
                         // battery alerts always carry a 1px border in their heading colour, even when borders are otherwise off
-                        border.width: card.isBattery ? 1 : Globals.borderWidth
+                        border.width: card.isBattery || card.modelData.urgency === NotificationUrgency.Critical ? 1 : Globals.borderWidth
                         border.color: card.isBattery ? card.headingColor : (card.modelData.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.fgColor)
                         layer.enabled: true // should stop screen smeer on resize
 
-                        RowLayout {
+                        // arrive from the edge the column is pinned to; a toast is occasional, so it earns a little motion
+                        property bool shown: false
+                        Component.onCompleted: shown = true
+                        opacity: shown ? 1 : 0
+                        transform: Translate {
+                            x: cardRect.shown ? 0 : 24
+                            Behavior on x {
+                                NumberAnimation {
+                                    duration: 260
+                                    easing.type: Easing.BezierSpline
+                                    easing.bezierCurve: Globals.easeOut
+                                }
+                            }
+                        }
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 180
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        ColumnLayout {
                             id: cardLayout
                             anchors {
                                 left: parent.left
                                 right: parent.right
                                 top: parent.top
-                                margins: Globals.margins
+                                margins: 14
                             }
-                            spacing: Globals.spacing
+                            spacing: 4
 
-                            ColumnLayout {
+                            Text {
                                 Layout.fillWidth: true
-                                spacing: Globals.spacing / 3
-
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: card.modelData.summary
-                                    color: card.headingColor
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize
-                                    font.weight: Globals.textFont.weight
-                                    elide: Text.ElideRight
-                                }
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: card.modelData.body
-                                    color: Globals.fgColor
-                                    font.family: Globals.textFont.family
-                                    font.weight: Globals.textFont.weight
-                                    font.pixelSize: Globals.textFont.pixelSize - 1
-                                    wrapMode: Text.WordWrap
-                                    maximumLineCount: 8
-                                    elide: Text.ElideRight
-                                    visible: card.modelData.body !== ""
-                                }
+                                visible: card.modelData.appName !== ""
+                                text: card.modelData.appName
+                                textFormat: Text.PlainText
+                                color: Qt.alpha(Globals.fgColor, 0.45)
+                                font.family: Globals.textFont.family
+                                font.pixelSize: 12
+                                elide: Text.ElideRight
+                            }
+                            Text {
+                                Layout.fillWidth: true
+                                text: card.modelData.summary
+                                textFormat: Text.PlainText
+                                color: card.headingColor
+                                font.family: Globals.textFont.family
+                                font.pixelSize: 14
+                                font.weight: Font.Medium
+                                elide: Text.ElideRight
+                            }
+                            Text {
+                                Layout.fillWidth: true
+                                text: card.modelData.body
+                                textFormat: Text.PlainText
+                                color: Qt.alpha(Globals.fgColor, 0.7)
+                                font.family: Globals.textFont.family
+                                font.pixelSize: 13
+                                lineHeight: 1.15
+                                wrapMode: Text.WordWrap
+                                maximumLineCount: 6
+                                elide: Text.ElideRight
+                                visible: card.modelData.body !== ""
+                            }
+                            Flow {
+                                Layout.fillWidth: true
+                                Layout.topMargin: 4
+                                visible: card.modelData.actions.length > 0
+                                spacing: 6
                                 Repeater {
                                     model: card.modelData.actions
-                                    delegate: ViewSwitchBtn {
+                                    delegate: MenuButton {
                                         required property var modelData
-                                        label: modelData.text || "Open"
+                                        text: modelData.text || "Open"
                                         onClicked: modelData.invoke()
                                     }
                                 }
@@ -219,6 +253,8 @@ Scope {
         onDismissed: root.centerOpen = false
         hAlign: "right"
         screen: Globals.focusedScreen // open the center on the focused monitor
+        padding: 16
+        backgroundColor: Globals.bgColor
 
         // ~~~ the right island is the only bar element above a right-aligned card -> ride to the top when it's gone ~~~
         margins {
@@ -228,158 +264,120 @@ Scope {
 
         ColumnLayout {
             id: centerCol
-            width: 360 // PopupWindow padding (Globals.margins) brings the card to ~380
-            spacing: Globals.spacing + 1
+            width: 348
+            spacing: 16
 
-            // header row
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Globals.spacing
-
-                Text {
-                    text: String.fromCodePoint(0xF009A) // nf-md-bell 󰂚
-                    visible: Globals.headerIcons
-                    color: Globals.fgColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 6
-                    font.weight: Globals.textFont.weight
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    text: "Notifications"
-                    color: Globals.fgColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 2
-                    font.weight: Globals.textFont.weight
-                }
-
-                Text {
-                    text: "Clear all"
-                    visible: history.count > 0
-                    color: Globals.criticalColor
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize - 1
-                    font.weight: Globals.textFont.weight
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: history.clear()
-                        anchors.margins: -1
-                        cursorShape: Qt.PointingHandCursor
-                    }
-                }
+            MenuHeader {
+                title: "Notifications"
+                icon: "bell"
+                actionText: "Clear all"
+                actionDestructive: true
+                actionEnabled: history.count > 0
+                onActionClicked: history.clear()
+                onCloseRequested: root.centerOpen = false
             }
 
-            MenuDivider {}
-
-            // empty state
             Text {
                 visible: history.count === 0
                 Layout.fillWidth: true
-                text: "No notifications"
-                color: Qt.alpha(Globals.fgColor, 0.4)
+                Layout.leftMargin: 10
+                text: "You're all caught up"
+                color: Qt.alpha(Globals.fgColor, 0.5)
                 font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize - 1
-                font.weight: Globals.textFont.weight - 100
-                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 13
             }
 
-            // history list if not empty
-            Repeater {
-                id: rep
-                model: history
-                delegate: Item {
-                    // transparent wrapper drives the layout; the bordered card is anchored inside and clipped while removing, so it collapses smoothly on dismiss.
-                    id: delegateWrapper
-                    required property int index
-                    required property string summary
-                    required property string body
-                    required property string appName
-                    required property int urgency
-                    required property string time
-                    property bool removing: false
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: removing ? 0 : inner.implicitHeight
+            ColumnLayout {
+                Layout.fillWidth: true
+                visible: history.count > 0
+                spacing: 4
 
-                    clip: removing
-                    opacity: removing ? 0 : 1
+                Repeater {
+                    model: history
+                    delegate: Item {
+                        // the wrapper drives the layout; the row inside is clipped while removing so it collapses smoothly on dismiss
+                        id: delegateWrapper
+                        required property int index
+                        required property string summary
+                        required property string body
+                        required property string appName
+                        required property int urgency
+                        required property string time
+                        property bool removing: false
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: removing ? 0 : inner.implicitHeight
 
-                    Behavior on Layout.preferredHeight {
-                        NumberAnimation {
-                            duration: Globals.animFast
-                            easing.type: Easing.OutCubic
+                        clip: removing
+                        opacity: removing ? 0 : 1
+
+                        Behavior on Layout.preferredHeight {
+                            NumberAnimation {
+                                duration: Globals.animDuration
+                                easing.type: Easing.BezierSpline
+                                easing.bezierCurve: Globals.easeOut
+                            }
                         }
-                    }
-                    Behavior on opacity {
-                        NumberAnimation {
-                            duration: Globals.animFast
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: Globals.animFast
+                            }
                         }
-                    }
 
-                    Rectangle {
-                        id: inner
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                            top: parent.top
+                        HoverHandler {
+                            id: rowHover
                         }
-                        // height tracks parent so it collapses with it
-                        height: parent.Layout.preferredHeight
-                        implicitHeight: historyLayout.implicitHeight + Globals.spacing * 2
-                        radius: Globals.radius
-                        color: "transparent"
-                        border.width: Globals.borderWidth
-                        border.color: Globals.fgColor
 
-                        // composite through an offscreen buffer so the border can't smear while cards resize/collapse during reflowt
-                        layer.enabled: true
-
-                        ColumnLayout {
-                            id: historyLayout
+                        Rectangle {
+                            id: inner
                             anchors {
                                 left: parent.left
                                 right: parent.right
                                 top: parent.top
-                                margins: Globals.spacing
                             }
-                            // tight spacing between summary / body / app name
-                            spacing: Globals.spacing / 3
+                            height: parent.Layout.preferredHeight
+                            implicitHeight: historyLayout.implicitHeight + 20
+                            radius: 9
+                            color: Qt.alpha(Globals.fgColor, rowHover.hovered ? 0.04 : 0)
 
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: Globals.spacing
+                            ColumnLayout {
+                                id: historyLayout
+                                anchors {
+                                    left: parent.left
+                                    right: parent.right
+                                    top: parent.top
+                                    leftMargin: 10
+                                    rightMargin: 6
+                                    topMargin: 10
+                                }
+                                spacing: 4
 
-                                Text {
+                                RowLayout {
                                     Layout.fillWidth: true
-                                    text: delegateWrapper.summary
-                                    // keep battery headings coloured in the history list too
-                                    color: delegateWrapper.appName === "Battery" ? (delegateWrapper.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.warningColor) : Globals.fgColor
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize
-                                    font.weight: Globals.textFont.weight
-                                    elide: Text.ElideRight
-                                }
+                                    spacing: 8
 
-                                Text {
-                                    text: delegateWrapper.time
-                                    color: Globals.fgColor2
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize - 3
-                                    font.weight: Globals.textFont.weight + 100
-                                }
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: delegateWrapper.appName !== "" ? delegateWrapper.appName : "Notification"
+                                        textFormat: Text.PlainText
+                                        color: Qt.alpha(Globals.fgColor, 0.45)
+                                        font.family: Globals.textFont.family
+                                        font.pixelSize: 12
+                                        elide: Text.ElideRight
+                                    }
 
-                                Text {
-                                    text: "󰖭"
-                                    color: Globals.fgColor2
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize - 1
-                                    font.weight: Globals.textFont.weight + 100
+                                    Text {
+                                        text: delegateWrapper.time
+                                        color: Qt.alpha(Globals.fgColor, 0.45)
+                                        font.family: Globals.textFont.family
+                                        font.pixelSize: 12
+                                    }
 
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        anchors.margins: -4
-                                        cursorShape: Qt.PointingHandCursor
+                                    // dismiss surfaces on hover so a quiet list stays quiet
+                                    MenuButton {
+                                        icon: "close"
+                                        opacity: rowHover.hovered ? 1 : 0
+                                        Layout.preferredHeight: 22
+                                        Layout.preferredWidth: 22
                                         onClicked: {
                                             // animate out first, then remove
                                             delegateWrapper.removing = true;
@@ -389,40 +387,39 @@ Scope {
 
                                     Timer {
                                         id: removeTimer
-                                        interval: Globals.animFast + 30
+                                        interval: Globals.animDuration + 30
                                         onTriggered: history.remove(delegateWrapper.index)
                                     }
                                 }
-                            }
 
-                            Text {
-                                visible: delegateWrapper.body !== ""
-                                text: delegateWrapper.body
-                                color: Globals.fgColor
-                                font.family: Globals.textFont.family
-                                font.weight: Globals.textFont.weight
-                                font.pixelSize: Globals.textFont.pixelSize - 1
-                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                Layout.fillWidth: true
-                            }
+                                Text {
+                                    Layout.fillWidth: true
+                                    Layout.rightMargin: 4
+                                    text: delegateWrapper.summary
+                                    textFormat: Text.PlainText
+                                    // keep battery headings coloured in the history list too
+                                    color: delegateWrapper.appName === "Battery" ? (delegateWrapper.urgency === NotificationUrgency.Critical ? Globals.criticalColor : Globals.warningColor) : Globals.fgColor
+                                    font.family: Globals.textFont.family
+                                    font.pixelSize: 14
+                                    font.weight: Font.Medium
+                                    elide: Text.ElideRight
+                                }
 
-                            Text {
-                                visible: delegateWrapper.appName !== ""
-                                text: delegateWrapper.appName
-                                color: Globals.fgColor2
-                                font.family: Globals.textFont.family
-                                font.weight: Globals.textFont.weight
-                                font.pixelSize: Globals.textFont.pixelSize - 3
+                                Text {
+                                    Layout.fillWidth: true
+                                    Layout.rightMargin: 4
+                                    visible: delegateWrapper.body !== ""
+                                    text: delegateWrapper.body
+                                    textFormat: Text.PlainText
+                                    color: Qt.alpha(Globals.fgColor, 0.7)
+                                    font.family: Globals.textFont.family
+                                    font.pixelSize: 13
+                                    lineHeight: 1.15
+                                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                    maximumLineCount: 6
+                                    elide: Text.ElideRight
+                                }
                             }
-                            Text { // blankline for spacer
-                                visible: history.count > 0
-                                text: " "
-                                color: Globals.fgColor2
-                                font.family: Globals.textFont.family
-                                font.weight: Globals.textFont.weight
-                                font.pixelSize: Globals.spacing
-                            }
-                            MenuDivider {}
                         }
                     }
                 }

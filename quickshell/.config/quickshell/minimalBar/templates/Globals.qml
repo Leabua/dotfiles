@@ -89,6 +89,9 @@ Singleton {
     readonly property int animFast: 80
     readonly property int animDuration: 150
     readonly property int animSlow: 250
+    readonly property int animPress: 120 // press feedback (scale-down on click)
+    // strong ease-out: responds instantly, lands softly -> use for anything entering or unfolding
+    readonly property var easeOut: [0.23, 1, 0.32, 1, 1, 1]
 
     // ---------- menu open-state ----------
     // bar-icon clicks and the matching IPC handlers toggle these; the menus mounted

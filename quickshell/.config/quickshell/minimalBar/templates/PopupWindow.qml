@@ -64,6 +64,7 @@ PanelWindow { // qmllint disable uncreatable-type
     property real cardTopMargin: 0
     // inner padding between the card edge and the content
     property real padding: Globals.margins
+    property color backgroundColor: Globals.menuBg
     readonly property real availableWidth: Math.max(1, width - padding * 2)
     readonly property real availableHeight: Math.max(1, height - Math.max(0, cardTopMargin) - padding * 2 - Globals.margins)
 
@@ -198,7 +199,7 @@ PanelWindow { // qmllint disable uncreatable-type
             }
         }
 
-        color: Globals.menuBg
+        color: root.backgroundColor
         radius: Globals.radius
         border.width: Globals.borderWidth
         border.color: Globals.borderColor

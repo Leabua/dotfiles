@@ -9,6 +9,7 @@ import qs.menus.wifi
 import qs.menus.audio
 import qs.menus.engineRoom
 import qs.menus.launcher
+import qs.menus.clipboard
 import qs.menus.reminders
 
 ShellRoot {

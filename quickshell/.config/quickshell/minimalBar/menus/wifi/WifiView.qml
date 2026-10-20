@@ -10,7 +10,8 @@ import QtQuick.Layouts
 ColumnLayout {
     id: root
 
-    readonly property int menuWidth: 300
+    property int availableWidth: 340
+    readonly property int menuWidth: Math.min(340, availableWidth)
 
     // ----- state -----
     property bool wifiEnabled: true
@@ -132,6 +133,7 @@ ColumnLayout {
             fresh.push(n);
         }
         fresh.sort((a, b) => b.signalStrength - a.signalStrength);
+        known.sort((a, b) => (b.connected - a.connected) || (b.signalStrength - a.signalStrength));
         root.knownNetworks = known;
         root.newNetworks = fresh;
     }
@@ -212,7 +214,8 @@ ColumnLayout {
             return;
 
         if (k === Qt.Key_Return || k === Qt.Key_Enter) {
-            root.connectNew(net);
+            if (root.passwordText !== "" && (!net.enterprise || root.usernameText !== ""))
+                root.connectNew(net);
             event.accepted = true;
             return;
         }
@@ -338,7 +341,7 @@ ColumnLayout {
     Process {
         id: actionProc
         stderr: StdioCollector {
-            onStreamFinished: root.errorText = text.trim()
+            onStreamFinished: root.errorText = text.trim().replace(/^Error:\s*/, "")
         }
         onExited: (exitCode, exitStatus) => {
             root.connectingKey = "";
@@ -351,7 +354,7 @@ ColumnLayout {
         id: enterpriseProc
         property string ssid: ""
         stderr: StdioCollector {
-            onStreamFinished: root.errorText = text.trim()
+            onStreamFinished: root.errorText = text.trim().replace(/^Error:\s*/, "")
         }
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0) {
@@ -366,7 +369,7 @@ ColumnLayout {
     Process {
         id: upProc
         stderr: StdioCollector {
-            onStreamFinished: root.errorText = text.trim()
+            onStreamFinished: root.errorText = text.trim().replace(/^Error:\s*/, "")
         }
         onExited: (exitCode, exitStatus) => {
             root.connectingKey = "";
@@ -395,220 +398,129 @@ ColumnLayout {
         onTriggered: root.refresh()
     }
 
-    spacing: Globals.spacing
+    width: root.menuWidth
+    spacing: 16
 
-    // strut pinning the body width (matches the other cards so swaps don't jump)
-    Item {
-        Layout.preferredWidth: root.menuWidth
-        Layout.preferredHeight: 0
+    MenuHeader {
+        title: "Wi-Fi"
+        icon: root.wifiEnabled ? "wifi" : "wifiOff"
+        showToggle: true
+        checked: root.wifiEnabled
+        onToggleRequested: root.toggleRadio()
+        onCloseRequested: Globals.wifiMenuOpen = false
     }
 
-    // ----- header: icon + title + on/off toggle -----
-    RowLayout {
-        Layout.fillWidth: true
-        spacing: Globals.spacing
-
-        Text {
-            text: String.fromCodePoint(root.wifiEnabled ? 0xF1EB : 0xF092E) // font-awesome wifi / mdi wifi-off
-            visible: Globals.headerIcons
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 6
-            font.weight: Globals.textFont.weight
-        }
-        Text {
-            Layout.fillWidth: true
-            text: "Wi-Fi"
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 2
-            font.weight: Globals.textFont.weight
-        }
-
-        Rectangle {
-            id: toggle
-            implicitWidth: Globals.textFont.pixelSize * 2.4
-            implicitHeight: Globals.textFont.pixelSize * 1.3
-            radius: height / 2
-            color: root.wifiEnabled ? Globals.fgColor : (toggleArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.5) : "transparent")
-            // border.width: 1
-            // border.color: Qt.alpha(Globals.fgColor, 0.4)
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: Globals.animFast
-                }
-            }
-
-            Rectangle {
-                id: knob
-                width: parent.height - 6
-                height: width
-                radius: width / 2
-                y: 3
-                x: root.wifiEnabled ? parent.width - width - 3 : 3
-                color: root.wifiEnabled ? Globals.bgColor : Globals.fgColor
-
-                Behavior on x {
-                    NumberAnimation {
-                        duration: Globals.animFast
-                        easing.type: Easing.OutCubic
-                    }
-                }
-            }
-
-            MouseArea {
-                id: toggleArea
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.toggleRadio()
-            }
-        }
-    }
-
-    MenuDivider {}
-
-    // ----- wifi off fallback -----
     Text {
+        Layout.fillWidth: true
+        Layout.leftMargin: 10
         visible: !root.wifiEnabled
-        Layout.fillWidth: true
         text: "Wi-Fi is off"
-        color: Qt.alpha(Globals.fgColor, 0.4)
+        color: Qt.alpha(Globals.fgColor, 0.5)
         font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize - 1
-        font.weight: Globals.textFont.weight - 100
-        horizontalAlignment: Text.AlignHCenter
+        font.pixelSize: 13
     }
 
-    // ----- known networks -----
-    Text {
-        visible: root.wifiEnabled
-        text: "Known networks"
-        color: Qt.alpha(Globals.fgColor, 0.6)
-        font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize - 1
-        font.weight: Globals.textFont.weight
-    }
+    // ----- saved networks (connected first) -----
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: root.wifiEnabled && root.knownNetworks.length > 0
+        spacing: 4
 
-    Repeater {
-        model: root.knownNetworks
-        delegate: WifiNetworkRow {
-            required property var modelData
-            visible: root.wifiEnabled
-            ssid: modelData.ssid
-            signalStrength: modelData.signalStrength
-            secured: modelData.secured
-            enterprise: modelData.enterprise
-            known: true
-            connected: modelData.connected
-            busy: root.connectingKey === root.keyForKnown(modelData.uuid)
-            expanded: root.expandedKey === root.keyForKnown(modelData.uuid)
-            onToggleExpand: root.expand(root.keyForKnown(modelData.uuid), modelData.enterprise)
-            onConnectRequested: root.connectKnown(modelData)
-            onDisconnectRequested: root.disconnectKnown(modelData)
-            onForgetRequested: root.forgetKnown(modelData)
+        MenuSectionLabel {
+            Layout.bottomMargin: 4
+            text: "Saved networks"
+        }
+
+        Repeater {
+            model: root.knownNetworks
+            delegate: WifiNetworkRow {
+                required property var modelData
+                ssid: modelData.ssid
+                signalStrength: modelData.signalStrength
+                secured: modelData.secured
+                enterprise: modelData.enterprise
+                known: true
+                connected: modelData.connected
+                busy: root.connectingKey === root.keyForKnown(modelData.uuid)
+                onActivated: modelData.connected ? root.disconnectKnown(modelData) : root.connectKnown(modelData)
+                onForgetRequested: root.forgetKnown(modelData)
+            }
         }
     }
 
-    Text {
-        visible: root.wifiEnabled && root.knownNetworks.length === 0
+    // ----- nearby networks + rescan -----
+    ColumnLayout {
         Layout.fillWidth: true
-        text: "No saved networks"
-        color: Qt.alpha(Globals.fgColor, 0.35)
-        font.family: Globals.textFont.family
-        font.weight: Globals.textFont.weight
-        font.pixelSize: Globals.textFont.pixelSize - 2
-    }
-
-    MenuDivider {
         visible: root.wifiEnabled
-    }
+        spacing: 4
 
-    // ----- new networks + rescan -----
-    RowLayout {
-        visible: root.wifiEnabled
-        Layout.fillWidth: true
-        spacing: Globals.spacing
-
-        Text {
+        RowLayout {
             Layout.fillWidth: true
-            text: "New networks"
-            color: Qt.alpha(Globals.fgColor, 0.6)
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize - 1
-            font.weight: Globals.textFont.weight
-        }
+            Layout.leftMargin: 10
+            spacing: 8
 
-        // radar -> rescan; spins while scanning
-        Text {
-            text: String.fromCodePoint(0xF0437) // radar
-            color: root.scanning ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.6)
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize - 1
-            font.weight: Globals.textFont.weight
-
-            RotationAnimation on rotation {
-                running: root.scanning
-                from: 0
-                to: 360
-                duration: 2000
-                loops: Animation.Infinite
+            MenuSectionLabel {
+                Layout.fillWidth: true
+                inset: 0
+                text: "Nearby networks"
             }
 
-            MouseArea {
-                anchors.fill: parent
-                anchors.margins: -Globals.spacing
-                cursorShape: Qt.PointingHandCursor
+            MenuButton {
+                text: root.scanning ? "Scanning…" : "Scan"
+                enabled: !root.scanning
                 onClicked: root.rescan()
             }
         }
-    }
 
-    Repeater {
-        model: root.newNetworks
-        delegate: WifiNetworkRow {
-            required property var modelData
-            visible: root.wifiEnabled
-            ssid: modelData.ssid
-            signalStrength: modelData.signalStrength
-            secured: modelData.secured
-            enterprise: modelData.enterprise
-            known: false
-            connected: false
-            busy: root.connectingKey === root.keyForNew(modelData.ssid)
-            expanded: root.expandedKey === root.keyForNew(modelData.ssid)
-            passwordText: root.passwordText
-            usernameText: root.usernameText
-            focusedField: root.focusedField
-            revealPassword: root.revealPassword
-            onToggleExpand: root.expand(root.keyForNew(modelData.ssid), modelData.enterprise)
-            onConnectRequested: root.connectNew(modelData)
-            onFocusField: field => root.focusedField = field
-            onToggleReveal: root.revealPassword = !root.revealPassword
-            onPasswordEdited: value => root.passwordText = value
-            onUsernameEdited: value => root.usernameText = value
-            onKeyPressed: event => root.handleKey(event)
+        Repeater {
+            model: root.newNetworks
+            delegate: WifiNetworkRow {
+                required property var modelData
+                ssid: modelData.ssid
+                signalStrength: modelData.signalStrength
+                secured: modelData.secured
+                enterprise: modelData.enterprise
+                known: false
+                connected: false
+                busy: root.connectingKey === root.keyForNew(modelData.ssid)
+                expanded: root.expandedKey === root.keyForNew(modelData.ssid)
+                passwordText: root.passwordText
+                usernameText: root.usernameText
+                focusedField: root.focusedField
+                revealPassword: root.revealPassword
+                // open networks join straight away; secured ones unfold the password form
+                onActivated: modelData.secured ? root.expand(root.keyForNew(modelData.ssid), modelData.enterprise) : root.connectNew(modelData)
+                onConnectRequested: root.connectNew(modelData)
+                onCancelRequested: root.collapseForm()
+                onFocusField: field => root.focusedField = field
+                onToggleReveal: root.revealPassword = !root.revealPassword
+                onPasswordEdited: value => root.passwordText = value
+                onUsernameEdited: value => root.usernameText = value
+                onKeyPressed: event => root.handleKey(event)
+            }
+        }
+
+        Text {
+            Layout.fillWidth: true
+            Layout.leftMargin: 10
+            Layout.topMargin: 4
+            visible: root.newNetworks.length === 0
+            text: root.scanning ? "Looking for networks…" : "No networks nearby"
+            color: Qt.alpha(Globals.fgColor, 0.5)
+            font.family: Globals.textFont.family
+            font.pixelSize: 13
         }
     }
 
     Text {
-        visible: root.wifiEnabled && root.newNetworks.length === 0
         Layout.fillWidth: true
-        text: "Tap the radar to scan"
-        color: Qt.alpha(Globals.fgColor, 0.35)
-        font.family: Globals.textFont.family
-        font.weight: Globals.textFont.weight - 100
-        font.pixelSize: Globals.textFont.pixelSize - 2
-    }
-    Text {
+        Layout.leftMargin: 10
         visible: root.errorText !== ""
-        Layout.fillWidth: true
         text: root.errorText
         textFormat: Text.PlainText
         color: Globals.criticalColor
         font.family: Globals.textFont.family
-        font.pixelSize: Globals.textFont.pixelSize - 2
-        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        font.pixelSize: 13
+        wrapMode: Text.WordWrap
     }
 }

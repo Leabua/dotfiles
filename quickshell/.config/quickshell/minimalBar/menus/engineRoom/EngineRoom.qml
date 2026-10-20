@@ -24,13 +24,15 @@ Scope {
     }
 
     PopupWindow {
+        id: popup
         open: Globals.engineRoomOpen
         onDismissed: Globals.engineRoomOpen = false
         hAlign: "center"
         anchorCenterX: Globals.menuAnchorX
 
         cardTopMargin: Globals.barShown ? Globals.currentBarHeight - Globals.cardY : 0
-        padding: Globals.spacing
+        padding: 16
+        backgroundColor: Globals.bgColor
 
         margins {
             top: Globals.marginsTop + (Globals.barShown ? Globals.currentBarHeight + Globals.hyprGaps : 0)
@@ -44,7 +46,9 @@ Scope {
 
         Component {
             id: engineComponent
-            EngineView {}
+            EngineView {
+                availableWidth: popup.availableWidth
+            }
         }
     }
 }

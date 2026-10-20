@@ -5,161 +5,114 @@ import qs.templates
 Rectangle {
     id: root
 
-    // pure vibecoding
     property string deviceName: ""
-    property string iconName: ""        // BlueZ freedesktop icon name (e.g. "audio-headset")
+    property string iconName: ""
     property bool connected: false
-    property bool busy: false           // pairing / connecting in flight
+    property bool busy: false
+    property string statusText: busy ? "Connecting…" : connected ? "Connected" : "Not connected"
     property bool batteryAvailable: false
-    property real battery: 0            // 0..1
-    property bool showForget: false     // paired rows expose an unpair/forget button
+    property real battery: 0
+    property bool showForget: false
 
     signal activated
     signal forgetRequested
 
-    function glyphFor(name: string): int {
-        const s = (name || "").toLowerCase();
-        if (s.includes("headset") || s.includes("headphone"))
-            return 0xF02CB; // headphones
-        if (s.includes("mouse"))
-            return 0xF037D;
-        if (s.includes("keyboard"))
-            return 0xF030C;
-        if (s.includes("phone"))
-            return 0xF011C;
-        if (s.includes("computer") || s.includes("laptop"))
-            return 0xF0322;
-        if (s.includes("watch"))
-            return 0xF0B3C;
-        if (s.includes("gamepad") || s.includes("joystick") || s.includes("controller"))
-            return 0xF0EB5;
-        if (s.includes("audio") || s.includes("speaker"))
-            return 0xF04C3;
-        return 0xF00AF; // generic bluetooth
+    function iconFor(name: string): string {
+        const value = (name || "").toLowerCase();
+        if (value.includes("headset") || value.includes("headphone"))
+            return "headphones";
+        if (value.includes("mouse"))
+            return "mouse";
+        if (value.includes("keyboard"))
+            return "keyboard";
+        if (value.includes("phone"))
+            return "phone";
+        if (value.includes("computer") || value.includes("laptop"))
+            return "computer";
+        if (value.includes("watch"))
+            return "watch";
+        if (value.includes("gamepad") || value.includes("joystick") || value.includes("controller"))
+            return "controller";
+        if (value.includes("audio") || value.includes("speaker"))
+            return "speaker";
+        return "bluetooth";
     }
 
     Layout.fillWidth: true
-    implicitHeight: row.implicitHeight + Globals.spacing
-    radius: Globals.radius
-    color: area.containsMouse ? Qt.alpha(Globals.fgColor, 0.1) : "transparent"
-
-    Behavior on color {
-        ColorAnimation {
-            duration: Globals.animFast
+    implicitHeight: 54
+    radius: 9
+    activeFocusOnTab: true
+    color: Qt.alpha(Globals.fgColor, activeFocus ? 0.1 : connected ? 0.06 : area.containsMouse ? 0.04 : 0)
+    Keys.onSpacePressed: if (!busy) activated()
+    Keys.onReturnPressed: if (!busy) activated()
+    scale: area.pressed ? 0.985 : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: Globals.animPress
+            easing.type: Easing.OutCubic
         }
     }
 
     RowLayout {
-        id: row
-        z: 1 // sit above `area` so the forget button can take its own clicks
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Globals.spacing
-        anchors.rightMargin: Globals.spacing
-        spacing: Globals.spacing
+        z: 1
+        anchors.fill: parent
+        anchors.leftMargin: 10
+        anchors.rightMargin: 6
+        spacing: 10
 
-        // device-type icon, tinted brighter when connected
-        Rectangle {
-            implicitWidth: Globals.barIconSize + Globals.spacing * 2
-            implicitHeight: Globals.barIconSize + Globals.spacing * 2
-            radius: Globals.radius
-            color: root.connected ? Globals.fgColor : "transparent"
-            // border.width: 1
-            border.color: Qt.alpha(Globals.fgColor, 0.3)
+        MenuIcon {
+            name: root.iconFor(root.iconName)
+            Layout.preferredWidth: 22
+            Layout.preferredHeight: 22
+            color: Qt.alpha(Globals.fgColor, root.connected ? 0.9 : 0.55)
+        }
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: Globals.animFast
-                }
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 4
+
+            Text {
+                Layout.fillWidth: true
+                text: root.deviceName === "" ? "Unknown device" : root.deviceName
+                textFormat: Text.PlainText
+                color: Globals.fgColor
+                font.family: Globals.textFont.family
+                font.pixelSize: 14
+                font.weight: Font.Medium
+                elide: Text.ElideRight
             }
 
             Text {
-                id: glyph
-                anchors.centerIn: parent
-                text: String.fromCodePoint(root.glyphFor(root.iconName))
-                color: root.connected ? Globals.bgColor : Globals.fgColor
+                Layout.fillWidth: true
+                text: root.statusText
+                color: Qt.alpha(Globals.fgColor, 0.45)
                 font.family: Globals.textFont.family
-                font.pixelSize: Globals.barIconSize
-                font.weight: Globals.textFont.weight
+                font.pixelSize: 12
+                elide: Text.ElideRight
             }
         }
 
-        Text {
-            Layout.fillWidth: true
-            text: root.deviceName === "" ? "Unknown device" : root.deviceName
-            color: Globals.fgColor
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize
-            font.weight: Globals.textFont.weight
-            elide: Text.ElideRight
-        }
-
-        // battery % for connected devices that report it
         Text {
             visible: root.connected && root.batteryAvailable
             text: Math.round(root.battery * 100) + "%"
-            color: Qt.alpha(Globals.fgColor, 0.7)
+            color: Qt.alpha(Globals.fgColor, 0.55)
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize - 2
-            font.weight: Globals.textFont.weight
+            font.pixelSize: 12
         }
 
-        // busy spinner-ish glyph while pairing / connecting
-        Text {
-            visible: root.busy
-            text: String.fromCodePoint(0xF06B0) // sync
-            color: Qt.alpha(Globals.fgColor, 0.7)
-            font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize
-            font.weight: Globals.textFont.weight
-
-            RotationAnimation on rotation {
-                running: root.busy
-                from: 0
-                to: 360
-                duration: 1000
-                loops: Animation.Infinite
-            }
-        }
-
-        // unpair / forget (paired rows only); takes its own clicks so it doesn't also fire the row's connect/disconnect
-        Rectangle {
-            visible: root.showForget && !root.busy
-            implicitWidth: forgetGlyph.implicitWidth + Globals.spacing
-            implicitHeight: forgetGlyph.implicitHeight + Globals.spacing
-            radius: Globals.radius
-            color: forgetArea.containsMouse ? Qt.alpha(Globals.criticalColor, 0.2) : "transparent"
-
-            Behavior on color {
-                ColorAnimation {
-                    duration: Globals.animFast
-                }
-            }
-
-            Text {
-                id: forgetGlyph
-                anchors.centerIn: parent
-                text: String.fromCodePoint(0xF0A7A) // trash-can-outline
-                color: forgetArea.containsMouse ? Globals.criticalColor : Qt.alpha(Globals.fgColor, 0.6)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
-            }
-
-            MouseArea {
-                id: forgetArea
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.forgetRequested()
-            }
+        MenuButton {
+            visible: root.showForget
+            enabled: !root.busy
+            icon: "trash"
+            destructive: true
+            onClicked: root.forgetRequested()
         }
     }
 
     MouseArea {
         id: area
         anchors.fill: parent
+        enabled: !root.busy
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: root.activated()

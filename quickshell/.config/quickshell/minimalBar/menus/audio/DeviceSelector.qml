@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import qs.templates
@@ -6,145 +7,101 @@ import qs.templates
 ColumnLayout {
     id: root
 
-    property int icon: 0xF057E
-    property var devices: []            // array of PwNode for this direction
-    property var currentNode: null      // the active default node (drives the highlight)
-    property string currentName: ""     // label for the collapsed header
-    property var nameFor: (function (n) {
-            return "";
-        })                                  // node -> display string, supplied by the owner
-
+    property string label: ""
+    property string iconName: "speaker"
+    property var devices: []
+    property var currentNode: null
+    property string currentName: ""
+    property var nameFor: (function (node) { return ""; })
     property bool expanded: false
-
+    readonly property bool canExpand: root.devices.length > 1
     signal selected(var node)
 
     Layout.fillWidth: true
-    spacing: Globals.spacing
+    spacing: 4
+    onCanExpandChanged: if (!canExpand) expanded = false
 
-    // collapsed header: [icon] current device name [chevron]
     Rectangle {
+        id: header
         Layout.fillWidth: true
-        implicitHeight: headerRow.implicitHeight + Globals.spacing
-        radius: Globals.radius
-        color: headerArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.1) : "transparent"
-
-        Behavior on color {
-            ColorAnimation {
-                duration: Globals.animFast
-            }
-        }
+        implicitHeight: 44
+        radius: 9
+        activeFocusOnTab: root.canExpand
+        color: Qt.alpha(Globals.fgColor, activeFocus || (headerMouse.containsMouse && root.canExpand) ? 0.04 : 0)
+        Keys.onSpacePressed: root.expanded = !root.expanded
+        Keys.onReturnPressed: root.expanded = !root.expanded
 
         RowLayout {
-            id: headerRow
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: Globals.spacing
-            anchors.rightMargin: Globals.spacing
-            spacing: Globals.spacing
+            anchors.fill: parent
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            spacing: 10
 
-            Text {
-                text: String.fromCodePoint(root.icon)
-                color: Globals.fgColor
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize + 6
-                font.weight: Globals.textFont.weight
+            MenuIcon {
+                name: root.iconName
+                Layout.preferredWidth: 22
+                Layout.preferredHeight: 22
+                color: Qt.alpha(Globals.fgColor, 0.6)
             }
 
-            Text {
+            ColumnLayout {
                 Layout.fillWidth: true
-                text: root.currentName === "" ? "No device" : root.currentName
-                color: Globals.fgColor
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
-                elide: Text.ElideRight
+                spacing: 3
+
+                Text {
+                    text: root.label
+                    color: Qt.alpha(Globals.fgColor, 0.45)
+                    font.family: Globals.textFont.family
+                    font.pixelSize: 12
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: root.currentName === "" ? "No device available" : root.currentName
+                    textFormat: Text.PlainText
+                    color: Globals.fgColor
+                    font.family: Globals.textFont.family
+                    font.pixelSize: 14
+                    font.weight: Font.Medium
+                    elide: Text.ElideRight
+                }
             }
 
-            // chevron flips up while the list is open
-            Text {
-                text: String.fromCodePoint(root.expanded ? 0xF0143 : 0xF0140)
-                color: Qt.alpha(Globals.fgColor, 0.7)
-                font.family: Globals.textFont.family
-                font.pixelSize: Globals.textFont.pixelSize
-                font.weight: Globals.textFont.weight
+            MenuIcon {
+                visible: root.canExpand
+                name: root.expanded ? "chevronUp" : "chevronDown"
+                color: Qt.alpha(Globals.fgColor, 0.45)
+                Layout.preferredWidth: 16
+                Layout.preferredHeight: 16
             }
         }
 
         MouseArea {
-            id: headerArea
+            id: headerMouse
             anchors.fill: parent
+            enabled: root.canExpand
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: root.expanded = !root.expanded
         }
     }
 
-    // expanded list of selectable devices (excluded from layout when collapsed)
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.leftMargin: Globals.spacing
+        Layout.leftMargin: 32 // option names land under the current device name
         visible: root.expanded
-        spacing: 0
+        spacing: 2
 
         Repeater {
             model: root.devices
 
-            delegate: Rectangle {
-                id: option
+            delegate: MenuActionRow {
                 required property var modelData
-                readonly property bool active: root.currentNode && modelData && root.currentNode.id === modelData.id
-
-                Layout.fillWidth: true
-                implicitHeight: optionText.implicitHeight + Globals.spacing
-                radius: Globals.radius
-                color: optionArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.1) : "transparent"
-
-                Behavior on color {
-                    ColorAnimation {
-                        duration: Globals.animFast
-                    }
-                }
-
-                RowLayout {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: Globals.spacing
-                    anchors.rightMargin: Globals.spacing
-                    spacing: Globals.spacing
-
-                    // active marker dot
-                    Text {
-                        text: String.fromCodePoint(0xF012C) // check
-                        opacity: option.active ? 1 : 0
-                        color: Globals.fgColor
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize - 4
-                        font.weight: Globals.textFont.weight
-                    }
-
-                    Text {
-                        id: optionText
-                        Layout.fillWidth: true
-                        text: root.nameFor(option.modelData)
-                        color: option.active ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.75)
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize - 1
-                        font.weight: Globals.textFont.weight
-                        elide: Text.ElideRight
-                    }
-                }
-
-                MouseArea {
-                    id: optionArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.selected(option.modelData);
-                        root.expanded = false;
-                    }
+                text: root.nameFor(modelData)
+                active: !!root.currentNode && !!modelData && root.currentNode.id === modelData.id
+                onClicked: {
+                    root.selected(modelData);
+                    root.expanded = false;
                 }
             }
         }

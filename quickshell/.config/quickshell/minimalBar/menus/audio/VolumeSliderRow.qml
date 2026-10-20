@@ -1,147 +1,112 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import qs.templates
 
-RowLayout {
+ColumnLayout {
     id: root
 
-    // glyph shown in the left box (nerd-font codepoint); used as the fallback
-    // when no app icon resolves
-    property int icon: 0xF057E
-    // optional app-icon image URL; when it loads it replaces the glyph so a
-    // playback row shows *which* app is making sound (see AudioView.appIcon)
+    property string iconName: "speaker"
+    property string label: ""
     property string iconSource: ""
-    // current level, 0..1 (bind to node.audio.volume)
     property real value: 0
-    // dim the row + box when the source is muted
     property bool muted: false
-
-    // fired continuously while dragging / on click with the new 0..1 level
+    readonly property string displayIcon: {
+        if (root.muted || root.value <= 0)
+            return root.iconName + "Muted";
+        if (root.iconName === "speaker")
+            return root.value < 0.34 ? "speakerLow" : root.value < 0.67 ? "speakerMedium" : "speaker";
+        return root.iconName;
+    }
     signal moved(real v)
-    // fired when the icon box is clicked (used to toggle mute)
     signal iconClicked
 
     Layout.fillWidth: true
-    spacing: Globals.spacing
+    spacing: 4
 
-    // square icon box on the left (app / device glyph, doubles as a mute button)
-    Rectangle {
-        id: box
-        Layout.alignment: Qt.AlignVCenter
-        implicitWidth: glyph.implicitHeight + Globals.spacing * 2
-        implicitHeight: glyph.implicitHeight + Globals.spacing * 2
-        radius: Globals.radius
-        color: boxArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.15) : "transparent"
-        border.width: 0
-        border.color: Qt.alpha(Globals.fgColor, root.muted ? 0.2 : 0.3)
+    Text {
+        Layout.fillWidth: true
+        Layout.leftMargin: 42 // under the device / app name, past the icon column
+        visible: root.label !== ""
+        text: root.label
+        textFormat: Text.PlainText
+        color: Qt.alpha(Globals.fgColor, 0.75)
+        font.family: Globals.textFont.family
+        font.pixelSize: 13
+        elide: Text.ElideRight
+    }
 
-        // real app icon when one resolves, otherwise fall back to the glyph
-        readonly property bool hasImg: root.iconSource !== "" && appIcon.status === Image.Ready
+    RowLayout {
+        Layout.fillWidth: true
+        Layout.leftMargin: 10
+        Layout.rightMargin: 10
+        spacing: 10
 
-        Behavior on color {
-            ColorAnimation {
-                duration: Globals.animFast
+        MenuButton {
+            Layout.preferredWidth: 22
+            icon: appIcon.status === Image.Ready ? "" : root.displayIcon
+            onClicked: root.iconClicked()
+
+            Image {
+                id: appIcon
+                anchors.centerIn: parent
+                width: 18
+                height: 18
+                source: root.iconSource
+                sourceSize.width: 36
+                sourceSize.height: 36
+                fillMode: Image.PreserveAspectFit
+                asynchronous: true
+                visible: status === Image.Ready
+                opacity: root.muted ? 0.4 : 1
             }
         }
 
-        Image {
-            id: appIcon
-            anchors.centerIn: parent
-            width: glyph.implicitHeight
-            height: glyph.implicitHeight
-            source: root.iconSource
-            sourceSize.width: 44
-            sourceSize.height: 44
-            fillMode: Image.PreserveAspectFit
-            asynchronous: true
-            smooth: true
-            cache: true
-            visible: box.hasImg
-            opacity: root.muted ? 0.35 : 1
+        Slider {
+            id: control
+            Layout.fillWidth: true
+            implicitHeight: 28
+            from: 0
+            to: 1
+            stepSize: 0.01
+            padding: 0
+            value: Math.max(0, Math.min(1, root.value))
+            onMoved: root.moved(value)
+
+            background: Rectangle {
+                x: control.leftPadding
+                y: control.topPadding + control.availableHeight / 2 - height / 2
+                width: control.availableWidth
+                height: 4
+                radius: 2
+                color: Qt.alpha(Globals.fgColor, 0.12)
+
+                Rectangle {
+                    width: control.visualPosition * parent.width
+                    height: parent.height
+                    radius: parent.radius
+                    color: Qt.alpha(Globals.fgColor, root.muted ? 0.35 : 0.9)
+                }
+            }
+
+            handle: Rectangle {
+                x: control.leftPadding + control.visualPosition * (control.availableWidth - width)
+                y: control.topPadding + (control.availableHeight - height) / 2
+                implicitWidth: 10
+                implicitHeight: 10
+                radius: 5
+                color: Globals.fgColor
+                visible: control.hovered || control.pressed || control.activeFocus
+            }
         }
 
         Text {
-            id: glyph
-            anchors.centerIn: parent
-            visible: !box.hasImg
-            text: String.fromCodePoint(root.icon)
-            color: Qt.alpha(Globals.fgColor, root.muted ? 0.35 : 1)
+            Layout.preferredWidth: 40
+            text: root.muted ? "Muted" : Math.round(root.value * 100) + "%"
+            color: Qt.alpha(Globals.fgColor, 0.55)
+            horizontalAlignment: Text.AlignRight
             font.family: Globals.textFont.family
-            font.pixelSize: Globals.textFont.pixelSize + 10 // one knob: the box + app-icon images size off this glyph
-            font.weight: Globals.textFont.weight
-        }
-
-        MouseArea {
-            id: boxArea
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.iconClicked()
-        }
-    }
-
-    // the slider track; click or drag anywhere along it to set the level
-    Rectangle {
-        id: track
-        Layout.fillWidth: true
-        Layout.alignment: Qt.AlignVCenter
-        implicitHeight: glyph.implicitHeight / 4
-        radius: height
-        color: Qt.alpha(Globals.fgColor, 0.25)
-
-        // filled portion up to the current value
-        Rectangle {
-            id: fill
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: parent.width * Math.max(0, Math.min(1, root.value))
-            radius: parent.radius
-            color: Qt.alpha(Globals.fgColor, root.muted ? 0.4 : 1)
-
-            // animate only when not actively dragging so the handle tracks the cursor 1:1
-            Behavior on width {
-                enabled: !slider.pressed
-                NumberAnimation {
-                    duration: Globals.animFast
-                }
-            }
-        }
-
-        // round handle riding the end of the fill
-        Rectangle {
-            id: handle
-            width: track.height * 2.2
-            height: width
-            radius: width / 2
-            color: Globals.fgColor
-            anchors.verticalCenter: parent.verticalCenter
-            x: Math.max(0, Math.min(track.width - width, fill.width - width / 2))
-            scale: slider.pressed ? 1.15 : 1
-            Behavior on scale {
-                NumberAnimation {
-                    duration: Globals.animFast
-                }
-            }
-        }
-
-        MouseArea {
-            id: slider
-            anchors.fill: parent
-            anchors.margins: -Globals.spacing // generous hit area so the thin track is easy to grab
-            cursorShape: Qt.PointingHandCursor
-            preventStealing: true
-
-            function setFromX(mx: real): void {
-                const v = Math.max(0, Math.min(1, (mx - Globals.spacing) / track.width));
-                root.moved(v);
-            }
-
-            onPressed: mouse => setFromX(mouse.x)
-            onPositionChanged: mouse => {
-                if (pressed)
-                    setFromX(mouse.x);
-            }
+            font.pixelSize: 12
         }
     }
 }

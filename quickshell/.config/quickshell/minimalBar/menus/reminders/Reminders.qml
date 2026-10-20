@@ -16,7 +16,7 @@ Scope {
     readonly property string filePath: Quickshell.env("HOME") + "/Documents/Uni Notes/Reminder Logs.md"
 
     // sizing tokens
-    readonly property int panelWidth: Math.min(620, (Globals.focusedScreen ? Globals.focusedScreen.width : 1920) - 48)
+    readonly property int panelWidth: Math.min(420, (Globals.focusedScreen ? Globals.focusedScreen.width : 1920) - 48)
     readonly property int cardPadH: 10
     readonly property int cardPadV: 10
     readonly property int cardGap: 7 // breathing room each side of the between-card divider
@@ -454,6 +454,8 @@ Scope {
         }
         hAlign: "right"
         screen: Globals.focusedScreen // open on the focused monitor, like the notification center
+        padding: 16
+        backgroundColor: Globals.bgColor
         onKeyDown: event => root.handleKey(event)
 
         // ~~~ the right island is the only bar element above a right-aligned card -> ride to the top when it's gone ~~~
@@ -484,138 +486,71 @@ Scope {
             ColumnLayout {
                 id: col
                 width: root.panelWidth
-                spacing: Globals.spacing
+                spacing: 6
 
-                // ----- header -----
-                RowLayout {
+                MenuHeader {
+                    Layout.bottomMargin: 8
+                    title: "Reminders"
+                    icon: "bell"
+                    actionText: "Add"
+                    actionIcon: "plus"
+                    actionEnabled: !root.editing
+                    onActionClicked: root.startAdd()
+                    onCloseRequested: Globals.remindersOpen = false
+                }
+
+                // empty state: an invitation to act, not a mood
+                ColumnLayout {
+                    visible: !activeRoot.hasAny
                     Layout.fillWidth: true
-                    Layout.leftMargin: root.cardPadH
-                    Layout.rightMargin: root.cardPadH
-                    spacing: Globals.spacing
+                    Layout.topMargin: 16
+                    Layout.bottomMargin: 20
+                    spacing: 6
 
-                    Text {
-                        text: "\u{F0139}" // bell-ring
-                        visible: Globals.headerIcons
-                        color: Globals.fgColor
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 6
-                        font.weight: Globals.textFont.weight
+                    MenuIcon {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 28
+                        Layout.bottomMargin: 4
+                        name: "bell"
+                        color: Qt.alpha(Globals.fgColor, 0.25)
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: "Reminders"
-                        color: Globals.fgColor
+                        horizontalAlignment: Text.AlignHCenter
+                        text: "Nothing on the list"
+                        color: Qt.alpha(Globals.fgColor, 0.8)
                         font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 3
-                        font.weight: Globals.textFont.weight
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
                     }
-
-                    // add button -> a soft round target
-                    Rectangle {
-                        implicitWidth: Globals.textFont.pixelSize + 12
-                        implicitHeight: Globals.textFont.pixelSize + 12
-                        radius: width / 2
-                        opacity: root.editing ? 0.3 : 1
-                        color: addArea.containsMouse ? Globals.fgColor : Qt.alpha(Globals.fgColor, 0.12)
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: Globals.animFast
-                            }
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "\u{F0415}" // plus
-                            color: addArea.containsMouse ? Globals.bgColor : Globals.fgColor
-                            font.family: Globals.textFont.family
-                            font.pixelSize: Globals.textFont.pixelSize + 4
-                            font.weight: Globals.textFont.weight
-                        }
-
-                        MouseArea {
-                            id: addArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.startAdd()
-                        }
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: "Add a reminder to get started"
+                        color: Qt.alpha(Globals.fgColor, 0.45)
+                        font.family: Globals.textFont.family
+                        font.pixelSize: 13
                     }
-                }
-
-                MenuDivider {
-                    Layout.leftMargin: root.cardPadH
-                    Layout.rightMargin: root.cardPadH
-                }
-
-                /*  empty state (each line fills the full panel width and
-                 centers its own text -> reliably centred regardless of content) */
-                Text {
-                    visible: !activeRoot.hasAny
-                    Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing * 3
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "\u{F0139}" // bell-ring
-                    color: Qt.alpha(Globals.fgColor, 0.2)
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 22
-                    font.weight: Globals.textFont.weight
-                }
-                Text {
-                    visible: !activeRoot.hasAny
-                    Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "Nothing on the list"
-                    color: Qt.alpha(Globals.fgColor, 0.5)
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize
-                    font.weight: Globals.textFont.weight
-                }
-                Text {
-                    visible: !activeRoot.hasAny
-                    Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing / 3
-                    Layout.bottomMargin: Globals.spacing * 3
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "Tap + to add a reminder"
-                    color: Qt.alpha(Globals.fgColor, 0.3)
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize - 2
-                    font.weight: Globals.textFont.weight - 100
                 }
 
                 // ----- Priority section -----
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.leftMargin: root.cardPadH
-                    Layout.rightMargin: root.cardPadH
-                    Layout.topMargin: Globals.spacing / 2
                     visible: activeRoot.hasAny
-                    spacing: Globals.spacing - 2
+                    spacing: 6
 
-                    Text {
-                        text: "\u{F0026}" // alert (!)
-                        visible: Globals.headerIcons
-                        color: Globals.criticalColor
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 3
-                        font.weight: Globals.textFont.weight
-                    }
-                    Text {
+                    // the one red in the panel: it marks what's urgent, nothing else
+                    MenuSectionLabel {
+                        inset: 0
                         text: "Priority"
-                        color: Globals.criticalColor
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 2
-                        font.weight: Globals.textFont.weight + 100
+                        color: Qt.alpha(Globals.criticalColor, 0.85)
                     }
-                    Text {
-                        Layout.fillWidth: true
-                        text: priorityModel.count > 0 ? "" + priorityModel.count : ""
-                        color: Qt.alpha(Globals.criticalColor, 0.6)
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize
-                        font.weight: Globals.textFont.weight
+                    MenuSectionLabel {
+                        inset: 0
+                        visible: priorityModel.count > 0
+                        text: priorityModel.count
                     }
                 }
 
@@ -635,33 +570,18 @@ Scope {
                     id: laterHeading
                     Layout.fillWidth: true
                     Layout.leftMargin: root.cardPadH
-                    Layout.rightMargin: root.cardPadH
-                    Layout.topMargin: Globals.spacing
+                    Layout.topMargin: 8
                     visible: activeRoot.hasAny
-                    spacing: Globals.spacing - 2
+                    spacing: 6
 
-                    Text {
-                        text: "\u{F0176}" // coffee
-                        visible: Globals.headerIcons
-                        color: Globals.fgColor2
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 3
-                        font.weight: Globals.textFont.weight
-                    }
-                    Text {
+                    MenuSectionLabel {
+                        inset: 0
                         text: "When you have the time"
-                        color: Globals.fgColor2
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 2
-                        font.weight: Globals.textFont.weight + 100
                     }
-                    Text {
-                        Layout.fillWidth: true
-                        text: laterModel.count > 0 ? "" + laterModel.count : ""
-                        color: Qt.alpha(Globals.fgColor2, 0.6)
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize
-                        font.weight: Globals.textFont.weight
+                    MenuSectionLabel {
+                        inset: 0
+                        visible: laterModel.count > 0
+                        text: laterModel.count
                     }
                 }
 
@@ -677,18 +597,18 @@ Scope {
                     delegate: cardComponent
                 }
 
-                //  footer: switch to completed (toggle hugs the right edge)
+                //  footer: switch to completed (hugs the right edge)
                 RowLayout {
                     id: footerRow
                     Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing / 2
+                    Layout.topMargin: 4
                     Item {
                         Layout.fillWidth: true
                     }
-                    ViewSwitchBtn {
+                    MenuButton {
                         id: completedBtn
-                        icon: "\u{F05E1}" // check-circle-outline
-                        label: completedModel.count > 0 ? "Completed · " + completedModel.count : "Completed"
+                        icon: "checkCircle"
+                        text: completedModel.count > 0 ? completedModel.count + " completed" : "Completed"
                         onClicked: {
                             if (root.editing)
                                 root.confirmEdit();
@@ -748,16 +668,14 @@ Scope {
                         // hover / editing / drag background
                         Rectangle {
                             anchors.fill: parent
-                            anchors.leftMargin: root.cardPadH - 4
-                            anchors.rightMargin: root.cardPadH - 4
-                            radius: Globals.radius
+                            radius: 9
                             color: {
                                 if (holderMa.drag.active)
                                     return Qt.alpha(Globals.fgColor, 0.14);
                                 if (wrapper.isEditing)
                                     return Qt.alpha(Globals.fgColor, 0.08);
                                 if (cardHover.hovered)
-                                    return Qt.alpha(Globals.fgColor, 0.05);
+                                    return Qt.alpha(Globals.fgColor, 0.04);
                                 return "transparent";
                             }
 
@@ -781,12 +699,12 @@ Scope {
                             anchors.leftMargin: root.cardPadH
                             anchors.rightMargin: root.cardPadH
                             anchors.topMargin: root.cardPadV
-                            spacing: Globals.spacing + 2
+                            spacing: 10
 
                             // ----- text column -----
                             ColumnLayout {
                                 Layout.fillWidth: true
-                                spacing: Globals.spacing / 2
+                                spacing: 4
 
                                 // title
                                 EditField {
@@ -794,7 +712,8 @@ Scope {
                                     visible: wrapper.isEditing
                                     value: root.draftTitle
                                     placeholder: "Title"
-                                    pixelSize: Globals.textFont.pixelSize + 1
+                                    pixelSize: 14
+                                    weight: Font.Medium
                                     active: wrapper.isEditing && root.editField === "title"
                                     onTapped: root.editField = "title"
                                     onEdited: value => root.draftTitle = value.replace(/\n/g, " ")
@@ -806,8 +725,8 @@ Scope {
                                     text: wrapper.title
                                     color: Globals.fgColor
                                     font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize + 1
-                                    font.weight: Globals.textFont.weight
+                                    font.pixelSize: 14
+                                    font.weight: Font.Medium
                                     textFormat: Text.PlainText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 }
@@ -817,10 +736,10 @@ Scope {
                                     Layout.fillWidth: true
                                     visible: wrapper.isEditing
                                     value: root.draftSubject
-                                    placeholder: "Details, notes, links..."
+                                    placeholder: "Details, notes, links"
                                     multiline: true
-                                    pixelSize: Globals.textFont.pixelSize - 1
-                                    weight: Globals.textFont.weight - 100
+                                    pixelSize: 13
+                                    weight: Font.Normal
                                     active: wrapper.isEditing && root.editField === "subject"
                                     onTapped: root.editField = "subject"
                                     onEdited: value => root.draftSubject = value
@@ -831,10 +750,10 @@ Scope {
                                     Layout.topMargin: 1
                                     visible: !wrapper.isEditing && wrapper.subject !== ""
                                     text: wrapper.subject
-                                    color: Qt.alpha(Globals.fgColor, 0.65)
+                                    color: Qt.alpha(Globals.fgColor, 0.6)
                                     font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize - 1
-                                    font.weight: Globals.textFont.weight - 100
+                                    font.pixelSize: 13
+                                    lineHeight: 1.15
                                     textFormat: Text.PlainText
                                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 }
@@ -846,19 +765,18 @@ Scope {
                                     visible: wrapper.isEditing
                                     spacing: Globals.spacing - 2
 
-                                    Text {
-                                        text: "\u{F00ED}" // calendar
-                                        color: Globals.fgColor2
-                                        font.family: Globals.textFont.family
-                                        font.pixelSize: Globals.textFont.pixelSize - 2
-                                        font.weight: Globals.textFont.weight
+                                    MenuIcon {
+                                        Layout.preferredWidth: 14
+                                        Layout.preferredHeight: 14
+                                        name: "calendar"
+                                        color: Qt.alpha(Globals.fgColor, 0.45)
                                     }
                                     EditField {
                                         Layout.fillWidth: true
                                         value: root.draftDate
-                                        placeholder: "Date · optional"
-                                        pixelSize: Globals.textFont.pixelSize - 2
-                                        weight: Globals.textFont.weight - 100
+                                        placeholder: "Due date (optional)"
+                                        pixelSize: 12
+                                        weight: Font.Normal
                                         active: root.editField === "date"
                                         onTapped: root.editField = "date"
                                         onEdited: value => root.draftDate = value.replace(/\n/g, " ")
@@ -870,29 +788,27 @@ Scope {
                                 Rectangle {
                                     Layout.topMargin: 3
                                     visible: !wrapper.isEditing && wrapper.date !== ""
-                                    implicitWidth: chipRow.implicitWidth + 12
-                                    implicitHeight: chipRow.implicitHeight + 5
-                                    radius: 4
-                                    color: Qt.alpha(Globals.fgColor2, 0.13)
+                                    implicitWidth: chipRow.implicitWidth + 14
+                                    implicitHeight: 22
+                                    radius: 6
+                                    color: Qt.alpha(Globals.fgColor, 0.07)
 
                                     RowLayout {
                                         id: chipRow
                                         anchors.centerIn: parent
-                                        spacing: 3
+                                        spacing: 5
 
-                                        Text {
-                                            text: "\u{F00ED}" // calendar
-                                            color: Globals.fgColor2
-                                            font.family: Globals.textFont.family
-                                            font.pixelSize: Globals.textFont.pixelSize - 4
-                                            font.weight: Globals.textFont.weight
+                                        MenuIcon {
+                                            Layout.preferredWidth: 12
+                                            Layout.preferredHeight: 12
+                                            name: "calendar"
+                                            color: Qt.alpha(Globals.fgColor, 0.55)
                                         }
                                         Text {
                                             text: wrapper.date
-                                            color: Globals.fgColor2
+                                            color: Qt.alpha(Globals.fgColor, 0.7)
                                             font.family: Globals.textFont.family
-                                            font.pixelSize: Globals.textFont.pixelSize - 3
-                                            font.weight: Globals.textFont.weight
+                                            font.pixelSize: 12
                                         }
                                     }
                                 }
@@ -901,36 +817,36 @@ Scope {
                                 Text {
                                     Layout.topMargin: 3
                                     visible: wrapper.isEditing
-                                    text: "Tab: next field · Ctrl+Enter: save · Esc: cancel"
+                                    text: "Tab to move, Ctrl+Enter to save, Esc to cancel"
                                     color: Qt.alpha(Globals.fgColor, 0.35)
                                     font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize - 4
-                                    font.weight: Globals.textFont.weight - 100
+                                    font.pixelSize: 12
                                 }
                             }
 
                             // ----- complete circle / confirm check -----
+                            // hovering previews the outcome: the empty ring fills with a check
                             Rectangle {
                                 Layout.alignment: Qt.AlignTop
-                                implicitWidth: Globals.textFont.pixelSize + 12
-                                implicitHeight: Globals.textFont.pixelSize + 12
-                                radius: width / 2
-                                color: circleArea.containsMouse ? Qt.alpha(wrapper.isEditing ? Globals.healthy : Globals.fgColor, 0.16) : "transparent"
+                                implicitWidth: 28
+                                implicitHeight: 28
+                                radius: 14
+                                color: circleArea.containsMouse ? Qt.alpha(wrapper.isEditing ? Globals.healthy : Globals.fgColor, 0.1) : "transparent"
+                                scale: circleArea.pressed ? 0.92 : 1
 
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Globals.animFast
+                                Behavior on scale {
+                                    NumberAnimation {
+                                        duration: Globals.animPress
+                                        easing.type: Easing.OutCubic
                                     }
                                 }
 
-                                Text {
+                                MenuIcon {
                                     anchors.centerIn: parent
-                                    text: wrapper.isEditing ? "\u{F012C}" // check
-                                                            : "\u{F0765}" // circle-outline
-                                    color: wrapper.isEditing ? Globals.healthy : Qt.alpha(Globals.fgColor, circleArea.containsMouse ? 1 : 0.6)
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize + (wrapper.isEditing ? 5 : 4)
-                                    font.weight: Globals.textFont.weight
+                                    width: 20
+                                    height: 20
+                                    name: wrapper.isEditing ? "check" : circleArea.containsMouse ? "checkCircle" : "circle"
+                                    color: wrapper.isEditing ? Globals.healthy : Qt.alpha(Globals.fgColor, circleArea.containsMouse ? 0.9 : 0.45)
                                 }
 
                                 MouseArea {
@@ -988,7 +904,7 @@ Scope {
                         anchors.leftMargin: root.cardPadH
                         anchors.rightMargin: root.cardPadH
                         height: 1
-                        color: Qt.alpha(Globals.fgColor, 0.1)
+                        color: Qt.alpha(Globals.fgColor, 0.07)
                     }
                 }
             }
@@ -1006,80 +922,28 @@ Scope {
             ColumnLayout {
                 id: ccol
                 width: root.panelWidth
-                spacing: Globals.spacing
+                spacing: 6
 
-                // header
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.leftMargin: root.cardPadH
-                    Layout.rightMargin: root.cardPadH
-                    spacing: Globals.spacing
-
-                    Text {
-                        text: "\u{F05E0}" // check-circle
-                        visible: Globals.headerIcons
-                        color: Globals.healthy
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 6
-                        font.weight: Globals.textFont.weight
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Completed"
-                        color: Globals.fgColor
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize + 3
-                        font.weight: Globals.textFont.weight
-                    }
-
-                    // clear every completed item (mirrors the notification center / clipboard)
-                    Text {
-                        text: "Clear all"
-                        visible: completedModel.count > 0
-                        color: clearArea.containsMouse ? Globals.criticalColor : Qt.alpha(Globals.criticalColor, 0.8)
-                        font.family: Globals.textFont.family
-                        font.pixelSize: Globals.textFont.pixelSize - 1
-                        font.weight: Globals.textFont.weight
-
-                        MouseArea {
-                            id: clearArea
-                            anchors.fill: parent
-                            anchors.margins: -4
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.clearCompleted()
-                        }
-                    }
+                MenuHeader {
+                    Layout.bottomMargin: 8
+                    title: "Completed"
+                    icon: "checkCircle"
+                    actionText: "Clear all"
+                    actionDestructive: true
+                    actionEnabled: completedModel.count > 0
+                    onActionClicked: root.clearCompleted()
+                    onCloseRequested: Globals.remindersOpen = false
                 }
 
-                MenuDivider {
-                    Layout.leftMargin: root.cardPadH
-                    Layout.rightMargin: root.cardPadH
-                }
-
-                // empty state (full-width centred lines)
                 Text {
                     visible: completedModel.count === 0
                     Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing * 3
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "\u{F05E1}" // check-circle-outline
-                    color: Qt.alpha(Globals.fgColor, 0.2)
-                    font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize + 22
-                    font.weight: Globals.textFont.weight
-                }
-                Text {
-                    visible: completedModel.count === 0
-                    Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing
-                    Layout.bottomMargin: Globals.spacing * 3
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "Nothing completed yet"
+                    Layout.leftMargin: root.cardPadH
+                    Layout.bottomMargin: 8
+                    text: "Finished reminders stay here for two weeks"
                     color: Qt.alpha(Globals.fgColor, 0.5)
                     font.family: Globals.textFont.family
-                    font.pixelSize: Globals.textFont.pixelSize
-                    font.weight: Globals.textFont.weight
+                    font.pixelSize: 13
                 }
 
                 ListView {
@@ -1107,41 +971,41 @@ Scope {
                             anchors.leftMargin: root.cardPadH
                             anchors.rightMargin: root.cardPadH
                             anchors.topMargin: root.cardPadV
-                            spacing: Globals.spacing + 2
+                            spacing: 10
 
                             Text {
                                 Layout.fillWidth: true
                                 text: cwrapper.title
-                                color: Qt.alpha(Globals.fgColor, 0.5)
+                                color: Qt.alpha(Globals.fgColor, 0.45)
                                 font.family: Globals.textFont.family
-                                font.pixelSize: Globals.textFont.pixelSize
-                                font.weight: Globals.textFont.weight
+                                font.pixelSize: 14
                                 font.strikeout: true
                                 textFormat: Text.PlainText
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             }
 
-                            // check -> send back to the reminders list as incomplete
+                            // check -> send back to the reminders list as incomplete (hover previews the empty ring)
                             Rectangle {
                                 Layout.alignment: Qt.AlignVCenter
-                                implicitWidth: Globals.textFont.pixelSize + 12
-                                implicitHeight: Globals.textFont.pixelSize + 12
-                                radius: width / 2
-                                color: cCheckArea.containsMouse ? Qt.alpha(Globals.healthy, 0.16) : "transparent"
+                                implicitWidth: 28
+                                implicitHeight: 28
+                                radius: 14
+                                color: cCheckArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.1) : "transparent"
+                                scale: cCheckArea.pressed ? 0.92 : 1
 
-                                Behavior on color {
-                                    ColorAnimation {
-                                        duration: Globals.animFast
+                                Behavior on scale {
+                                    NumberAnimation {
+                                        duration: Globals.animPress
+                                        easing.type: Easing.OutCubic
                                     }
                                 }
 
-                                Text {
+                                MenuIcon {
                                     anchors.centerIn: parent
-                                    text: "\u{F05E0}" // check-circle
-                                    color: Globals.healthy
-                                    font.family: Globals.textFont.family
-                                    font.pixelSize: Globals.textFont.pixelSize + 4
-                                    font.weight: Globals.textFont.weight
+                                    width: 20
+                                    height: 20
+                                    name: cCheckArea.containsMouse ? "circle" : "checkCircle"
+                                    color: cCheckArea.containsMouse ? Qt.alpha(Globals.fgColor, 0.7) : Globals.healthy
                                 }
 
                                 MouseArea {
@@ -1162,21 +1026,21 @@ Scope {
                             anchors.leftMargin: root.cardPadH
                             anchors.rightMargin: root.cardPadH
                             height: 1
-                            color: Qt.alpha(Globals.fgColor, 0.1)
+                            color: Qt.alpha(Globals.fgColor, 0.07)
                         }
                     }
                 }
 
-                // footer: back to the reminders list (toggle hugs the right edge)
+                // footer: back to the reminders list (hugs the right edge)
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.topMargin: Globals.spacing / 2
+                    Layout.topMargin: 4
                     Item {
                         Layout.fillWidth: true
                     }
-                    ViewSwitchBtn {
-                        icon: "\u{F0139}" // bell-ring
-                        label: "Reminders"
+                    MenuButton {
+                        icon: "bell"
+                        text: "Back to reminders"
                         onClicked: root.view = "active"
                     }
                 }
