@@ -70,9 +70,9 @@ Singleton {
         }
     }
     //  ~~~~~~ static colors ~~~~~~~
-    readonly property color bgColor: "#000000"
+    // readonly property color bgColor: "#000000"
     // readonly property color bgColor: "#1a1a1a"
-    // readonly property color bgColor: "#1e1e1e"
+    readonly property color bgColor: "#1e1e1e"
 
     readonly property color healthy: "#4fd6be" // green
     readonly property color warningColor: "#f9e2af" // amber
