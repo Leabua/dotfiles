@@ -13,7 +13,7 @@ Rectangle {
     visible: row.implicitWidth > 0
     implicitWidth: row.implicitWidth + padding * 2
     implicitHeight: Globals.barIslandHeight
-    radius: height / 2
+    radius: Globals.barIslandRadius
     color: Globals.bgColor
 
     RowLayout {

@@ -15,7 +15,7 @@ Rectangle {
 
     implicitWidth: row.implicitWidth + Globals.barItemPadding * 2
     implicitHeight: Globals.barItemHeight
-    radius: height / 2
+    radius: Globals.barItemRadius
     color: Qt.alpha(Globals.fgColor, active ? 0.11 : mouse.pressed ? 0.1 : mouse.containsMouse ? 0.06 : 0)
     scale: mouse.pressed ? 0.96 : 1
 
