@@ -58,6 +58,7 @@ RowLayout {
 
     BarButton {
         visible: Globals.caffeinated
+        iconOnly: true
         onClicked: Globals.toggleCaffeine()
 
         BarValue {
