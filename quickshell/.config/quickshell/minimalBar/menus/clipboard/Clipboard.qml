@@ -521,36 +521,40 @@ Scope {
                 }
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 2
-
-                ClipboardFilter {
-                    label: "All"
-                    count: clipModel.count
-                    active: root.filterMode === "all"
-                    onClicked: root.setFilter("all")
-                }
-                ClipboardFilter {
-                    label: "Text"
-                    count: clipModel.count - root.imageCount
-                    active: root.filterMode === "text"
-                    onClicked: root.setFilter("text")
-                }
-                ClipboardFilter {
-                    label: "Images"
-                    count: root.imageCount
-                    active: root.filterMode === "image"
-                    onClicked: root.setFilter("image")
-                }
-
-                Item { Layout.fillWidth: true }
-
-            }
-
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.bodyHeight
+                // the filter row now lives in here, so the body takes its height + gap; the card stays the same size
+                Layout.preferredHeight: root.bodyHeight + filterRow.implicitHeight + 12
+
+                // filters sit over the list column only, so the preview pane can run up beside them
+                RowLayout {
+                    id: filterRow
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    width: root.listWidth
+                    spacing: 2
+
+                    ClipboardFilter {
+                        label: "All"
+                        count: clipModel.count
+                        active: root.filterMode === "all"
+                        onClicked: root.setFilter("all")
+                    }
+                    ClipboardFilter {
+                        label: "Text"
+                        count: clipModel.count - root.imageCount
+                        active: root.filterMode === "text"
+                        onClicked: root.setFilter("text")
+                    }
+                    ClipboardFilter {
+                        label: "Images"
+                        count: root.imageCount
+                        active: root.filterMode === "image"
+                        onClicked: root.setFilter("image")
+                    }
+
+                    Item { Layout.fillWidth: true }
+                }
 
                 RowLayout {
                     anchors.fill: parent
@@ -561,6 +565,7 @@ Scope {
                         id: listView
                         Layout.preferredWidth: root.listWidth
                         Layout.fillHeight: true
+                        Layout.topMargin: filterRow.implicitHeight + 12 // starts under the filters
                         model: filteredModel
                         currentIndex: root.selectedIndex
                         highlightFollowsCurrentItem: false
