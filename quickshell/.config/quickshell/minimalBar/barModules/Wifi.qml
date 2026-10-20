@@ -16,10 +16,10 @@ BarButton {
 
     BarValue {
         id: value
-        icon: root.connected ? "" : "wifiOff"
 
-        // same fan + cut-offs as the network rows in the wifi menu. Open arcs carry less ink than the
-        // closed icons beside them, so the bar draws them a touch heavier and lifts them off the bottom-heavy dot
+        // both states draw inside the glyph slot so the pill keeps one size whether or not we're connected.
+        // Same fan + cut-offs as the network rows in the wifi menu; open arcs carry less ink than the closed
+        // icons beside them, so the bar draws them a touch heavier and lifts them off the bottom-heavy dot
         WifiSignal {
             visible: root.connected
             anchors.fill: parent
@@ -30,11 +30,18 @@ BarButton {
             strokeWidth: Globals.barIconStroke + 0.2
             unlitOpacity: 0.35 // keeps the full fan visible at any signal, so the icon doesn't shrink with the level
         }
+        MenuIcon {
+            visible: !root.connected
+            anchors.fill: parent
+            name: "wifiOff"
+            color: value.iconColor
+            strokeWidth: Globals.barIconStroke
+        }
     }
 
     Process {
         id: wifiProc
-        command: ["nmcli", "-t", "-f", "active,ssid,signal", "dev", "wifi"]
+        command: ["nmcli", "-t", "-f", "active,signal", "dev", "wifi", "list", "--rescan", "no"] // cached list -> instant; a rescan takes seconds and is the wifi menu's job
         stdout: StdioCollector {
             onStreamFinished: {
                 const active = text.trim().split("\n").find(line => line.startsWith("yes:"));

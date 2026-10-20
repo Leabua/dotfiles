@@ -10,7 +10,8 @@ RowLayout {
     property string icon: ""   // MenuIcon name
     property string text: ""
     property color tint: Globals.fgColor
-    // drawn icons (battery, wifi, logo) go here instead of a MenuIcon name; colour them with iconColor
+    // drawn icons (battery, wifi, logo) go here instead of a MenuIcon name; colour them with iconColor.
+    // A named icon wins: the slot then takes no space, even though its (hidden) children still exist
     default property alias glyph: glyphSlot.data
 
     readonly property color iconColor: Qt.colorEqual(tint, Globals.fgColor) ? Qt.alpha(Globals.fgColor, Globals.barIconAlpha) : tint
@@ -28,7 +29,7 @@ RowLayout {
 
     Item {
         id: glyphSlot
-        visible: children.length > 0
+        visible: root.icon === "" && children.length > 0
         Layout.preferredWidth: Globals.barIconSize
         Layout.preferredHeight: Globals.barIconSize
     }
