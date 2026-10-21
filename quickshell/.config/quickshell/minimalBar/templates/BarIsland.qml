@@ -7,7 +7,9 @@ Rectangle {
     id: root
 
     default property alias content: row.data
-    property int padding: Globals.barIslandSidePadding // left / right; islands holding plain content (the OSDs) add the pills' text padding
+    // Match the vertical inset so an end button's corners are concentric with
+    // the island. Plain content (OSDs) supplies its roomier padding explicitly.
+    property int padding: Globals.barIslandInset
 
     // an island whose entries are all hidden (left island between OSDs) takes no space at all
     visible: row.implicitWidth > 0

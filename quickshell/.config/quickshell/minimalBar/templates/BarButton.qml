@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import qs.templates
 
 // a clickable bar entry: a pill that lights on hover and stays lit while its menu is open,
-// using the same fills as the menu rows so the bar and the card read as one surface
+// with stronger fills so the small bar entries stay legible against the island
 Rectangle {
     id: root
 
@@ -16,7 +16,7 @@ Rectangle {
     implicitWidth: row.implicitWidth + Globals.barItemPadding * 2
     implicitHeight: Globals.barItemHeight
     radius: Globals.barItemRadius
-    color: Qt.alpha(Globals.fgColor, active ? 0.11 : mouse.pressed ? 0.1 : mouse.containsMouse ? 0.06 : 0)
+    color: Qt.alpha(Globals.fgColor, active ? 0.22 : mouse.pressed ? 0.18 : mouse.containsMouse ? 0.12 : 0)
     scale: mouse.pressed ? 0.96 : 1
 
     Behavior on color {

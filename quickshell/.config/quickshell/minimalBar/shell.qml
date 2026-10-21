@@ -71,13 +71,15 @@ ShellRoot {
 
             // ------- left: OSDs + now playing; only one shows at a time, and the island vanishes when none do -------
             BarIsland {
+                // Hidden children have no layout width; use state so an OSD can reveal the island again.
+                visible: OsdState.active !== "" || nowPlaying.player !== null
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 padding: Globals.barIslandSidePadding + Globals.barItemPadding
 
                 VolumeOSD {}
                 BrightnessOSD {}
-                MediaScriptOSD {}
+                MediaScriptOSD { id: nowPlaying }
             }
 
             // ------- centre: power menu, clock, workspaces, alerts mirrored while the right island is hidden -------

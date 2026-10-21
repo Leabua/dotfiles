@@ -35,9 +35,8 @@ Singleton {
 
     Connections {
         target: Pipewire.defaultAudioSink ? Pipewire.defaultAudioSink.audio : null
-        ignoreUnknownSignals: true
 
-        function onVolumeChanged() {
+        function onVolumesChanged() {
             root.show("volume");
         }
 

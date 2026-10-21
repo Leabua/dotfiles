@@ -5,6 +5,7 @@ import Quickshell.Services.UPower
 import qs.menus.engineRoom
 import qs.templates
 import "BatteryMath.js" as BatteryMath
+import "GpuMath.js" as GpuMath
 
 import QtQuick
 import QtQuick.Layouts
@@ -95,36 +96,22 @@ ColumnLayout {
         root.swapStr = swapTotal > 0 ? root.fmtGiB(swapTotal - swapFree) + " / " + root.fmtGiB(swapTotal) : "off";
     }
 
-    // ---------- GPU (Intel iGPU: no root, no nvidia-smi) ----------
-    // not sure how if this would work for a dedicate gpu
-    // busy% from RC6 idle-residency delta; clock from the i915 sysfs freq knobs.
-    // (an Intel iGPU has no dedicated temp/VRAM sensor -- it shares the CPU package.)
-    property real gpuBusy: 0     // 0..1
-    property int gpuCurFreq: 0   // MHz
-    property int gpuMaxFreq: 0   // MHz
-    property real _lastRc6: -1   // RC6 (idle) residency ms at last sample
-    property real _lastWall: -1  // /proc/uptime ms at last sample
+    // ---------- Intel GPU ----------
+    // Global engine counters require perf privileges on this host. RC6 instead
+    // gives awake time, which is labelled explicitly and is independent of MHz.
+    property real gpuAwake: -1  // 0..1, or unavailable
+    property int gpuCurFreq: -1 // actual MHz, not the driver's requested clock
+    property int gpuMaxFreq: -1 // configured clock limit in MHz
+    property var _lastGpuSample: null
 
     function parseGpu(text: string): void {
-        const l = text.trim().split("\n");
-        const rc6 = parseFloat(l[0]);         // idle-residency ms
-        const cur = parseInt(l[1]);
-        const max = parseInt(l[2]);
-        const wall = parseFloat(l[3]) * 1000; // /proc/uptime seconds -> ms
-        if (!isNaN(cur))
-            root.gpuCurFreq = cur;
-        if (!isNaN(max))
-            root.gpuMaxFreq = max;
-        if (!isNaN(rc6) && !isNaN(wall) && root._lastWall >= 0) {
-            const dW = wall - root._lastWall;
-            const dR = rc6 - root._lastRc6;
-            if (dW > 0) // active fraction = wall time not spent idling in RC6
-                root.gpuBusy = Math.max(0, Math.min(1, 1 - dR / dW));
-        }
-        if (!isNaN(rc6))
-            root._lastRc6 = rc6;
-        if (!isNaN(wall))
-            root._lastWall = wall;
+        if (!Globals.engineRoomOpen)
+            return;
+        const sample = GpuMath.parseSample(text);
+        root.gpuAwake = GpuMath.awakeFraction(root._lastGpuSample, sample);
+        root.gpuCurFreq = sample ? sample.clock : -1;
+        root.gpuMaxFreq = sample ? sample.maximum : -1;
+        root._lastGpuSample = sample;
     }
 
     // ---------- Battery ----------
@@ -135,46 +122,93 @@ ColumnLayout {
     readonly property bool full: root.batReady && bat.state === UPowerDeviceState.FullyCharged
     readonly property int batPercent: root.batReady ? Math.round(bat.percentage * 100) : 0
     readonly property real batFrac: root.batReady ? bat.percentage : 0
-    property real energySample: -1
-    property double energySampleTime: 0
-    property int energySampleState: -1
+    property var batteryTrend: BatteryMath.createTrend()
     property real sampledRate: 0
-    readonly property bool rateIsEstimate: root.batReady && bat.changeRate <= 0.05 && root.sampledRate > 0
-    readonly property real batteryRate: !root.batReady ? 0 : bat.changeRate > 0.05 ? bat.changeRate : root.sampledRate
+    property bool historyLoaded: false
+    readonly property real batteryRate: root.batReady ? root.sampledRate : 0
 
     function recordBatteryEnergy(): void {
         const now = Date.now();
-        if (!root.batReady || (bat.state !== UPowerDeviceState.Charging && bat.state !== UPowerDeviceState.Discharging)) {
-            root.energySample = -1;
+        if (!root.batReady) {
+            root.batteryTrend = BatteryMath.createTrend();
             root.sampledRate = 0;
+            root.historyLoaded = false;
             return;
         }
-        if (root.energySample < 0 || root.energySampleState !== bat.state) {
-            root.energySample = bat.energy;
-            root.energySampleTime = now;
-            root.energySampleState = bat.state;
-            root.sampledRate = 0;
-            return;
-        }
-        const elapsed = now - root.energySampleTime;
-        if (elapsed < 30000)
-            return;
-        if (bat.energy === root.energySample && elapsed < 120000)
-            return;
-        const rate = BatteryMath.rateFromEnergy(root.energySample, bat.energy, elapsed, root.charging);
-        root.sampledRate = rate > 0 && root.sampledRate > 0 ? root.sampledRate * 0.5 + rate * 0.5 : rate;
-        root.energySample = bat.energy;
-        root.energySampleTime = now;
+        if (root.batteryTrend.state !== bat.state || now - root.batteryTrend.time > 90000)
+            root.historyLoaded = false;
+        root.batteryTrend = BatteryMath.recordEnergy(root.batteryTrend, bat.energy, now, bat.state);
+        root.sampledRate = BatteryMath.trendRate(root.batteryTrend, now);
     }
 
-    onBatChanged: Qt.callLater(root.recordBatteryEnergy)
-    Component.onCompleted: root.recordBatteryEnergy()
+    function requestBatteryHistory(): void {
+        if (!root.batReady || root.historyLoaded || batteryHistoryProc.running || !bat.nativePath || (bat.state !== UPowerDeviceState.Charging && bat.state !== UPowerDeviceState.Discharging))
+            return;
+        batteryHistoryProc.sampleDevice = bat.nativePath;
+        batteryHistoryProc.sampleState = bat.state;
+        const name = bat.nativePath.split("/").pop().replace(/[^a-zA-Z0-9_]/g, "_");
+        batteryHistoryProc.command = ["busctl", "--system", "--json=short", "call", "org.freedesktop.UPower", "/org/freedesktop/UPower/devices/battery_" + name, "org.freedesktop.UPower.Device", "GetHistory", "suu", "charge", "900", "60"];
+        batteryHistoryProc.running = true;
+    }
+
+    function seedBatteryHistory(text: string): void {
+        if (!root.batReady || bat.nativePath !== batteryHistoryProc.sampleDevice || bat.state !== batteryHistoryProc.sampleState)
+            return;
+        try {
+            const now = Date.now();
+            const trend = BatteryMath.trendFromHistory(JSON.parse(text).data[0], bat.energy, bat.energyCapacity, bat.percentage, bat.state, now);
+            if (BatteryMath.trendRate(trend, now) <= 0)
+                return;
+            root.batteryTrend = trend;
+            root.sampledRate = BatteryMath.trendRate(trend, now);
+            root.historyLoaded = true;
+        } catch (error) {
+            // Unsupported history falls back to continuous local Wh samples.
+        }
+    }
+
+    function refreshBattery(): void {
+        root.recordBatteryEnergy();
+        root.requestBatteryHistory();
+    }
+
+    onBatChanged: {
+        root.batteryTrend = BatteryMath.createTrend();
+        root.sampledRate = 0;
+        root.historyLoaded = false;
+        Qt.callLater(root.refreshBattery);
+    }
+    Component.onCompleted: Qt.callLater(root.refreshBattery)
 
     Connections {
         target: root.bat
         function onEnergyChanged(): void { root.recordBatteryEnergy(); }
-        function onStateChanged(): void { root.recordBatteryEnergy(); }
-        function onReadyChanged(): void { root.recordBatteryEnergy(); }
+        function onStateChanged(): void { root.refreshBattery(); }
+        function onReadyChanged(): void { root.refreshBattery(); }
+    }
+
+    // Keep the trend while the popup is closed, including flat firmware steps.
+    Timer {
+        interval: 30000
+        repeat: true
+        running: root.batReady
+        onTriggered: root.recordBatteryEnergy()
+    }
+
+    Timer {
+        interval: 60000
+        repeat: true
+        running: root.batReady && !root.historyLoaded
+        onTriggered: root.requestBatteryHistory()
+    }
+
+    Process {
+        id: batteryHistoryProc
+        property string sampleDevice: ""
+        property int sampleState: -1
+        stdout: StdioCollector {
+            onStreamFinished: root.seedBatteryHistory(text)
+        }
     }
 
     // mirror BatteryIcons.displayColor exactly so the gauge matches the bar icon
@@ -204,7 +238,7 @@ ColumnLayout {
         const w = root.batteryRate;
         if (!w || w <= 0.05)
             return "Measuring…";
-        return (root.rateIsEstimate ? "≈ " : "") + w.toFixed(1) + " W";
+        return "≈ " + w.toFixed(1) + " W";
     }
     function timeStr(): string {
         if (!root.batReady)
@@ -213,9 +247,10 @@ ColumnLayout {
             return "Charged";
         if (bat.state === UPowerDeviceState.PendingCharge || bat.state === UPowerDeviceState.PendingDischarge)
             return "Paused";
-        const reported = root.charging ? bat.timeToFull : bat.timeToEmpty;
-        if (reported > 0)
-            return root.fmtTime(reported);
+        if (bat.state !== UPowerDeviceState.Charging && bat.state !== UPowerDeviceState.Discharging)
+            return "—";
+        // Use the same sustained rate as the watts field, including when UPower
+        // briefly reports a large derived rate at a coarse charge-counter step.
         const estimate = BatteryMath.remainingSeconds(bat.energy, bat.energyCapacity, root.batteryRate, root.charging);
         return estimate > 0 ? "≈ " + root.fmtTime(estimate) : "Estimating…";
     }
@@ -262,6 +297,10 @@ ColumnLayout {
         running: Globals.engineRoomOpen
         triggeredOnStart: true // sample immediately on open (CPU needs a second tick to diff)
         onTriggered: root.refresh()
+        onRunningChanged: {
+            root._lastGpuSample = null;
+            root.gpuAwake = -1;
+        }
     }
 
     // /proc reads via FileView -> no per-tick subprocess (temp/gpu below still glob sysfs)
@@ -293,9 +332,7 @@ ColumnLayout {
     }
     Process {
         id: gpuProc
-        // rc6 idle-residency, current + max clock, then uptime -- one shot, one parse.
-        // card* glob grabs whichever DRM node is the i915 (single-GPU laptop).
-        command: ["sh", "-c", "cat /sys/class/drm/card*/power/rc6_residency_ms 2>/dev/null | head -1; cat /sys/class/drm/card*/gt_cur_freq_mhz 2>/dev/null | head -1; cat /sys/class/drm/card*/gt_max_freq_mhz 2>/dev/null | head -1; cat /proc/uptime"]
+        command: ["sh", decodeURIComponent(Qt.resolvedUrl("GpuSample.sh").toString().replace(/^file:\/\//, ""))]
         stdout: StdioCollector {
             onStreamFinished: root.parseGpu(text)
         }
@@ -381,9 +418,11 @@ ColumnLayout {
             EngineMeter {
                 Layout.fillWidth: true
                 label: "Graphics"
+                detail: "Awake time"
                 icon: "gpu"
-                value: root.gpuBusy
-                accent: root.heatColor(root.gpuBusy)
+                value: root.gpuAwake
+                available: root.gpuAwake >= 0
+                accent: root.heatColor(root.gpuAwake)
             }
 
             ColumnLayout {
@@ -391,8 +430,8 @@ ColumnLayout {
                 spacing: 10
 
                 StatLine {
-                    key: "Clock"
-                    val: root.gpuCurFreq > 0 ? root.gpuCurFreq + " MHz" : "—"
+                    key: "Actual clock"
+                    val: root.gpuCurFreq >= 0 ? root.gpuCurFreq + " MHz" : "—"
                 }
                 StatLine {
                     key: "Maximum"
