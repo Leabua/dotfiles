@@ -1,0 +1,201 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Port of zsh/.p10k.zsh: one line, no background, arrow before directory/Git.
+add_newline = false
+format = '$character$directory$git_branch$git_commit$git_status$git_state '
+right_format = '$status$cmd_duration$jobs$direnv$python$conda$nodejs$ruby$golang$rust$java$lua$perl$php$scala$haskell$kubernetes$terraform$aws$azure$gcloud$nix_shell${env_var.YAZI_LEVEL}$username$hostname'
+
+[character]
+success_symbol = '[->](green)'
+error_symbol = '[->](red)'
+vimcmd_symbol = '[->](green)'
+vimcmd_visual_symbol = '[V](green)'
+vimcmd_replace_symbol = '[▶](green)'
+
+[directory]
+format = '[$path]($style)[$read_only]($read_only_style)'
+style = 'bold cyan'
+read_only = ' '
+read_only_style = '110'
+truncation_length = 1
+truncation_symbol = ''
+truncate_to_repo = false
+
+[git_branch]
+format = ' [git:\(](73)[$branch](9)[\)](73)([:$remote_branch](73))'
+truncation_length = 32
+truncation_symbol = '…'
+
+[git_commit]
+format = ' [@$hash( #$tag)](73)'
+commit_hash_length = 8
+tag_disabled = false
+only_detached = true
+
+[git_status]
+format = '$ahead_behind$stashed$conflicted$staged$modified$untracked$deleted$renamed'
+ahead = ' [⇡$count](73)'
+behind = ' [⇣$count](73)'
+diverged = ' [⇣$behind_count⇡$ahead_count](73)'
+stashed = ' [*$count](73)'
+conflicted = ' [~$count](red)'
+staged = ' [+$count](purple)'
+modified = ' [!$count](purple)'
+untracked = ' [?$count](purple)'
+# Starship counts these separately; keep them visible alongside modifications.
+deleted = ' [!$count](purple)'
+renamed = ' [»$count](purple)'
+
+[git_state]
+format = ' [$state( $progress_current/$progress_total)](red)'
+
+[status]
+disabled = false
+# p10k hides ordinary exit codes; the arrow already turns red on failure.
+format = '([✘ $signal_name]($style) )'
+style = '9'
+pipestatus = true
+pipestatus_format = '[✘ $pipestatus]($style) '
+pipestatus_segment_format = '$status'
+pipestatus_separator = '|'
+
+[cmd_duration]
+min_time = 3000
+format = '[$duration]($style) '
+style = '101'
+show_milliseconds = false
+
+[jobs]
+format = '[$symbol]($style) '
+symbol = ''
+style = '70'
+symbol_threshold = 1
+number_threshold = 1
+
+[direnv]
+disabled = false
+format = '[$symbol$loaded]($style) '
+symbol = '▼ '
+style = '178'
+
+# Runtime versions appear only with a version-manager marker or environment,
+# rather than for every source file (the language-version segments were off).
+[python]
+format = '[$symbol$virtualenv]($style) '
+symbol = ' '
+style = '37'
+detect_extensions = []
+detect_files = []
+detect_folders = []
+
+[conda]
+format = '[$symbol$environment]($style) '
+symbol = ' '
+style = '37'
+ignore_base = false
+
+[nodejs]
+format = '[$symbol$version]($style) '
+symbol = ' '
+style = '70'
+detect_extensions = []
+detect_files = ['.node-version', '.nvmrc']
+detect_folders = []
+
+[ruby]
+format = '[$symbol$version]($style) '
+style = '168'
+detect_extensions = []
+detect_files = ['.ruby-version']
+
+[golang]
+format = '[$symbol$version]($style) '
+style = '37'
+detect_extensions = []
+detect_files = ['.go-version']
+detect_folders = []
+
+[rust]
+format = '[$symbol$version]($style) '
+style = '37'
+detect_extensions = []
+detect_files = ['rust-toolchain', 'rust-toolchain.toml']
+
+[java]
+format = '[$symbol$version]($style) '
+style = '32'
+detect_extensions = []
+detect_files = ['.java-version']
+
+[lua]
+format = '[$symbol$version]($style) '
+style = '32'
+detect_extensions = []
+detect_files = ['.lua-version']
+
+[perl]
+format = '[$symbol$version]($style) '
+style = '67'
+detect_extensions = []
+detect_files = ['.perl-version']
+detect_folders = []
+
+[php]
+format = '[$symbol$version]($style) '
+style = '99'
+detect_extensions = []
+detect_files = ['.php-version']
+
+[scala]
+format = '[$symbol$version]($style) '
+style = '160'
+detect_extensions = []
+detect_files = ['.scala-version']
+
+[haskell]
+format = '[$symbol$version]($style) '
+style = '172'
+
+[kubernetes]
+disabled = false
+format = '[$symbol$context( /$namespace)]($style) '
+style = '134'
+detect_files = ['Chart.yaml', 'kustomization.yaml', 'skaffold.yaml']
+detect_folders = ['.kube']
+
+[terraform]
+format = '[$symbol$workspace]($style) '
+style = '38'
+
+[aws]
+format = '[$symbol($profile)( $region)]($style) '
+style = '208'
+
+[azure]
+disabled = false
+format = '[$symbol$subscription]($style) '
+style = '32'
+
+[gcloud]
+format = '[$symbol$project]($style) '
+style = '32'
+
+[nix_shell]
+format = '[$symbol$state( $name)]($style) '
+symbol = ' '
+style = '74'
+
+[env_var.YAZI_LEVEL]
+format = '[󰇥 yazi]($style) '
+style = '178'
+
+[username]
+format = '[$user]($style)'
+style_user = '180'
+style_root = 'bold 178'
+show_always = false
+
+[hostname]
+format = '[@$hostname]($style) '
+style = '180'
+ssh_only = true

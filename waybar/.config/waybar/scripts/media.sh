@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Event-driven media module for waybar
 # Dependencies: playerctl
 

@@ -2,6 +2,25 @@
 
 Each group starts with a single-line comment. Package lists are alphabetized within their groups.
 
+## Shell
+
+Bash is the login shell for `leabua`. The Bash, FZF, and Starship NixOS modules
+provide shell integration; GNU Stow supplies the personal configuration:
+
+```sh
+cd ~/dotfiles
+stow -D zsh
+stow bash starship
+sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
+```
+
+NixOS uses `programs.fzf.fuzzyCompletion` and `programs.fzf.keybindings`;
+`programs.fzf.enable` and `enableBashIntegration` are Home Manager options.
+Ble.sh is enabled to display Starship's right prompt in Bash. The old Zsh shell,
+plugin packages, and p10k paths remain commented out for reference.
+Log out and back in after rebuilding so the desktop inherits the new login shell.
+Existing Herdr and tmux panes remain in their original shell; new panes use Bash.
+
 | File | What belongs here |
 | --- | --- |
 | `configuration.nix` | Host settings, services, desktop integration, users, networking, and Nix maintenance |

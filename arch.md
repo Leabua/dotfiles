@@ -25,7 +25,7 @@ sudo pacman -S cliphist grim slurp satty wl-clipboard playerctl brightnessctl li
 sudo pacman -S ghostty kitty alacritty
 
 # shell
-sudo pacman -S zsh zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search fzf zoxide
+sudo pacman -S bash bash-completion starship fzf zoxide
 
 # terminal tools
 sudo pacman -S tmux btop fastfetch yazi neovim lazygit ripgrep fd jq wget trash-cli tree-sitter
@@ -65,7 +65,7 @@ sudo pacman -S zram-generator
 Then the AUR bits (install `yay` first if you haven't):
 
 ```
-yay -S walker wlogout zsh-theme-powerlevel10k \
+yay -S walker wlogout blesh \
        otf-departure-mono otf-departure-mono-nerd \
        bibata-cursor-theme adwaita-qt5 adwaita-qt6 \
        zen-browser-bin claude-code pacseek \
@@ -122,7 +122,7 @@ BROWSER=zen-browser
 
 **Shell** (`users.users.leabua.shell`):
 ```
-chsh -s $(which zsh)
+chsh -s "$(command -v bash)"
 ```
 
 **Dark mode + icon theme** (the `dconf` block):
@@ -168,7 +168,7 @@ xdg-mime default nvim-terminal.desktop text/plain text/markdown text/x-python te
 ```
 git clone https://github.com/Leabua/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-stow alacritty bluetui btop fastfetch ghostty gtk hypr impala mako matugen niri nvim pacseek quickshell rofi satty tmux walker waybar wiremix yazi zsh
+stow bash starship ghostty herdr hypr quickshell matugen wallpapers nvim btop fastfetch gtk satty
 ```
 
 See the table in the [README](https://github.com/Leabua/dotfiles/blob/master/README.md) for what each one is.

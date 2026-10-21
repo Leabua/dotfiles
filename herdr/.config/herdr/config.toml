@@ -9,6 +9,8 @@ name = "terminal"
 
 auto_switch = false
 [terminal]
+# Avoid inheriting a stale SHELL=zsh from the persistent Herdr server.
+default_shell = "bash"
 # New panes/tabs/workspaces inherit the source pane's directory (tmux -c behaviour).
 new_cwd = "follow"
 

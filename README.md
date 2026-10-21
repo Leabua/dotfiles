@@ -1,123 +1,137 @@
-# Lea's dots for arch and nixos (hyprland and niri)
+# Lea’s dotfiles
 
-![Quickshell minimalBar on the blue train wallpaper - bar, app menu, clipboard history and the reminders panel](assets/screenshot-1.png)
+My desktop setup for NixOS and Arch: Hyprland, Quickshell, Ghostty, Bash, and Neovim. Herdr handles most terminal sessions; tmux stays available as an alternative. Niri is included as an alternative compositor.
 
-![The same shell on a pixel-art wallpaper - clipboard, app menu and notification toasts, all matugen-themed off the wallpaper](assets/screenshot-2.png)
+These are personal configs, currently maintained on NixOS. Start with an installed system, networking, Git, and GNU Stow. Review the host settings and paths before applying them to another machine.
 
-![Ghostty running tmux with the Neovim dashboard and fastfetch side by side](assets/screenshot-3.png)
+![Quickshell minimalBar with the app menu, clipboard history, and reminders](assets/screenshot-1.png)
 
-Simple set of modular dots that can get a whole system up in less than an hour, using either Nixos or Arch. 
-Dots are rather personal, are more my arch configs converted to nixos where needed and tuned for Nixos file system currently, however when using arch most things will likely resolve and if there are any issues it will likely be a pathing issue that an LLM will likely be able to resolve.
-Note: I assume that you'll do the part of figuring out how to install arch or nixos and getting it to a point that you can clone a repo. Same for learning what the packages that you'll need are. 
+<details>
+<summary>More screenshots</summary>
 
-## Required packages 
-- stow  
-- git
-- hyprland or niri
+![Wallpaper-derived colours across the shell and notification toasts](assets/screenshot-2.png)
 
-## Getting Nixos up
+![Ghostty with Neovim and fastfetch in a tmux session](assets/screenshot-3.png)
 
-The whole system is declared in [`nixos/`](https://github.com/Leabua/dotfiles/tree/master/nixos) as a flake. It is *not* stowed and does *not* live in `/etc/nixos` - you build straight out of the repo.
+</details>
 
-1. Install Nixos from the ISO as normal, then clone this repo to `~/dotfiles`.
-2. Enable flakes if the installer hasn't, by adding to `/etc/nixos/configuration.nix`:
-   `nix.settings.experimental-features = [ "nix-command" "flakes" ];` then `sudo nixos-rebuild switch`.
-3. Copy your machine's real hardware config over the one in the repo - this file is specific to the machine that generated it and will not work on yours as-is:
+## Install on NixOS
+
+The system configuration lives in [`nixos/`](nixos). Rebuild directly from the repository; this directory is not a Stow package.
+
+1. Clone the repository:
+
+   ```sh
+   git clone https://github.com/Leabua/dotfiles.git ~/dotfiles
+   cd ~/dotfiles
+   ```
+
+2. Enable flakes if needed. Add this to your existing NixOS configuration and rebuild it once:
+
+   ```nix
+   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+   ```
+
+3. Replace the hardware configuration with the one generated for your machine:
+
+   ```sh
+   cp /etc/nixos/hardware-configuration.nix ~/dotfiles/nixos/
+   ```
+
+   Review [`configuration.nix`](nixos/configuration.nix), especially the username, hostname, and `/mnt/hdd` mount. The flake output is named `nixos`.
+
+4. Link the desktop configs you want, then rebuild:
+
+   ```sh
+   stow bash starship ghostty herdr hypr quickshell matugen wallpapers nvim btop fastfetch gtk satty
+   sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
+   ```
+
+5. Log out and back in to start a session with Bash as the login shell. Existing terminal panes keep running their current shell.
+
+Add applications to [`nixos/packages.nix`](nixos/packages.nix) and development tools to [`nixos/dev.nix`](nixos/dev.nix). The [NixOS notes](nixos/README.md) cover the other modules and maintenance commands.
+
+## Install on Arch
+
+Follow [`arch.md`](arch.md) for packages, services, and system settings, then use Stow as below. Some desktop configs contain NixOS paths and may need adjusting on Arch.
+
+## Manage configs with Stow
+
+Run Stow from `~/dotfiles`. It creates links in your home directory, so edits through either the repository or the linked path update the same file.
+
+```sh
+cd ~/dotfiles
+stow ghostty herdr nvim       # link selected packages
+stow --simulate --verbose bash starship  # preview changes
+stow -D zsh                  # remove links, keeping the repo files
 ```
-cp /etc/nixos/hardware-configuration.nix ~/dotfiles/nixos/
-```
-4. Build it. The flake target is `#nixos`, which matches the hostname set in `configuration.nix` - change both if you want a different hostname.
-```
+
+Back up conflicting files before stowing a package. Choose packages individually: `nixos`, `scripts`, and `assets` are not Stow packages.
+
+Most packages link into `~/.config`. Bash links `.bashrc` and `.bash_profile` into `~`, Starship links `~/.config/starship.toml`, and wallpapers links `~/Wallpapers`.
+
+Quickshell supplies the bar, launcher, notifications, clipboard, and power menu. The older `waybar`, `rofi`, `walker`, and `mako` configs are available for an alternative setup; choose which components to start in your compositor’s autostart config. Stowing a config alone does not start its application.
+
+## Bash and Starship
+
+Bash replaces Zsh as the default shell. The original [`zsh/`](zsh) configuration is kept for reference, with its NixOS settings commented out.
+
+To migrate an existing checkout:
+
+```sh
+cd ~/dotfiles
+stow -D zsh
+stow bash starship
 sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
 ```
-5. Stow whatever configs you want from the table below.
 
-Day to day there are aliases in [`zsh`](https://github.com/Leabua/dotfiles/tree/master/zsh) for this: `rebuild` to apply changes, `upgrade` to bump the flake inputs and rebuild, `clean` to garbage collect old generations.
+Starship follows the p10k layout: `->`, the current directory, and `git:(branch)` on the left; command status, commands taking at least three seconds, background jobs, and active environments on the right. It keeps the ANSI colours and single-line layout without adding blank lines. Ble.sh provides Bash’s right prompt, suggestions, and syntax highlighting, as required by [Starship’s Bash integration](https://starship.rs/advanced-config/#enable-right-prompt).
 
-Packages go in [`nixos/packages.nix`](https://github.com/Leabua/dotfiles/blob/master/nixos/packages.nix), not into an imperative `nix-env` install.
+Some p10k behaviour differs: Starship truncates long branches at the end, uses its own Git status counters and directory shortening, and detects runtime/cloud context independently. It does not reproduce p10k’s command-sensitive segment visibility or all its version-manager and uncommon tool segments. Vim editing remains enabled; Starship’s mode-specific symbols have limited Bash support.
 
-## Getting Arch up
+Ble.sh’s [input colours](bash/.config/blesh/init.sh) use the terminal palette, matching the previous Zsh highlighting, with dim suggestions and no suggestion background. Reload the colours in an existing Bash pane with `source ~/.config/blesh/init.sh`.
 
-Arch has no equivalent of `packages.nix`, so the whole thing is written out longhand in [`arch.md`](https://github.com/Leabua/dotfiles/blob/master/arch.md) - packages, services, and the handful of things Nixos does declaratively that you have to do by hand (caps↔escape, the power key, zram, session variables, the trash timer). Install Arch from the ISO, get networking up, then work top to bottom through it.
-It's kept in step with `configuration.nix` and `packages.nix`, so the two systems land in a similar place.
+Ghostty explicitly starts Bash, Herdr opens Bash in new panes, and tmux selects the Bash path for NixOS or Arch. Keep both configs stowed if you still use both tools. After editing Herdr’s config, `herdr server reload-config` applies it to new panes without closing existing sessions.
 
-The dots themselves are tuned for Nixos paths, so on Arch expect the odd hardcoded path to need fixing. Nothing structural - maybe a one-minute job.
+The Bash config preserves these NixOS shortcuts:
 
-## Usage
-1. Flash either nixos or arch onto the system. Once internet is connected and operational install a window manager of your choice. 
-2. Install the required packages above. 
-3. Clone this repo down. 
-You may need to setup git if you haven't yet.
-```
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
+| Command | Action |
+| --- | --- |
+| `nixconf` | Open the system configuration in Neovim |
+| `rebuild` | Apply the flake with nix-output-monitor |
+| `upgrade` | Update flake inputs, then rebuild |
+| `clean` | Delete old generations and garbage collect, then update the boot configuration |
 
-```
-Then: `git clone https://github.com/Leabua/dotfiles.git`. <- Now you have all the files on your system.
+## Packages
 
-4. Stow usage 
-Go into the cloned directory then:
-Symlinking your configs
-Recommended: `stow <folderName> `. I.e. `stow hypr` or for multiple files `stow hypr nvim tmux ghostty`.
-Fastest and not recommended: `stow .` -> symlinks it all. Not recommeneded since thats just a mess since some packages do the same role.
+| Package | Purpose |
+| --- | --- |
+| [`bash`](bash) | Shell startup, aliases, history, and Vim editing |
+| [`starship`](starship) | Prompt adapted from the p10k configuration |
+| [`ghostty`](ghostty) | Daily terminal emulator |
+| [`herdr`](herdr) | Daily terminal multiplexer with Neovim-aware pane navigation |
+| [`tmux`](tmux) | Alternative terminal multiplexer |
+| [`hypr`](hypr) | Hyprland, bindings, window rules, locking, and idle settings |
+| [`niri`](niri) | Alternative compositor with scrollable tiling |
+| [`quickshell`](quickshell) | Custom `minimalBar` desktop shell and menus |
+| [`matugen`](matugen) | Wallpaper-derived colours for the desktop |
+| [`wallpapers`](wallpapers) | Wallpaper collection used by the rotation script |
+| [`nvim`](nvim) | Neovim plugins, LSP, keymaps, and colours |
+| [`btop`](btop) | Resource monitor |
+| [`fastfetch`](fastfetch) | System information display |
+| [`gtk`](gtk) | GTK 3 and GTK 4 appearance settings |
+| [`satty`](satty) | Screenshot annotation |
+| [`alacritty`](alacritty) | Alternative terminal emulator |
+| [`bluetui`](bluetui) | Bluetooth TUI |
+| [`impala`](impala) | Wi-Fi TUI for iwd |
+| [`wiremix`](wiremix) | PipeWire audio TUI |
+| [`yazi`](yazi) | Terminal file manager |
+| [`pacseek`](pacseek) | Arch package browser |
+| [`mako`](mako) | Alternative notification daemon |
+| [`rofi`](rofi) | Alternative launcher and menus |
+| [`walker`](walker) | Alternative application launcher |
+| [`waybar`](waybar) | Alternative status bar |
+| [`zed`](zed) | Zed editor settings and keymaps |
+| [`zsh`](zsh) | Previous shell and p10k prompt, retained for reference |
 
-Unstowing a directory
-Go into the cloned repository. 
-`stow -D <folderName>` <- removes the symlink (capital D; lowercase `-d` sets the stow directory instead)
-
-You will be able to change the contents of anything either in dotfiles or in the actual place the files link to (likely ~/.config/ in most circumstances).
-
-## Stowable packages
-
-Every package below is stowed the same way -`stow <package>` from inside `~/dotfiles`, no flags. Pick only what you need, they're all independent.
-
-Almost everything lands in `~/.config/<package>`. The only two exceptions are `zsh` (which drops `.zshrc` and `.p10k.zsh` straight into your home directory, since that's where zsh looks for them) and `wallpapers` (which lands at `~/Wallpapers`, since that's where `rotate_wallpaper.sh` looks).
-NB: Note that quickshell replaces a tonne of these standalone packages and directories including a launcher, notifications daemon, power menu etc. A lot of these are from when I used arch without quickshell read the quickshell source to see whats already catered for if interested in what quickshell replaces. 
-
-### What I actually run
-
-If you want the setup in the screenshots above, this is the whole thing:
-
-```
-stow hypr quickshell matugen wallpapers ghostty tmux zsh nvim btop fastfetch gtk satty (recommend you get `kitty` as well initially since hyprland depends on it as the default terminal on a fresh install)
-```
-
-Swap `hypr` for `niri` if you want the scrollable compositor instead — everything else is the same either way, and `quickshell` works under both.
-
-That leaves `alacritty`, `mako`, `rofi`, `walker` and `waybar` unstowed on purpose: quickshell is the bar, launcher, notification daemon and power menu, so stowing those on top of it just gives you two of everything. 
-`bluetui`, `impala`, `wiremix`, `yazi` and `pacseek` are standalone TUIs - I still use some of them, just on their defaults, so their configs here are take-it-or-leave-it.
-
-| Package | What it does | Files |
-| --- | --- | --- |
-| `alacritty` | Terminal emulator - the lightweight fallback | [alacritty](https://github.com/Leabua/dotfiles/tree/master/alacritty/.config/alacritty) |
-| `bluetui` | TUI for bluetooth | [bluetui](https://github.com/Leabua/dotfiles/tree/master/bluetui/.config/bluetui) |
-| `btop` | Resource monitor | [btop](https://github.com/Leabua/dotfiles/tree/master/btop/.config/btop) |
-| `fastfetch` | System info on shell start | [fastfetch](https://github.com/Leabua/dotfiles/tree/master/fastfetch/.config/fastfetch) |
-| `ghostty` | Terminal emulator - the daily driver | [ghostty](https://github.com/Leabua/dotfiles/tree/master/ghostty/.config/ghostty) |
-| `gtk` | GTK 3 and GTK 4 theme settings, so GTK apps match the rest | [gtk](https://github.com/Leabua/dotfiles/tree/master/gtk/.config) |
-| `herdr` | Terminal multiplexer for AI agents, with vim-aware pane navigation (tmux replacement) | [herdr](https://github.com/Leabua/dotfiles/tree/master/herdr/.config/herdr) |
-| `hypr` | Hyprland compositor: Lua modules for bindings, monitors, tiling and window rules, plus hyprlock / hypridle / hyprpaper / hyprsunset | [hypr](https://github.com/Leabua/dotfiles/tree/master/hypr/.config/hypr) |
-| `impala` | TUI for wifi (iwd) | [impala](https://github.com/Leabua/dotfiles/tree/master/impala/.config/impala) |
-| `mako` | Lightweight Wayland notification daemon | [mako](https://github.com/Leabua/dotfiles/tree/master/mako/.config/mako) |
-| `matugen` | Generates the Material You colour palette from the current wallpaper; everything else reads its output | [matugen](https://github.com/Leabua/dotfiles/tree/master/matugen/.config/matugen) |
-| `niri` | Niri, the scrollable-tiling Wayland compositor - the alternative to Hyprland | [niri](https://github.com/Leabua/dotfiles/tree/master/niri/.config/niri) |
-| `nvim` | Neovim: LSP, plugins and colours | [nvim](https://github.com/Leabua/dotfiles/tree/master/nvim/.config/nvim) |
-| `pacseek` | TUI for browsing the Arch repos and the AUR - Arch only, skip it on Nixos | [pacseek](https://github.com/Leabua/dotfiles/tree/master/pacseek/.config/pacseek) |
-| `quickshell` | Custom QtQuick desktop shell: bar, menus, OSDs and launcher. Two bars live here, `minimalBar` and `onebarV2`. Setup requires matugen for dynamic color switching. | [quickshell](https://github.com/Leabua/dotfiles/tree/master/quickshell/.config/quickshell) |
-| `rofi` | Launcher and menus: app runner, clipboard, power menu | [rofi](https://github.com/Leabua/dotfiles/tree/master/rofi/.config/rofi) |
-| `satty` | Screenshot annotation tool | [satty](https://github.com/Leabua/dotfiles/tree/master/satty/.config/satty) |
-| `tmux` | Terminal multiplexer | [tmux](https://github.com/Leabua/dotfiles/tree/master/tmux/.config/tmux) |
-| `walker` | Wayland-native application launcher | [walker](https://github.com/Leabua/dotfiles/tree/master/walker/.config/walker) |
-| `wallpapers` | The wallpaper collection - lands at `~/Wallpapers`, which is where `rotate_wallpaper.sh` looks | [wallpapers](https://github.com/Leabua/dotfiles/tree/master/wallpapers/Wallpapers) |
-| `waybar` | Status bar - the simpler alternative if you don't want Quickshell | [waybar](https://github.com/Leabua/dotfiles/tree/master/waybar/.config/waybar) |
-| `wiremix` | TUI mixer for PipeWire audio | [wiremix](https://github.com/Leabua/dotfiles/tree/master/wiremix/.config/wiremix) |
-| `yazi` | Terminal file manager | [yazi](https://github.com/Leabua/dotfiles/tree/master/yazi/.config/yazi) |
-| `zsh` | Shell config with the powerlevel10k prompt (`.zshrc`, `.p10k.zsh`) | [zsh](https://github.com/Leabua/dotfiles/tree/master/zsh) |
-
-## Not stow packages
-
-Three directories are in here but are not meant to be symlinked:
-
-- [`nixos`](https://github.com/Leabua/dotfiles/tree/master/nixos) - the system config (`flake.nix`, `configuration.nix`, `packages.nix`). Rebuild straight from the repo, don't stow it.
-- [`scripts`](https://github.com/Leabua/dotfiles/tree/master/scripts) - helper scripts. The configs call them by their repo path (`~/dotfiles/scripts/rotate_wallpaper.sh`), so they run in place.
-- [`assets`](https://github.com/Leabua/dotfiles/tree/master/assets) - the screenshot at the top of this README. Nothing reads it at runtime.
+[`scripts/`](scripts) contains helpers that run directly from the repository. Bash adds it to `PATH`; desktop configs also refer to `~/dotfiles/scripts`. [`assets/`](assets) holds the README screenshots.

@@ -1,3 +1,6 @@
+# Start Bash even when the desktop session still exports the previous shell.
+command = bash
+
 # theme = Aizen Dark
 # theme = Carbonfox
 # theme = Ayu 

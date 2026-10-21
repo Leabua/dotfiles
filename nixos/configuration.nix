@@ -70,7 +70,7 @@
   console.useXkbConfig = true;
   services.libinput.enable = true;
 
-  # Users and shell: account permissions and shared Zsh plugin paths.
+  # Users and shell: Bash with fuzzy completion and the Starship prompt.
   users.users.leabua = {
     isNormalUser = true;
     extraGroups = [
@@ -79,16 +79,27 @@
       "kvm"
       "docker"
     ];
-    shell = pkgs.zsh;
+    shell = pkgs.bashInteractive;
+    # shell = pkgs.zsh;
   };
-  programs.zsh.enable = true;
-  environment.pathsToLink = [
-    "/share/fzf"
-    "/share/zsh-powerlevel10k"
-    "/share/zsh-autosuggestions"
-    "/share/zsh-syntax-highlighting"
-    "/share/zsh-history-substring-search"
-  ];
+  programs.bash.enable = true;
+  # Ble.sh supplies the right prompt, suggestions, and highlighting in Bash.
+  programs.bash.blesh.enable = true;
+  # NixOS equivalents of Home Manager's fzf.enable / enableBashIntegration.
+  programs.fzf.fuzzyCompletion = true;
+  programs.fzf.keybindings = true;
+  programs.starship.enable = true;
+  programs.starship.enableBashIntegration = true;
+  programs.starship.enableZshIntegration = false;
+
+  # programs.zsh.enable = true;
+  # environment.pathsToLink = [
+  #   "/share/fzf"
+  #   "/share/zsh-powerlevel10k"
+  #   "/share/zsh-autosuggestions"
+  #   "/share/zsh-syntax-highlighting"
+  #   "/share/zsh-history-substring-search"
+  # ];
 
   # Desktop session: Ly greeter, Hyprland, and graphical privilege prompts.
   services.displayManager.ly.enable = true;
