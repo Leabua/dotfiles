@@ -14,11 +14,7 @@
       url = "github:herdrdev/herdr/v0.8.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    clocktui = {
-      url = "github:Leabua/ClockTUI";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    blip = {
+   blip = {
       url = "github:blip-net/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };

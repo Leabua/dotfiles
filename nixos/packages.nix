@@ -31,8 +31,6 @@
     # Everyday applications: terminal, file managers, productivity, and creative tools.
     google-chrome
     ghostty
-    libreoffice
-    obs-studio
     obsidian
     thunar
     t3code
@@ -58,7 +56,6 @@
     # zsh-syntax-highlighting
 
     # External applications: packages supplied by pinned flake inputs.
-    inputs.clocktui.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
