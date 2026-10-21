@@ -50,6 +50,12 @@ sudo nixos-rebuild switch --flake .#nixos
 
 The files include `nixfmt` as both a flake formatter and a development package. New files must be tracked by Git before a Git-backed flake will include them.
 
+Penelope follows the private project's `beta` branch over SSH. Run
+`nix flake update penelope` to refresh its locked beta commit. `penelope.nix`
+temporarily corrects the stale Bun dependency hash declared upstream; it uses
+the upstream package directly once that hash changes. Refresh `bunDeps.outputHash`
+in Penelope's own flake after dependency changes before promoting them to beta.
+
 ## Review notes
 
 - All external inputs follow the same Nixpkgs revision, and the existing lockfile pins are preserved.

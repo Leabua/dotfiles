@@ -38,9 +38,21 @@
   # Boot: UEFI bootloader and compressed RAM swap.
   boot.loader = {
     systemd-boot.enable = true;
+    # Boot menu entry for Memtest86+, to check RAM after random kernel crashes.
+    systemd-boot.memtest86.enable = true;
     efi.canTouchEfiVariables = true;
   };
+  # RAM: quick pattern test of free memory at every boot (a few seconds). Bad
+  # cells are logged as "bad mem addr" in `journalctl -k -b` and kept unused.
+  boot.kernelParams = [ "memtest=4" ];
   zramSwap.enable = true;
+
+  # Wi-Fi: the RTL8821CE firmware stops answering in deep power save and can
+  # hang the machine; keep the card out of deep sleep and PCIe link power saving.
+  boot.extraModprobeConfig = ''
+    options rtw88_core disable_lps_deep=y
+    options rtw88_pci disable_aspm=y
+  '';
 
   # Storage: optional data drive; boot can continue when it is absent.
   fileSystems."/mnt/hdd" = {
@@ -83,7 +95,7 @@
     # shell = pkgs.zsh;
   };
   programs.bash.enable = true;
-  # Ble.sh supplies the right prompt, suggestions, and highlighting in Bash.
+  # Ble.sh supplies quiet history suggestions; its other UI features are off.
   programs.bash.blesh.enable = true;
   # NixOS equivalents of Home Manager's fzf.enable / enableBashIntegration.
   programs.fzf.fuzzyCompletion = true;
