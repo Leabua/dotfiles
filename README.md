@@ -85,11 +85,13 @@ stow bash starship
 sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
 ```
 
-Starship follows the p10k layout: `->`, the current directory, and `git:(branch)` on the left; command status, commands taking at least three seconds, background jobs, and active environments on the right. It keeps the ANSI colours and single-line layout without adding blank lines. Ble.sh provides Bash’s right prompt, suggestions, and syntax highlighting, as required by [Starship’s Bash integration](https://starship.rs/advanced-config/#enable-right-prompt).
+Starship keeps a single line with `->`, the current directory, and `git:(branch)` plus Git changes and ahead/behind counts. It uses the original prompt’s colours without blank lines or a right prompt. Ble.sh supplies history suggestions, and FZF supplies fuzzy search.
 
-Some p10k behaviour differs: Starship truncates long branches at the end, uses its own Git status counters and directory shortening, and detects runtime/cloud context independently. It does not reproduce p10k’s command-sensitive segment visibility or all its version-manager and uncommon tool segments. Vim editing remains enabled; Starship’s mode-specific symbols have limited Bash support.
+Starship truncates long branches at the end and uses its own Git counters and directory shortening. Language, cloud, and environment segments from the old p10k config are omitted.
 
-Ble.sh’s [input colours](bash/.config/blesh/init.sh) use the terminal palette, matching the previous Zsh highlighting, with dim suggestions and no suggestion background. Reload the colours in an existing Bash pane with `source ~/.config/blesh/init.sh`.
+The [Ble.sh settings](bash/.config/blesh/init.sh) keep input plain, with dim history suggestions and ordinary Tab completion. Vi mode, syntax colouring, automatic completion menus, bells, and extra status messages are disabled. Standard Bash editing applies: `Ctrl+U` deletes back to the start of the line, and `Ctrl+K` deletes to the end. Run `exec bash -l` to reload the setup in an existing pane.
+
+Ghostty 1.3.1 has a [duplicate-prompt bug with Ble.sh](https://github.com/ghostty-org/ghostty/issues/11644). The startup settings apply the upstream prompt-marker fix in memory when needed, preserving Ghostty’s shell integration without rebuilding the terminal.
 
 Ghostty explicitly starts Bash, Herdr opens Bash in new panes, and tmux selects the Bash path for NixOS or Arch. Keep both configs stowed if you still use both tools. After editing Herdr’s config, `herdr server reload-config` applies it to new panes without closing existing sessions.
 
@@ -106,7 +108,7 @@ The Bash config preserves these NixOS shortcuts:
 
 | Package | Purpose |
 | --- | --- |
-| [`bash`](bash) | Shell startup, aliases, history, and Vim editing |
+| [`bash`](bash) | Shell startup, aliases, history suggestions, and standard Bash editing |
 | [`starship`](starship) | Prompt adapted from the p10k configuration |
 | [`ghostty`](ghostty) | Daily terminal emulator |
 | [`herdr`](herdr) | Daily terminal multiplexer with Neovim-aware pane navigation |

@@ -7,13 +7,13 @@ if [[ -r /etc/bashrc && -z ${__ETC_BASHRC_SOURCED:-} ]]; then
   source /etc/bashrc
 fi
 
-# History and Vim editing, matching the previous Zsh setup.
+# History and standard Bash editing (Ctrl+U / Ctrl+K clear either side).
 HISTFILE="$HOME/.bash_history"
 HISTSIZE=1000
 HISTFILESIZE=1000
 HISTCONTROL=ignoreboth
 shopt -s histappend checkwinsize
-set -o vi
+set -o emacs
 
 case ":$PATH:" in
   *":$HOME/dotfiles/scripts:"*) ;;
@@ -52,10 +52,6 @@ if [[ -z ${BLE_VERSION:-} && $TERM != dumb ]]; then
     fi
   done
   unset ble_file
-fi
-if [[ -n ${BLE_VERSION:-} ]]; then
-  # p10k had no separate Vim mode status line below the prompt.
-  bleopt keymap_vi_mode_show:=
 fi
 if command -v fzf >/dev/null 2>&1 && ! declare -F fzf-file-widget >/dev/null; then
   eval "$(fzf --bash)"
