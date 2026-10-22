@@ -37,8 +37,8 @@ Singleton {
         features: { "tnum": 1 } // tabular digits -> 9% -> 10% doesn't shove the island sideways
     })
     readonly property int barIconSize: 16
-    readonly property real barIconStroke: 2 // a touch heavier than the menus' 1.7 so 16px icons hold up next to semibold text
-    readonly property real barIconAlpha: 0.7 // same tier as the menu rows' icons
+    readonly property real barIconStroke: 1.5 // a touch heavier than the menus' 1.7 so 16px icons hold up next to semibold text
+    readonly property real barIconAlpha: 0.9 // same tier as the menu rows' icons
     readonly property int barItemHeight: 22 // hover / open pill around each bar entry
     readonly property int barItemPadding: 6 // pill's horizontal padding
     readonly property int barGlyphGap: 4 // icon -> value, and neighbours that read as one unit (logo, clock, workspaces)
@@ -51,10 +51,10 @@ Singleton {
     // --------- colors -----------------
     //  ~~~~~~ dynamic colors ~~~~~~~
     //  material UI colors generated with matugen
-    // readonly property alias fgColor: jsonParser.primary
-    // readonly property alias fgColor2: jsonParser.tertiary
-    readonly property color fgColor: "#FFFFFF"
-    readonly property color fgColor2: "#FFFFFF"
+    readonly property alias fgColor: jsonParser.primary
+    readonly property alias fgColor2: jsonParser.tertiary
+    // readonly property color fgColor: "#FFFFFF"
+    // readonly property color fgColor2: "#FFFFFF"
 
     // translate mutagen JSON to qml
     FileView {
@@ -71,8 +71,8 @@ Singleton {
     }
     //  ~~~~~~ static colors ~~~~~~~
     // readonly property color bgColor: "#000000"
-    // readonly property color bgColor: "#1a1a1a"
-    readonly property color bgColor: "#1e1e1e"
+    readonly property color bgColor: "#1a1a1a"
+    // readonly property color bgColor: "#1e1e1e"
 
     readonly property color healthy: "#4fd6be" // green
     readonly property color warningColor: "#f9e2af" // amber

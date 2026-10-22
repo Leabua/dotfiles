@@ -34,7 +34,7 @@ Scope {
         if (percent <= 10 && !warned10) {
             warned10 = true;
             warned20 = true; // skip the low warning if we dropped straight past 20%
-            notifyBattery("critical", "Battery critically low", "Plug in now — " + percent + "% remaining");
+            notifyBattery("critical", "Battery critically low", percent + "% remaining." + " " + "Plug in now.");
         } else if (percent <= 20 && !warned20) {
             warned20 = true;
             notifyBattery("normal", "Battery low", percent + "% remaining");
