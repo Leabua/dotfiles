@@ -4,8 +4,8 @@ Each group starts with a single-line comment. Package lists are alphabetized wit
 
 ## Shell
 
-Bash is the login shell for `leabua`. NixOS enables Bash, Ble.sh, and Starship;
-GNU Stow supplies the personal configuration and FZF integration:
+Bash is the login shell for `leabua`. NixOS enables Bash, FZF, and Starship;
+GNU Stow supplies the personal configuration:
 
 ```sh
 cd ~/dotfiles
@@ -14,12 +14,10 @@ stow bash starship
 sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
 ```
 
-FZF is installed in `packages.nix`. Its global NixOS bindings are disabled so
-`.bashrc` can load Ble.sh's supported deferred integration without parsing
-the ordinary Readline bindings during startup. Ble.sh supplies inline history
-suggestions. Starship uses one render per command, without timers or a right
-prompt. The old Zsh shell, plugin packages, and p10k paths remain commented out
-for reference.
+FZF's NixOS module enables fuzzy completion and history search. Bash uses native
+Readline editing, without inline suggestions or syntax colouring. Starship uses
+one render per command, without timers or a right prompt. The old Zsh shell,
+plugin packages, and p10k paths remain commented out for reference.
 Log out and back in after rebuilding so the desktop inherits the new login shell.
 Existing Herdr and tmux panes remain in their original shell; new panes use Bash.
 

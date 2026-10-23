@@ -65,7 +65,7 @@ sudo pacman -S zram-generator
 Then the AUR bits (install `yay` first if you haven't):
 
 ```
-yay -S walker wlogout blesh \
+yay -S walker wlogout \
        otf-departure-mono otf-departure-mono-nerd \
        bibata-cursor-theme adwaita-qt5 adwaita-qt6 \
        zen-browser-bin claude-code pacseek \

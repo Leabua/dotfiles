@@ -85,15 +85,13 @@ stow bash starship
 sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
 ```
 
-Starship keeps a single line with `->`, the current directory, and `git:(branch)` plus Git changes and ahead/behind counts. It uses the original prompt’s colours without blank lines or a right prompt. Ble.sh supplies history suggestions, and FZF supplies fuzzy search.
+Starship keeps a single line with `->`, the current directory, and `git:(branch)` plus Git changes and ahead/behind counts. It uses the original prompt’s colours without blank lines or a right prompt. Bash uses native Readline editing, and FZF supplies fuzzy search.
 
 Starship truncates long branches at the end and uses its own Git counters and directory shortening. Language, cloud, and environment segments from the old p10k config are omitted.
 
-The [Ble.sh settings](bash/.config/blesh/init.sh) keep input plain, with dim history suggestions and ordinary Tab completion. Vi mode, syntax colouring, automatic completion menus, bells, and extra status messages are disabled. Standard Bash editing applies: `Ctrl+U` deletes back to the start of the line, and `Ctrl+K` deletes to the end. Run `exec bash -l` to reload the setup in an existing pane.
+The [Bash settings](bash/.bashrc) keep input plain, with ordinary Tab completion and FZF history search on `Ctrl+R`. `Ctrl+U` deletes back to the start of the line, and `Ctrl+K` deletes to the end. Inline suggestions and syntax colouring are not enabled. Run `exec bash -l` to reload the setup in an existing pane.
 
-FZF loads through Ble.sh's deferred integration, so its bindings do not block the first prompt. The [prompt hook](bash/.config/bash/prompt.sh) renders Starship once per command, without command timers, job counting, or an empty right prompt. Ble.sh still adds startup and editing overhead; disabling its visual features does not remove the editor itself.
-
-Ghostty 1.3.1 has a [duplicate-prompt bug with Ble.sh](https://github.com/ghostty-org/ghostty/issues/11644). The startup settings apply the upstream prompt-marker fix in memory when needed, preserving Ghostty’s shell integration without rebuilding the terminal.
+NixOS loads FZF's native Bash integration; `.bashrc` provides a fallback for Arch. The [prompt hook](bash/.config/bash/prompt.sh) renders Starship once per command, without command timers, job counting, or an empty right prompt. Ghostty's shell integration runs without prompt-marker patches.
 
 Ghostty explicitly starts Bash, Herdr opens Bash in new panes, and tmux selects the Bash path for NixOS or Arch. Keep both configs stowed if you still use both tools. After editing Herdr’s config, `herdr server reload-config` applies it to new panes without closing existing sessions.
 
@@ -110,7 +108,7 @@ The Bash config preserves these NixOS shortcuts:
 
 | Package | Purpose |
 | --- | --- |
-| [`bash`](bash) | Shell startup, aliases, history suggestions, and standard Bash editing |
+| [`bash`](bash) | Shell startup, aliases, history search, and standard Bash editing |
 | [`starship`](starship) | Prompt adapted from the p10k configuration |
 | [`ghostty`](ghostty) | Daily terminal emulator |
 | [`herdr`](herdr) | Daily terminal multiplexer with Neovim-aware pane navigation |

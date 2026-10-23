@@ -95,12 +95,10 @@
     # shell = pkgs.zsh;
   };
   programs.bash.enable = true;
-  # Ble.sh supplies quiet history suggestions; its other UI features are off.
-  programs.bash.blesh.enable = true;
-  # .bashrc loads FZF through Ble.sh's deferred integration. The global FZF
-  # loader bypasses that integration and slows startup by parsing unused maps.
-  programs.fzf.fuzzyCompletion = false;
-  programs.fzf.keybindings = false;
+  # Use native Readline editing, with FZF for completion and history search.
+  programs.bash.blesh.enable = false;
+  programs.fzf.fuzzyCompletion = true;
+  programs.fzf.keybindings = true;
   programs.starship.enable = true;
   programs.starship.enableBashIntegration = true;
   programs.starship.enableZshIntegration = false;
