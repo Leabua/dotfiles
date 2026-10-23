@@ -46,7 +46,8 @@
 
     # Shell utilities: navigation, search, and terminal sessions.
     fd
-    # fzf and starship are installed by their NixOS modules.
+    fzf # Bash integration is loaded by .bashrc, through Ble.sh when available.
+    # starship is installed by its NixOS module.
     ripgrep
     tmux
     zoxide

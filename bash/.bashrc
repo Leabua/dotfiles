@@ -41,7 +41,7 @@ if [[ ${HERDR_ENV:-} == 1 ]]; then
   fi
 fi
 
-# NixOS initializes Ble.sh, FZF, and Starship in /etc/bashrc. These fallbacks
+# NixOS initializes Ble.sh and Starship in /etc/bashrc. These fallbacks
 # also support Arch without initializing any of them twice.
 if [[ -z ${BLE_VERSION:-} && $TERM != dumb ]]; then
   for ble_file in /usr/share/blesh/ble.sh /run/current-system/sw/share/blesh/ble.sh; do
@@ -53,8 +53,15 @@ if [[ -z ${BLE_VERSION:-} && $TERM != dumb ]]; then
   done
   unset ble_file
 fi
-if command -v fzf >/dev/null 2>&1 && ! declare -F fzf-file-widget >/dev/null; then
-  eval "$(fzf --bash)"
+if command -v fzf >/dev/null 2>&1; then
+  if [[ ${BLE_VERSION:-} ]]; then
+    # The regular FZF bindings make Ble.sh reconstruct several Readline maps.
+    # Its native integration loads the widgets after the first prompt instead.
+    ble-import -d integration/fzf-completion
+    ble-import -d integration/fzf-key-bindings
+  elif ! declare -F fzf-file-widget >/dev/null; then
+    eval "$(fzf --bash)"
+  fi
 fi
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init bash)"
@@ -64,6 +71,9 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 export CONDA_CHANGEPS1=false
 if command -v starship >/dev/null 2>&1 && ! declare -F starship_precmd >/dev/null; then
   eval "$(starship init bash)"
+fi
+if declare -F starship_precmd >/dev/null; then
+  source "$HOME/.config/bash/prompt.sh"
 fi
 
 # NixOS maintenance.

@@ -97,9 +97,10 @@
   programs.bash.enable = true;
   # Ble.sh supplies quiet history suggestions; its other UI features are off.
   programs.bash.blesh.enable = true;
-  # NixOS equivalents of Home Manager's fzf.enable / enableBashIntegration.
-  programs.fzf.fuzzyCompletion = true;
-  programs.fzf.keybindings = true;
+  # .bashrc loads FZF through Ble.sh's deferred integration. The global FZF
+  # loader bypasses that integration and slows startup by parsing unused maps.
+  programs.fzf.fuzzyCompletion = false;
+  programs.fzf.keybindings = false;
   programs.starship.enable = true;
   programs.starship.enableBashIntegration = true;
   programs.starship.enableZshIntegration = false;
