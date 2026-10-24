@@ -12,6 +12,7 @@ import qs.menus.engineRoom
 import qs.menus.launcher
 import qs.menus.clipboard
 import qs.menus.reminders
+import qs.menus.preview
 
 ShellRoot {
     id: root
@@ -144,6 +145,10 @@ ShellRoot {
     }
     LazyLoader {
         source: "menus/powerMenu/PowerMenu.qml"
+        active: true
+    }
+    LazyLoader {
+        source: "menus/preview/Preview.qml"
         active: true
     }
     LazyLoader {

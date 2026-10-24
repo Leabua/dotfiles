@@ -64,7 +64,21 @@ Item {
         cup: '<path d="M4 6h12v8a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M16 8h1.5a2.5 2.5 0 0 1 0 5H16"/>',
         sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
         sunDim: '<circle cx="12" cy="12" r="4"/><path d="M12 4h.01M12 20h.01M4 12h.01M20 12h.01M6.3 6.3h.01M17.7 17.7h.01M6.3 17.7h.01M17.7 6.3h.01"/>',
-        controller: '<path d="M7 7h10c3 0 5 10 3 12-2 1-4-3-5-3H9c-1 0-3 4-5 3C2 17 4 7 7 7Z"/><path d="M7 10v4m-2-2h4m6-1h.1m3 2h.1"/>'
+        controller: '<path d="M7 7h10c3 0 5 10 3 12-2 1-4-3-5-3H9c-1 0-3 4-5 3C2 17 4 7 7 7Z"/><path d="M7 10v4m-2-2h4m6-1h.1m3 2h.1"/>',
+        // ~~~ file preview ~~~
+        play: '<path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5Z"/>',
+        pause: '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+        back10: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/><path d="M10 10v5m3-5h2v5h-2Z"/>',
+        forward10: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8m0-5v5h-5"/><path d="M9 10v5m3-5h2v5h-2Z"/>',
+        chevronLeft: '<path d="m15 18-6-6 6-6"/>',
+        chevronRight: '<path d="m9 18 6-6-6-6"/>',
+        external: '<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+        folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+        file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v4a2 2 0 0 0 2 2h4"/>',
+        film: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 7.5h4m10 0h4M3 12h18M3 16.5h4m10 0h4"/>',
+        music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+        book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+        code: '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>'
     })
 
     Image {

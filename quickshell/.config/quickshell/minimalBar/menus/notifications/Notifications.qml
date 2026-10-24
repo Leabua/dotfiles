@@ -27,13 +27,15 @@ Scope {
         bodySupported: true
         imageSupported: true
         onNotification: n => {
-            history.insert(0, {
-                summary: n.summary,
-                body: n.body,
-                appName: n.appName,
-                urgency: n.urgency,
-                time: Qt.formatDateTime(new Date(), "HH:mm")
-            });
+            // transient confirmations (e.g. power profile switches) toast but stay out of the centre
+            if (!n.transient)
+                history.insert(0, {
+                    summary: n.summary,
+                    body: n.body,
+                    appName: n.appName,
+                    urgency: n.urgency,
+                    time: Qt.formatDateTime(new Date(), "HH:mm")
+                });
             // remember the persistent battery warning so charging can dismiss it
             if (n.appName === "Battery" && n.urgency === NotificationUrgency.Critical)
                 root.batteryCriticalNotif = n;
