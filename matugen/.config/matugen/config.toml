@@ -21,3 +21,8 @@ output_path = '~/.cache/hypr/hyprlock-colors.conf'
 input_path = '~/.config/matugen/templates/hyprborderTemplate.lua'
 output_path = '~/.cache/hypr/border-colors.lua'
 
+# Thunar reads the bar's palette; the icon theme is redrawn in the new accent.
+[templates.gtk]
+input_path = '~/.config/matugen/templates/gtkTemplate.css'
+output_path = '~/.config/gtk-3.0/quickshell-colors.css'
+post_hook = '~/dotfiles/scripts/quickshell-icons'

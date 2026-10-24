@@ -65,3 +65,6 @@ nvim/.config/nvim/nvim.log
 # hyprlock.conf's wallpaper path changes locally when wallpaper switches;
 # it's still tracked, but marked skip-worktree so local edits don't show as diffs
 # (see: git update-index --skip-worktree hypr/.config/hypr/hyprlock.conf)
+
+# Wallpaper-generated Thunar palette (Matugen writes it on every rotation).
+gtk/.config/gtk-3.0/quickshell-colors.css

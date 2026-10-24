@@ -19,7 +19,21 @@
     libnotify
     pavucontrol
     playerctl
-    quickshell
+    # minimalBar's file preview plays video / audio (QtMultimedia) and reads webp,
+    # tiff and avif (qtimageformats); the stock wrapper ships neither.
+    (symlinkJoin {
+      name = "quickshell-with-media";
+      paths = [ quickshell ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        for bin in $out/bin/*; do
+          wrapProgram "$bin" \
+            --prefix NIXPKGS_QT6_QML_IMPORT_PATH : ${qt6.qtmultimedia}/lib/qt-6/qml \
+            --prefix QT_PLUGIN_PATH : ${qt6.qtmultimedia}/lib/qt-6/plugins:${qt6.qtimageformats}/lib/qt-6/plugins
+        done
+      '';
+    })
+    poppler-utils # pdftoppm / pdfinfo render PDF pages for the preview
 
     # Capture and clipboard: screenshots, annotations, and clipboard history.
     cliphist
@@ -31,8 +45,23 @@
     # Everyday applications: terminal, file managers, productivity, and creative tools.
     google-chrome
     ghostty
-    obsidian
-    thunar
+    # Obsidian's bundled font-list module links against fontconfig/libstdc++, which
+    # NixOS doesn't expose globally; without this the font picker is empty.
+    (obsidian.overrideAttrs (old: {
+      postFixup = (old.postFixup or "") + ''
+        wrapProgram $out/bin/obsidian \
+          --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ fontconfig stdenv.cc.cc.lib ]}
+      '';
+    }))
+    # Sidebar rows sit flush under Places / Devices: upstream pads them with a blank
+    # 12px cell that the GTK theme can't reach.
+    (thunar.overrideAttrs (old: {
+      postPatch = (old.postPatch or "") + ''
+        substituteInPlace thunar/thunar-shortcuts-view.c \
+          --replace-fail 'g_object_set (G_OBJECT (renderer), "xpad", 6, NULL);' \
+                         'g_object_set (G_OBJECT (renderer), "xpad", 0, NULL);'
+      '';
+    }))
     t3code
     yazi
 

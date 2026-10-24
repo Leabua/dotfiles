@@ -72,6 +72,39 @@ Most packages link into `~/.config`. Bash links `.bashrc` and `.bash_profile` in
 
 Quickshell supplies the bar, launcher, notifications, clipboard, and power menu. The older `waybar`, `rofi`, `walker`, and `mako` configs are available for an alternative setup; choose which components to start in your compositor’s autostart config. Stowing a config alone does not start its application.
 
+## Thunar appearance
+
+The `gtk` package styles Thunar in minimalBar's language: one charcoal plane, white
+text, and the wallpaper accent for icons, hover and selection washes, and the path
+bar island. Matugen writes the accent to `gtk-3.0/quickshell-colors.css`. Its post hook
+runs [`scripts/quickshell-icons`](scripts/quickshell-icons), which redraws the
+`Quickshell` icon theme in `~/.local/share/icons`: line icons for files, folders,
+drives and the toolbar, drawn like `MenuIcon.qml`. App icons still come from Papirus Dark.
+
+Run `matugen image /path/to/wallpaper` once after stowing `gtk` and `matugen`; wallpaper
+rotation keeps it current. NixOS supplies the rest: xfconf (Thunar's settings), tumbler
+(thumbnails), and a one-line Thunar patch that removes the sidebar's built-in indent.
+
+### File preview
+
+Ctrl+Space in Thunar opens the selected file in a minimalBar card
+([`menus/preview`](quickshell/.config/quickshell/minimalBar/menus/preview)): video and
+audio play with full transport controls, PDFs render page by page, and images, text and
+folders show inline. It's a Thunar custom action (Edit → Configure custom actions) running
+`qs -p ~/.config/quickshell/minimalBar ipc call preview toggle <path>`.
+
+| Key | Action |
+| --- | --- |
+| Space | Play or pause, or next page in a PDF |
+| ← → | Seek 5 s, or turn the page |
+| ↑ ↓ | Volume |
+| M | Mute |
+| Return | Open in its app |
+| Esc | Close |
+
+NixOS wraps Quickshell with QtMultimedia and the extra image formats, and installs
+poppler-utils for PDFs.
+
 ## Bash and Starship
 
 Bash replaces Zsh as the default shell. The original [`zsh/`](zsh) configuration is kept for reference, with its NixOS settings commented out.

@@ -47,11 +47,14 @@
   boot.kernelParams = [ "memtest=4" ];
   zramSwap.enable = true;
 
-  # Wi-Fi: the RTL8821CE firmware stops answering in deep power save and can
-  # hang the machine; keep the card out of deep sleep and PCIe link power saving.
+  # Hardware quirks for the HP Pavilion 15-cs2xxx.
   boot.extraModprobeConfig = ''
+    # The RTL8821CE can hang in deep power save or PCIe link power saving.
     options rtw88_core disable_lps_deep=y
     options rtw88_pci disable_aspm=y
+
+    # Use Mic3 (NID 0x1b) for the ALC295 speaker mute LED.
+    options snd_hda_intel model=hp-mute-led-mic3
   '';
 
   # Storage: optional data drive; boot can continue when it is absent.
@@ -153,6 +156,11 @@
   services.gvfs.enable = true;
   services.udisks2.enable = true;
 
+  # Thunar: xfconf keeps its preferences (hidden menubar, path bar); tumbler draws
+  # thumbnails for images, PDFs and video. Ctrl+Space previews through minimalBar.
+  programs.xfconf.enable = true;
+  services.tumbler.enable = true;
+
   # Appearance and session defaults: dark GTK/Qt themes and preferred applications.
   environment.sessionVariables = {
     GTK_THEME = "Adwaita:dark";
@@ -173,7 +181,7 @@
       {
         settings."org/gnome/desktop/interface" = {
           color-scheme = "prefer-dark";
-          icon-theme = "Papirus-Dark";
+          icon-theme = "Quickshell";
         };
       }
     ];

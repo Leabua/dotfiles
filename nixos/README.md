@@ -34,6 +34,25 @@ Existing Herdr and tmux panes remain in their original shell; new panes use Bash
 
 Gaming stays disabled until its import is uncommented in `configuration.nix`. Keep custom mounts such as `/mnt/hdd` there: regenerating the hardware file can overwrite manual additions.
 
+## Mute-key LED
+
+`configuration.nix` selects `snd_hda_intel model=hp-mute-led-mic3` for this
+HP Pavilion 15-cs2xxx with Realtek ALC295 audio. This is the kernel's
+[HP mute LED via Mic3 quirk](https://docs.kernel.org/sound/hd-audio/models.html),
+which routes the speaker mute LED through codec pin `0x1b`. The existing
+Hyprland `XF86AudioMute` binding already toggles PipeWire's default output.
+
+Rebuild and reboot to load the driver with the new option:
+
+```sh
+sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
+reboot
+```
+
+Then test F6 with the laptop speakers selected. The LED should follow mute;
+the physical result still needs verification after reboot. This override is
+specific to this laptop, so revisit it when moving the config to other hardware.
+
 ## Maintenance
 
 ```sh
