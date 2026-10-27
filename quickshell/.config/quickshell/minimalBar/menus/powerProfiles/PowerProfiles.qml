@@ -13,7 +13,6 @@ Scope {
     property string activeProfile: ""
     property string errorText: ""
     property int selectedIndex: -1
-    property int pendingIndex: -1
     readonly property var profiles: [
         { name: "power-saver", label: "Power saver", icon: "leaf" },
         { name: "balanced", label: "Balanced", icon: "balanced" },
@@ -27,7 +26,6 @@ Scope {
         if (profile === root.activeProfile)
             return;
         root.errorText = "";
-        root.pendingIndex = index;
         setProfileCmd.command = ["powerprofilesctl", "set", profile];
         setProfileCmd.running = true;
     }
@@ -82,19 +80,11 @@ Scope {
     Process {
         id: setProfileCmd
         onExited: exitCode => {
-            if (exitCode === 0) {
+            if (exitCode === 0)
                 getProfileCmd.running = true;
-                // transient -> confirms the switch as a toast without piling up in the history
-                notifyProc.command = ["notify-send", "-a", "Power profile", "-h", "boolean:transient:true", "Switched to " + root.profiles[root.pendingIndex].label];
-                notifyProc.running = true;
-            } else {
+            else
                 root.errorText = "Could not change the power profile";
-            }
         }
-    }
-
-    Process {
-        id: notifyProc
     }
 
     Timer {
