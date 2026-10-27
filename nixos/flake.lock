@@ -227,11 +227,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1792624984,
-        "narHash": "sha256-HUwpyGPj+nbcCt639FbII2SOYNbYITpCovhvny2yAbQ=",
+        "lastModified": 1792874396,
+        "narHash": "sha256-LFBP4AxP/zggdeJehF7B9ht0K0s1ZnAkeRE/C1Ox9M4=",
         "ref": "beta",
-        "rev": "d09fe7639d9d229b9127edf710772bc275fd5077",
-        "revCount": 745,
+        "rev": "98cd9fd994bd66c476e4299ec919eda1f98ab284",
+        "revCount": 767,
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       },

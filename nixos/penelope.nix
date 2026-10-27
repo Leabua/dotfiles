@@ -10,7 +10,7 @@ let
     src = penelope;
     postPatch = ''
       substituteInPlace flake.nix \
-        --replace-fail '${staleHash}' 'sha256-eJxwfxvYsoPOktL2vg+mQNKCoT6SPQe6xUqxkD/knjM='
+        --replace-fail '${staleHash}' 'sha256-lAFZIXI/BJkX4AFLxnR5ORVyzLovyIx7B+Qe7Uq7TZ8='
     '';
   };
   desktopFlake =
