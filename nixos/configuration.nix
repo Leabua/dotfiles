@@ -121,6 +121,8 @@
     enable = true;
     xwayland.enable = true;
   };
+  programs.niri.enable = true;
+
   systemd.packages = [ pkgs.hyprpolkitagent ];
   systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
 

@@ -29,7 +29,7 @@ RowLayout {
     readonly property var niriOutputWorkspaces: {
         if (!isNiri)
             return [];
-        return niriWorkspaces.filter(w => w.output === screenName).sort((a, b) => a.index - b.index);
+        return niriWorkspaces.filter(w => w.output === screenName).sort((a, b) => a.idx - b.idx);
     }
 
     Process {
@@ -80,7 +80,7 @@ RowLayout {
             required property int index
 
             property var niriWs: workspaceLayout.isNiri ? workspaceLayout.niriOutputWorkspaces[index] : null
-            property int workspaceId: workspaceLayout.isNiri ? (niriWs ? niriWs.index : index + 1) : index + 1
+            property int workspaceId: workspaceLayout.isNiri ? (niriWs ? niriWs.idx : index + 1) : index + 1
 
             property var ws: workspaceLayout.isNiri ? niriWs : Hyprland.workspaces.values.find(w => w.id === workspaceId)
             property bool isActive: workspaceLayout.isNiri ? !!(niriWs && niriWs.is_active) : Hyprland.focusedWorkspace?.id === (workspaceId)
@@ -113,7 +113,7 @@ RowLayout {
                 onClicked: {
                     Globals.dismissPopup();
                     if (workspaceLayout.isNiri) {
-                        Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", rect.workspaceId.toString()]);
+                        Quickshell.execDetached(["sh", "-c", 'niri msg action focus-monitor "$1" && niri msg action focus-workspace "$2"', "niri-workspace", workspaceLayout.screenName, rect.workspaceId.toString()]);
                     } else {
                         Hyprland.dispatch("hl.dsp.focus({ workspace = " + rect.workspaceId + " })");
                     }

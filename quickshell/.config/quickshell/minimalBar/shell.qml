@@ -90,7 +90,7 @@ ShellRoot {
 
                 Logo {}
                 Clock {}
-                Workspaces {}
+                Workspaces { screenName: modelData.name }
                 CriticalAlerts {}
             }
 

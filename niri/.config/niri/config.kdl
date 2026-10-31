@@ -13,26 +13,25 @@ hotkey-overlay {
 
 environment {
     XCURSOR_SIZE "20"
-    XCURSOR_THEME "Bibata-Modern-Ice"
+    XCURSOR_THEME "Bibata-Modern-Classic"
     GDK_SCALE "1"
+    GTK_THEME "Adwaita:dark"
 }
 
 // -------------------
 // Autostart
 // -------------------
-spawn-sh-at-startup "ssh-add ~/.ssh/id_ed25519"
-spawn-at-startup "gnome-keyring-daemon" "--start" "--components=ssh,secrets,pkcs11"
-spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
+// Niri's session launcher manages graphical-session.target (including polkit).
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "XDG_SESSION_TYPE" "NIRI_SOCKET"
+spawn-sh-at-startup "eval $(gnome-keyring-daemon --start --components=secrets) && systemctl --user import-environment GNOME_KEYRING_CONTROL SSH_AUTH_SOCK"
+spawn-sh-at-startup "qs -p $HOME/.config/quickshell/minimalBar"
 spawn-at-startup "nm-applet"
-// wallpaper daemon — same as Hyprland's autostart.lua
 spawn-at-startup "awww-daemon"
-spawn-sh-at-startup "awww img $(cat ~/.cache/awww_current_wallpaper 2>/dev/null) --transition-type fade"
-spawn-at-startup "hypridle"
+spawn-sh-at-startup "for attempt in 1 2 3 4 5; do awww query >/dev/null 2>&1 && break; sleep 0.2; done; wallpaper=$(cat ~/.cache/awww_current_wallpaper 2>/dev/null); [ -f \"$wallpaper\" ] && awww img \"$wallpaper\" --transition-type fade"
+spawn-sh-at-startup "hypridle -c $HOME/.config/niri/hypridle.conf"
 spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
 spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
-// hyprpolkitagent is started system-wide via a systemd user unit
-// (WantedBy=graphical-session.target), not from here — see nixos/configuration.nix
-spawn-at-startup "noctalia"
+spawn-sh-at-startup "wl-paste --type image --watch $HOME/dotfiles/scripts/cliphist-export-live"
 
 // -------------------
 // Input Devices
@@ -88,9 +87,6 @@ window-rule {
 
     draw-border-with-background false // this solves the color issues on focused windows
 
-    background-effect {
-      blur false
-    }
     shadow {
       off
     }
@@ -107,9 +103,6 @@ window-rule {
     geometry-corner-radius 0
     clip-to-geometry true
 
-    background-effect {
-      blur false
-    }
     shadow {
       off
     }
@@ -149,7 +142,7 @@ gestures {
 // Cursor
 // -------------------
 cursor {
-    xcursor-theme "Bibata-Modern-Ice"
+    xcursor-theme "Bibata-Modern-Classic"
     xcursor-size 20
     hide-when-typing
     hide-after-inactive-ms 10000
@@ -169,54 +162,24 @@ binds {
    // quickly mirror laptop to monitor using wl-mirror
     Mod+Ctrl+M { spawn "sh" "-c" "wl-mirror  eDP-1"; }
 
-    // -- Application Launchers -- (aligned with Hyprland: SUPER+Return / SUPER+SHIFT+O/F)
+    // Same applications and minimalBar IPC targets as Hyprland.
     Mod+Return { spawn "ghostty"; }
     Mod+Shift+O { spawn "obsidian"; }
-    Mod+Shift+F { spawn "nautilus"; }
-    Mod+B { spawn "zen-beta"; } // was Mod+Shift+B — changed to Mod+B to match Hyprland SUPER+B (BROWSER=zen-beta)
-
-    // App launcher — noctalia (was quickshell onebarV2; Hyprland SUPER+SPACE)
-    Mod+Space { spawn-sh "noctalia msg panel-toggle launcher"; }
-
-    // Control center — noctalia (was quickshell powerMenu; Hyprland SUPER+ALT+SPACE rightIsland)
-    Mod+Alt+Space { spawn-sh "noctalia msg panel-toggle control-center"; }
-
-    // Clipboard — noctalia (was qs clipboard on Mod+Shift+V/C; Hyprland SUPER+C)
-    Mod+C { spawn-sh "noctalia msg panel-toggle clipboard"; }
-    // keep old aliases for muscle memory
-    Mod+Shift+C { spawn-sh "noctalia msg panel-toggle clipboard"; }
-    Mod+Shift+V { spawn-sh "noctalia msg panel-toggle clipboard"; }
-
-    // Wallpaper — cycle to next, same script Hyprland uses (was Mod+Shift+P, now Mod+P to match Hyprland SUPER+P)
+    Mod+Shift+F { spawn "thunar"; }
+    Mod+B { spawn "zen-beta"; }
+    Mod+Space { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call launcher toggle"; }
+    Mod+Alt+Space { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call rightIsland toggle"; }
+    Mod+N { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call notifications toggle"; }
+    Mod+C { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call clipboard toggle"; }
+    Mod+R { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call reminders toggle"; }
+    Mod+Shift+Space { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call bar toggle"; }
     Mod+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
-    // keep old alias
-    Mod+Shift+P { spawn-sh "~/dotfiles/scripts/rotate_wallpaper.sh"; }
+    Mod+Ctrl+L { spawn "hyprlock"; }
 
-    Mod+Shift+M { spawn-sh "chromium --app-id=blgdilankhbcpipclgpdndahbehalgkh"; }
+    Print { spawn-sh "grim -g \"$(slurp)\" - | wl-copy && notify-send 'Screenshot' 'Selection copied to clipboard' -i clipboard"; }
+    Mod+Print { spawn-sh "output=$(niri msg --json focused-output | jq -r '.name // empty'); [ -n \"$output\" ] && grim -o \"$output\" - | wl-copy && notify-send 'Screenshot' 'Monitor copied to clipboard' -i clipboard"; }
 
-    // Bar toggle — noctalia (was qs bar toggle on Mod+Shift+Return; Hyprland SUPER+SHIFT+SPACE)
-    Mod+Shift+Space { spawn-sh "noctalia msg bar-toggle"; }
-    // keep old alias
-    Mod+Shift+Return { spawn-sh "noctalia msg bar-toggle"; }
-
-    // Lockscreen — hyprlock implements ext-session-lock-v1, works under niri too
-    // Hyprland is SUPER+CTRL+L; niri keeps Mod+Alt+L to avoid conflict with Mod+Ctrl+L focus-monitor-right (no Hyprland equivalent, left as is)
-    Mod+Alt+L { spawn "hyprlock"; }
-
-    // Settings — noctalia (was qs cycleBarLevel; Hyprland has no direct equivalent)
-    Mod+Alt+C { spawn-sh "noctalia msg settings-toggle"; }
-
-    // Notifications — noctalia has no dedicated notifications panel; control-center is closest (was qs notifications on Mod+Alt+N; Hyprland SUPER+N)
-    Mod+N { spawn-sh "noctalia msg panel-toggle control-center"; }
-    Mod+Alt+N { spawn-sh "noctalia msg panel-toggle control-center"; }
-
-    // System monitor — onebarV2 engineRoom has no direct noctalia equivalent, mapped to control-center (no Hyprland equivalent, left as is)
-    Mod+Alt+M { spawn-sh "noctalia msg panel-toggle control-center"; }
-
-    Print { spawn-sh "grim -g \"$(slurp)\" - | satty --filename -"; }
-    Mod+Print { spawn-sh "grim - | wl-copy && notify-send 'Screenshot' 'Monitor copied to clipboard' -i clipboard"; }
-
-    // -- Audio Controls -- (kept wpctl to match Hyprland utilities.lua; noctalia alternative is `noctalia msg volume-up/down/mute`)
+    // -- Audio Controls --
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
     XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
@@ -232,28 +195,32 @@ binds {
     XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
     XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
 
-    // -- Power Menu -- (was qs powerMenu; noctalia session menu; Hyprland XF86PowerOff -> qs powerMenu)
-    XF86PowerOff allow-when-locked=false { spawn-sh "noctalia msg panel-toggle session"; }
+    // -- Power Menu --
+    XF86PowerOff allow-when-locked=true { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call powerMenu toggle"; }
 
     // -- Core Window Management --
     Mod+W { close-window; }
     Mod+F { fullscreen-window; }
-    Mod+O { toggle-overview; }
+    Mod+O { toggle-window-floating; }
+    Mod+Tab { toggle-overview; }
     Mod+Shift+Q { quit; }
 
     // -- Focus Navigation --
     Mod+H { focus-column-left; }
     Mod+L { focus-column-right; }
-    Mod+K { focus-workspace-up; }
-    Mod+J { focus-workspace-down; }
+    Mod+K { focus-window-up; }
+    Mod+J { focus-window-down; }
 
     // -- Cross-Monitor Navigation --
-    Mod+Shift+K { focus-monitor-up; }
-    Mod+Shift+J { focus-monitor-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+J { move-window-down; }
     Mod+Ctrl+K  { focus-monitor-up; }
     Mod+Ctrl+J  { focus-monitor-down; }
     Mod+Ctrl+H  { focus-monitor-left; }
-    Mod+Ctrl+L  { focus-monitor-right; }
+    Mod+Ctrl+Right { focus-monitor-right; }
+    Mod+Ctrl+Left { focus-monitor-left; }
+    Mod+Page_Up { focus-workspace-up; }
+    Mod+Page_Down { focus-workspace-down; }
 
     // -- Move Windows / Modify Layout --
     Mod+Shift+H { move-column-left; }
@@ -274,7 +241,6 @@ binds {
     Mod+Shift+Equal { set-window-height "+100"; }
 
     // -- Preset Layout Toggles --
-    Mod+R       { switch-preset-column-width; }
     Mod+T       { switch-preset-column-width; }
     Mod+Shift+R { switch-preset-window-height; }
     Mod+Shift+T { switch-preset-window-height; }
@@ -304,16 +270,16 @@ binds {
     Mod+Shift+0 { move-window-to-workspace 10; }
 
     // -- Send Window to Workspace (Silent) --
-    Mod+Ctrl+Shift+1 { move-window-to-workspace 1; }
-    Mod+Ctrl+Shift+2 { move-window-to-workspace 2; }
-    Mod+Ctrl+Shift+3 { move-window-to-workspace 3; }
-    Mod+Ctrl+Shift+4 { move-window-to-workspace 4; }
-    Mod+Ctrl+Shift+5 { move-window-to-workspace 5; }
-    Mod+Ctrl+Shift+6 { move-window-to-workspace 6; }
-    Mod+Ctrl+Shift+7 { move-window-to-workspace 7; }
-    Mod+Ctrl+Shift+8 { move-window-to-workspace 8; }
-    Mod+Ctrl+Shift+9 { move-window-to-workspace 9; }
-    Mod+Ctrl+Shift+0 { move-window-to-workspace 10; }
+    Mod+Ctrl+Shift+1 { move-window-to-workspace 1 focus=false; }
+    Mod+Ctrl+Shift+2 { move-window-to-workspace 2 focus=false; }
+    Mod+Ctrl+Shift+3 { move-window-to-workspace 3 focus=false; }
+    Mod+Ctrl+Shift+4 { move-window-to-workspace 4 focus=false; }
+    Mod+Ctrl+Shift+5 { move-window-to-workspace 5 focus=false; }
+    Mod+Ctrl+Shift+6 { move-window-to-workspace 6 focus=false; }
+    Mod+Ctrl+Shift+7 { move-window-to-workspace 7 focus=false; }
+    Mod+Ctrl+Shift+8 { move-window-to-workspace 8 focus=false; }
+    Mod+Ctrl+Shift+9 { move-window-to-workspace 9 focus=false; }
+    Mod+Ctrl+Shift+0 { move-window-to-workspace 10 focus=false; }
 }
 
 

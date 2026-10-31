@@ -7,13 +7,34 @@ import Quickshell.Hyprland
 Singleton {
     id: root
 
-    // the ShellScreen Hyprland currently has focused -> lets toasts / popups follow the active monitor
+    readonly property bool isNiri: !!Quickshell.env("NIRI_SOCKET")
+    property var niriWorkspaces: []
+    property string niriFocusedOutput: ""
+
+    Process {
+        running: root.isNiri
+        command: ["niri", "msg", "--json", "event-stream"]
+        stdout: SplitParser {
+            onRead: data => {
+                let event;
+                try { event = JSON.parse(data); } catch (e) { return; }
+                if (event.WorkspacesChanged) {
+                    root.niriWorkspaces = event.WorkspacesChanged.workspaces;
+                    root.niriFocusedOutput = root.niriWorkspaces.find(w => w.is_focused)?.output ?? "";
+                } else if (event.WorkspaceActivated?.focused) {
+                    root.niriFocusedOutput = root.niriWorkspaces.find(w => w.id === event.WorkspaceActivated.id)?.output ?? "";
+                }
+            }
+        }
+    }
+
+    // Let keyboard-opened menus and toasts follow the active monitor.
     readonly property var focusedScreen: {
-        const m = Hyprland.focusedMonitor;
-        if (!m)
+        const name = isNiri ? niriFocusedOutput : Hyprland.focusedMonitor?.name;
+        if (!name)
             return null;
         for (const s of Quickshell.screens)
-            if (s.name === m.name)
+            if (s.name === name)
                 return s;
         return null;
     }
