@@ -36,11 +36,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792353892,
-        "narHash": "sha256-AeqM/I/Sn6hEAL6+UbJi/wnBxueAmEyIZ87okSVejWw=",
+        "lastModified": 1793062804,
+        "narHash": "sha256-nd67OzZ169qA07xp3X4zZNvYX7FyFGmb9bKllc5dCMQ=",
         "owner": "blip-net",
         "repo": "nix",
-        "rev": "eeaed45e714126c8dc1f634a92c2d70ec3992d90",
+        "rev": "92ae525425b38b2873d8d52a564a9c146fccba08",
         "type": "github"
       },
       "original": {
@@ -106,11 +106,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1792570323,
-        "narHash": "sha256-mw7VzWO9S5T4+OgiTyw5GwRySOoPyiMEnANxnXQOfuI=",
+        "lastModified": 1793250848,
+        "narHash": "sha256-bCAuksG9u1KZlb9sairkIgqrKp/s9zc2Vdn9ys6SFg0=",
         "owner": "schembriaiden",
         "repo": "helium-browser-nix-flake",
-        "rev": "a05e2c1e9596d7c3630dd56b53d21a36b8270a26",
+        "rev": "86742b6e69c1f5647843653dab56100941cb1b9d",
         "type": "github"
       },
       "original": {
@@ -164,11 +164,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1792502884,
-        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
+        "lastModified": 1793341285,
+        "narHash": "sha256-Y1CiZ4SoBUjLQyQM/pY+rS2dXD3CHLPstF0lmOc73D4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
+        "rev": "1c89083e451e891152365b799595cf7790a43325",
         "type": "github"
       },
       "original": {
@@ -180,11 +180,11 @@
     },
     "nixpkgs-darwin": {
       "locked": {
-        "lastModified": 1792208400,
-        "narHash": "sha256-c+NgsnPFEfvGOLxJEQkxkpOESw7mPjnh/H9qDVEWFkQ=",
+        "lastModified": 1793147889,
+        "narHash": "sha256-+//qXhkXCKTFoVCHAYhoEP1ZnPSx/b4IHdLI1ZMz3UU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "42966a9c76f2cdb95b108c9fac939a27b0b8f2c5",
+        "rev": "36173dbc6ff2b383c4d03b002fd1ea58e2e4dbcd",
         "type": "github"
       },
       "original": {
@@ -227,11 +227,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1792874396,
-        "narHash": "sha256-LFBP4AxP/zggdeJehF7B9ht0K0s1ZnAkeRE/C1Ox9M4=",
+        "lastModified": 1793393399,
+        "narHash": "sha256-HHCWaoGhVptM54GDpqnD+c5bSWNn+r8A09iMftWdgKk=",
         "ref": "beta",
-        "rev": "98cd9fd994bd66c476e4299ec919eda1f98ab284",
-        "revCount": 767,
+        "rev": "28cd2c29aba6817b72089b9ce3550d70b55e7282",
+        "revCount": 918,
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       },
@@ -398,11 +398,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792595242,
-        "narHash": "sha256-kH/E0uJDslOgYcnmU+c0cm6HrUjsEtvZQKZtuQ1+uvo=",
+        "lastModified": 1793309674,
+        "narHash": "sha256-d1Tvbgn//HQ3f1PDh/iIMEpvuUu9Lc4lJqiwGl18cY8=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "f19490ac889eabb05bdb7e8dcb85225ee75bd87b",
+        "rev": "2656d974602749ca5594b133e3022a241ab5d4e0",
         "type": "github"
       },
       "original": {

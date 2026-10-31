@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# This prompt only displays the directory and Git state. Avoid Starship's
+# This prompt displays the directory, Git state, and Nix environment. Avoid Starship's
 # command timers, job counting, and a second process for an empty right prompt.
 # Keep the existing registered hooks, including Ghostty's shell integration.
 starship_preexec() { :; }

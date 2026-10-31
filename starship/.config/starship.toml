@@ -2,8 +2,12 @@
 
 # Port of zsh/.p10k.zsh: one line, no background, arrow before directory/Git.
 add_newline = false
-format = '$character$directory$git_branch$git_commit$git_status$git_state '
+format = '$character$directory$git_branch$git_commit$git_status$git_state$nix_shell '
 right_format = ''
+
+[nix_shell]
+format = ' in [󱄅]($style) '
+style = 'bold blue'
 
 [character]
 success_symbol = '[->](green)'

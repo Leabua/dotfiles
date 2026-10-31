@@ -118,7 +118,7 @@ stow bash starship
 sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
 ```
 
-Starship keeps a single line with `->`, the current directory, and `git:(branch)` plus Git changes and ahead/behind counts. It uses the original prompt’s colours without blank lines or a right prompt. Bash uses native Readline editing, and FZF supplies fuzzy search.
+Starship keeps a single line with `->`, the current directory, and `git:(branch)` plus Git changes and ahead/behind counts. Inside `nix develop` or `nix-shell`, a blue `󱄅` (the same NixOS icon as Quickshell) marks the active environment. It uses the original prompt’s colours without blank lines or a right prompt. Bash uses native Readline editing, and FZF supplies fuzzy search.
 
 Starship truncates long branches at the end and uses its own Git counters and directory shortening. Language, cloud, and environment segments from the old p10k config are omitted.
 
