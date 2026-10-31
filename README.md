@@ -170,27 +170,3 @@ The Bash config preserves these NixOS shortcuts:
 | [`zsh`](zsh) | Previous shell and p10k prompt, retained for reference |
 
 [`scripts/`](scripts) contains helpers that run directly from the repository. Bash adds it to `PATH`; desktop configs also refer to `~/dotfiles/scripts`. [`assets/`](assets) holds the README screenshots.
-
-## Niri session
-
-Niri uses the same minimalBar shell, application shortcuts, clipboard watchers,
-keyring, NetworkManager applet, wallpaper daemon, and Hyprlock as Hyprland.
-Its own `~/.config/niri/hypridle.conf` locks after five minutes and powers off
-monitors after six, using Niri's display commands. Start Niri through the login
-screen so its systemd graphical session and polkit agent start with it.
-
-The Quickshell shortcuts match Hyprland: Super+Space launcher, Super+Alt+Space
-right island, Super+N notifications, Super+C clipboard, Super+R reminders,
-Super+Shift+Space bar visibility, and the power key for the power menu.
-Super+Ctrl+L locks; Super+Shift+F opens Thunar.
-
-Super+O toggles floating, and H/J/K/L focus windows in their respective
-directions. Niri-specific controls: Super+Tab opens the overview,
-Super+PageUp/PageDown changes workspace, Super+Ctrl+arrow left/right changes
-monitor, and Super+T cycles column widths. Super+Shift+Ctrl+number sends a window
-without following it. Workspaces remain dynamic and per monitor; Hyprland's
-special scratchpad workspace has no direct mapping here.
-
-If Niri is not yet installed, apply the NixOS configuration with
-`sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos`, then log out and
-choose Niri in the greeter.

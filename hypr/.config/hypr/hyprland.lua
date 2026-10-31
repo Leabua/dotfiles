@@ -3,7 +3,7 @@
 ---------------------------
 
 -- These need to go before the source files otherwise they will not load
--- and if they dont load hyprland will fell broken
+-- and if they dont load hyprland will feel broken
 
 BROWSER = "zen-beta"
 FILEMANAGER = "thunar"
