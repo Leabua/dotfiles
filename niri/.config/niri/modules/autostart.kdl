@@ -1,0 +1,11 @@
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
+spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET"
+spawn-sh-at-startup "qs -p $HOME/.config/quickshell/minimalBar"
+spawn-at-startup "awww-daemon"
+spawn-at-startup "nm-applet"
+// niri-specific idle config: Hyprland's uses hyprctl dpms
+spawn-sh-at-startup "hypridle -c $HOME/.config/niri/hypridle.conf"
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+spawn-sh-at-startup "wl-paste --type image --watch $HOME/dotfiles/scripts/cliphist-export-live"
+spawn-sh-at-startup "eval $(gnome-keyring-daemon --start --components=secrets) && systemctl --user import-environment GNOME_KEYRING_CONTROL SSH_AUTH_SOCK"

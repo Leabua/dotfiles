@@ -26,3 +26,7 @@ output_path = '~/.cache/hypr/border-colors.lua'
 input_path = '~/.config/matugen/templates/gtkTemplate.css'
 output_path = '~/.config/gtk-3.0/quickshell-colors.css'
 post_hook = '~/dotfiles/scripts/quickshell-icons'
+
+[templates.niriborder]
+input_path = '~/.config/matugen/templates/niriborderTemplate.kdl'
+output_path = '~/.cache/niri/border-colors.kdl'

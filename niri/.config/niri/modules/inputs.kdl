@@ -1,0 +1,36 @@
+// --------------
+// --- INPUTS ---
+// --------------
+
+input {
+    keyboard {
+        xkb {
+            layout "us"
+            options "caps:swapescape"
+        }
+        repeat-rate 60
+        repeat-delay 300
+        numlock
+    }
+    touchpad {
+        natural-scroll
+        scroll-factor 1.0
+        tap
+        dwt
+    }
+    focus-follows-mouse max-scroll-amount="0%"
+    warp-mouse-to-focus
+}
+
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 20
+    hide-when-typing
+    hide-after-inactive-ms 10000
+}
+
+gestures {
+    hot-corners {
+        off
+    }
+}

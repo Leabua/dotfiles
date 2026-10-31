@@ -1,0 +1,26 @@
+// floating TUIs launched from the bar
+window-rule {
+    match app-id="com.mitchellh.ghostty" title="^wiremix-term$"
+    match app-id="com.mitchellh.ghostty" title="^bluetui-term$"
+    match app-id="com.mitchellh.ghostty" title="^impala-term$"
+    match app-id="com.mitchellh.ghostty" title="^sysmenu-tui$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="^localsend$"
+    open-floating true
+}
+
+// Firefox-style picture-in-picture (niri default rule)
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id=r#"zen"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// Prevent Apple Music PWA from stealing focus on launch
+window-rule {
+    match app-id="^chrome-blgdilankhbcpipclgpdndahbehalgkh-Default$"
+    open-focused false
+}

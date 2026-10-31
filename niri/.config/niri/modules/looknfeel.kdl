@@ -1,0 +1,47 @@
+// -----------------------
+// ---- LOOK AND FEEL ----
+// -----------------------
+
+layout {
+    gaps 10
+
+    center-focused-column "never"
+    // Mod+R toggles between half and full width
+    preset-column-widths {
+        proportion 0.5
+        proportion 1.0
+    }
+    default-column-width { proportion 1.0; }
+
+    focus-ring {
+        off
+    }
+    border {
+        on
+        width 2
+        // fallback; the matugen colours below override it
+        active-gradient from="#a6e3a1" to="#89b4fa" angle=45
+        // Hyprland's default col.inactive_border
+        inactive-color "#444444"
+    }
+    shadow {
+        off
+    }
+}
+
+// matugen-generated active border gradient (see matugen niriborderTemplate.kdl)
+include optional=true "~/.cache/niri/border-colors.kdl"
+
+// rounding 0, opacity 1, no blur, no shadow
+window-rule {
+    geometry-corner-radius 0
+    clip-to-geometry true
+    opacity 1.0
+    draw-border-with-background false // this solves the color issues on focused windows
+    background-effect {
+        blur false
+    }
+}
+
+animations {
+}
