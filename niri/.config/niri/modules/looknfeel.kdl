@@ -2,8 +2,12 @@
 // ---- LOOK AND FEEL ----
 // -----------------------
 
+prefer-no-csd
+
 layout {
     gaps 10
+    // Let the stationary overview wallpaper show through each workspace.
+    background-color "transparent"
 
     center-focused-column "never"
     // Mod+R toggles between half and full width
@@ -25,6 +29,18 @@ layout {
         inactive-color "#444444"
     }
     shadow {
+        off
+    }
+}
+
+// Use the wallpaper behind the whole overview, including between workspaces.
+layer-rule {
+    match namespace="^awww-daemon$"
+    place-within-backdrop true
+}
+
+overview {
+    workspace-shadow {
         off
     }
 }
