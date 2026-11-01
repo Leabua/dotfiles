@@ -24,7 +24,7 @@
     };
     penelope = {
       # Private repo: fetched over SSH
-      url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=beta";
+      url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=main";
     };
   };
   outputs =
