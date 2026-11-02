@@ -187,7 +187,7 @@ Scope {
                             spacing: 14
 
                             Rectangle {
-                                Layout.alignment: Qt.AlignTop
+                                Layout.alignment: Qt.AlignVCenter // centred on the text block, however many lines it runs
                                 Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
                                 radius: 20
