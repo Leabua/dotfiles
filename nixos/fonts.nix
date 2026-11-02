@@ -18,12 +18,14 @@ let
   };
 in
 {
-  # Fonts: regular monospace faces, Nerd Font variants, Apple's San Francisco family, and the lock-screen clock.
+  # Fonts: regular monospace faces, Nerd Font variants, Apple's San Francisco family, the lock-screen clock,
+  # and Roboto Flex (niriBar's Material 3 face; its width axis draws the tall stacked clock).
   fonts.packages = with pkgs; [
     pixelify-sans
     maple-mono.NF
     nerd-fonts.iosevka
     appleFonts.sf-pro
     appleFonts.sf-mono
+    roboto-flex
   ];
 }

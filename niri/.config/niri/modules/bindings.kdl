@@ -14,11 +14,11 @@ binds {
     Mod+B { spawn "zen-beta"; }
 
     // quickshell Bindings
-    Mod+Space { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call launcher toggle"; } // launcher
-    Mod+Alt+Space { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call rightIsland toggle"; } // toggle right island
-    Mod+N { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call notifications toggle"; } // noti panel
-    Mod+C { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call clipboard toggle"; } // clipboard
-    Mod+Shift+R { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call reminders toggle"; } // reminders
+    Mod+Space { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call launcher toggle"; } // launcher
+    Mod+Alt+Space { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call rightIsland toggle"; } // toggle right island
+    Mod+N { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call notifications toggle"; } // noti panel
+    Mod+C { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call clipboard toggle"; } // clipboard
+    Mod+Shift+R { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call reminders toggle"; } // reminders
     // hide shell bar
-    Mod+Shift+Space { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call bar toggle"; } // hide bar
+    Mod+Shift+Space { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call bar toggle"; } // hide bar
 }

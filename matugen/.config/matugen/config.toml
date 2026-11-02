@@ -30,3 +30,8 @@ post_hook = '~/dotfiles/scripts/quickshell-icons'
 [templates.niriborder]
 input_path = '~/.config/matugen/templates/niriborderTemplate.kdl'
 output_path = '~/.cache/niri/border-colors.kdl'
+
+# niriBar (Material 3 Expressive) reads the full M3 role set rather than just two accents.
+[templates.niribar]
+input_path = '~/.config/matugen/templates/niriBarTemplate.json'
+output_path = '~/.cache/quickshell/niribar-colors.json'

@@ -21,7 +21,7 @@ binds {
     XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
 
     // power button
-    XF86PowerOff allow-when-locked=true { spawn-sh "qs -p $HOME/.config/quickshell/minimalBar ipc call powerMenu toggle"; }
+    XF86PowerOff allow-when-locked=true { spawn-sh "qs -p $HOME/.config/quickshell/niriBar ipc call powerMenu toggle"; }
 
     // screenshots, same as Hyprland: selection / focused monitor -> clipboard
     Print { spawn-sh "grim -g \"$(slurp)\" - | wl-copy && notify-send 'Screenshot' 'Selection copied to clipboard' -i clipboard"; }
