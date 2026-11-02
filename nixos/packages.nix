@@ -75,14 +75,9 @@
 
     # Shell utilities: navigation, search, and terminal sessions.
     fd
-    # fzf and starship are installed by their NixOS modules.
     ripgrep
     tmux
     zoxide
-    # zsh-autosuggestions
-    # zsh-history-substring-search
-    # zsh-powerlevel10k
-    # zsh-syntax-highlighting
 
     # External applications: packages supplied by pinned flake inputs.
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default

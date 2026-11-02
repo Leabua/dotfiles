@@ -8,7 +8,7 @@
     ./fonts.nix
     ./dev.nix
     ./penelope.nix
-    # ./gaming.nix
+    ./gaming.nix
     inputs.blip.nixosModules.default
   ];
 
