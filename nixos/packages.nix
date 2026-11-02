@@ -19,6 +19,7 @@
     libnotify
     pavucontrol
     playerctl
+
     # minimalBar's file preview plays video / audio (QtMultimedia) and reads webp,
     # tiff and avif (qtimageformats); the stock wrapper ships neither.
     (symlinkJoin {
@@ -45,14 +46,10 @@
     # Everyday applications: terminal, file managers, productivity, and creative tools.
     google-chrome
     ghostty
-    # Obsidian's bundled font-list module links against fontconfig/libstdc++, which
-    # NixOS doesn't expose globally; without this the font picker is empty.
-    (obsidian.overrideAttrs (old: {
-      postFixup = (old.postFixup or "") + ''
-        wrapProgram $out/bin/obsidian \
-          --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ fontconfig stdenv.cc.cc.lib ]}
-      '';
-    }))
+    standardnotes
+    obsidian
+
+
     # Sidebar rows sit flush under Places / Devices: upstream pads them with a blank
     # 12px cell that the GTK theme can't reach.
     (thunar.overrideAttrs (old: {
@@ -62,8 +59,6 @@
                          'g_object_set (G_OBJECT (renderer), "xpad", 0, NULL);'
       '';
     }))
-    t3code
-    yazi
 
     # System utilities: monitoring, dotfiles, downloads, and trash management.
     btop
@@ -72,6 +67,7 @@
     stow
     trash-cli
     wget
+    yazi
 
     # Shell utilities: navigation, search, and terminal sessions.
     fd

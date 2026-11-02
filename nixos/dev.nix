@@ -8,6 +8,7 @@
     codex
     neovim
     opencodeV2
+    t3code
     zed-editor
 
     # Development utilities: version control, JSON processing, and parsing tools.
