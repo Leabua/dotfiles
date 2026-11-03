@@ -46,7 +46,6 @@
     # Everyday applications: terminal, file managers, productivity, and creative tools.
     google-chrome
     ghostty
-    standardnotes
     obsidian
 
 

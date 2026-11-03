@@ -67,17 +67,18 @@
     ];
   };
 
-  # Networking: host identity, NetworkManager, SSH, and local development ports.
+# Networking: host identity, NetworkManager, SSH, and local development ports.
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.allowedTCPPorts = [
       5173
-      1420
+        1420
     ];
   };
   services.openssh.enable = true;
   programs.blip.enable = true;
+  programs.nix-ld.enable = true;
 
   # Locale and input: local time and system-wide Caps Lock / Escape swap.
   time.timeZone = "Africa/Johannesburg";
