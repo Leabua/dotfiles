@@ -23,7 +23,7 @@ Scope {
 
     NotificationServer {
         id: server
-        actionsSupported: true
+        actionsSupported: false
         bodySupported: true
         imageSupported: true
         onNotification: n => {
@@ -215,32 +215,12 @@ Scope {
                                 elide: Text.ElideRight
                                 visible: card.modelData.body !== ""
                             }
-                            Flow {
-                                Layout.fillWidth: true
-                                Layout.topMargin: 4
-                                visible: card.modelData.actions.length > 0
-                                spacing: 6
-                                Repeater {
-                                    model: card.modelData.actions
-                                    delegate: MenuButton {
-                                        required property var modelData
-                                        text: modelData.text || "Open"
-                                        onClicked: modelData.invoke()
-                                    }
-                                }
-                            }
                         }
 
                         MouseArea {
                             anchors.fill: parent
                             z: -1
-                            onClicked: {
-                                const action = card.modelData.actions.find(a => a.identifier === "default");
-                                if (action)
-                                    action.invoke();
-                                else
-                                    card.modelData.dismiss();
-                            }
+                            onClicked: card.modelData.dismiss()
                             cursorShape: Qt.PointingHandCursor
                         }
                     }

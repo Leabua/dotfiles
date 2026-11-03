@@ -23,7 +23,7 @@ Scope {
 
     NotificationServer {
         id: server
-        actionsSupported: true
+        actionsSupported: false
         bodySupported: true
         imageSupported: true
         onNotification: n => {
@@ -173,7 +173,7 @@ Scope {
                         }
 
                         // M3 notification anatomy: leading avatar (the app's own icon, else its initial on a tonal
-                        // circle; battery alerts take their status container), then app / title / body / actions
+                        // circle; battery alerts take their status container), then app / title / body
                         RowLayout {
                             id: cardLayout
                             anchors {
@@ -258,33 +258,13 @@ Scope {
                                     elide: Text.ElideRight
                                     visible: card.modelData.body !== ""
                                 }
-                                Flow {
-                                    Layout.fillWidth: true
-                                    Layout.topMargin: 8
-                                    visible: card.modelData.actions.length > 0
-                                    spacing: 8
-                                    Repeater {
-                                        model: card.modelData.actions
-                                        delegate: MenuButton {
-                                            required property var modelData
-                                            text: modelData.text || "Open"
-                                            onClicked: modelData.invoke()
-                                        }
-                                    }
-                                }
                             }
                         }
 
                         MouseArea {
                             anchors.fill: parent
                             z: -1
-                            onClicked: {
-                                const action = card.modelData.actions.find(a => a.identifier === "default");
-                                if (action)
-                                    action.invoke();
-                                else
-                                    card.modelData.dismiss();
-                            }
+                            onClicked: card.modelData.dismiss()
                             cursorShape: Qt.PointingHandCursor
                         }
                     }
