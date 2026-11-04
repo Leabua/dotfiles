@@ -96,7 +96,6 @@ Item {
         onClicked: {
             const c = root.mapToItem(null, root.width / 2, root.height / 2);
             Globals.menuAnchorX = c.x;
-            Globals.menuAnchorY = c.y;
             Globals.toggleMenu("powerMenu");
         }
     }

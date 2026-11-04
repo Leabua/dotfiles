@@ -276,9 +276,8 @@ Singleton {
     readonly property bool headerIcons: true
     readonly property bool buttonIcons: true
 
-    // scene position of the rail item that opened the current menu -> the card opens beside it (-1 = not anchored)
+    // scene x of the rail item that opened the current menu -> the card opens beside the rail (-1 = not anchored)
     property real menuAnchorX: -1
-    property real menuAnchorY: -1
 
     // screen rect of the open menu card -> toasts duck below a menu sitting in their spot (zero-width = nothing open)
     property rect menuCardRect: Qt.rect(0, 0, 0, 0)

@@ -33,7 +33,7 @@ PanelWindow { // qmllint disable uncreatable-type
     property bool verticallyCentered: false
     // scene-x of the rail item that opened this; -1 = not rail-anchored (use hAlign)
     property real anchorCenterX: -1
-    // rail-anchored -> the card opens beside the rail, centred on the trigger, and animates in from it
+    // rail-anchored -> the card opens beside the rail, centred on its midpoint, and animates in from it
     readonly property bool _beside: anchorCenterX >= 0
     // extra top offset added on top of the window's top margin
     property real cardTopMargin: 0
@@ -130,9 +130,9 @@ PanelWindow { // qmllint disable uncreatable-type
 
         anchors.top: parent.top
         anchors.topMargin: {
-            if (root._beside) // rail scene y is screen y -> shift into this window, then keep the card on screen
-                return Math.max(0, Math.min(root.height - height - Globals.margins, Globals.menuAnchorY - root.margins.top - height / 2));
-            if (root.verticallyCentered)
+            // rail-opened menus share the rail's vertical midpoint (the rail is centred on its full-height
+            // window, so that's the screen's midpoint too)
+            if (root._beside || root.verticallyCentered)
                 return Math.max(0, (root.height - height) / 2);
             return Math.max(0, root.cardTopMargin);
         }
