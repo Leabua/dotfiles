@@ -65,6 +65,7 @@ alias nixconf='nvim "$HOME/dotfiles/nixos"'
 alias rebuild='sudo nixos-rebuild switch --flake "$HOME/dotfiles/nixos#nixos" --log-format internal-json -v |& nom --json'
 alias search="nix search nixpkgs"
 alias upgrade='nix flake update --flake "$HOME/dotfiles/nixos" && rebuild'
+alias update-t3code='nix flake update t3code --flake "$HOME/dotfiles/nixos" && rebuild'
 
 # Everyday shortcuts.
 alias catall="fd -t f -X tail -n +1 | nvim"

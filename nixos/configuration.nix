@@ -16,7 +16,7 @@
   nixpkgs.overlays = [
     (final: prev: {
       opencodeV2 = final.callPackage ./opencode-v2.nix { };
-      t3code = final.callPackage ./t3code.nix { };
+      t3code = inputs.t3code.packages.${final.stdenv.hostPlatform.system}.t3-code-nightly;
       # Correct the pnpm dependency hash for the pinned language server.
       # Stop overriding once Nixpkgs changes this version or dependency hash.
       typescript-language-server = prev.typescript-language-server.overrideAttrs (
