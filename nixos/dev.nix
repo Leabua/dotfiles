@@ -5,7 +5,6 @@
     # Editors and coding agents: interactive development environments.
     antigravity-cli
     claude-code
-    codex
     neovim
     opencodeV2
     t3code
