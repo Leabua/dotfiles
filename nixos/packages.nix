@@ -72,6 +72,10 @@
     ripgrep
     tmux
     zoxide
+    zsh-autosuggestions
+    zsh-history-substring-search
+    zsh-powerlevel10k
+    zsh-syntax-highlighting
     herdr # from nixpkgs so it comes prebuilt; the herdr flake compiles Rust
 
     # Browsers and apps from flake inputs.

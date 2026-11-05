@@ -1,6 +1,6 @@
 # Lea’s dotfiles
 
-My desktop setup for NixOS and Arch: Hyprland, Quickshell, Ghostty, Bash, and Neovim. Herdr handles most terminal sessions; tmux stays available as an alternative. Niri is included as an alternative compositor.
+My desktop setup for NixOS and Arch: Hyprland, Quickshell, Ghostty, zsh, and Neovim. Herdr handles most terminal sessions; tmux stays available as an alternative. Niri is included as an alternative compositor.
 
 These are personal configs, currently maintained on NixOS. Start with an installed system, networking, Git, and GNU Stow. Review the host settings and paths before applying them to another machine.
 
@@ -43,11 +43,11 @@ The system configuration lives in [`nixos/`](nixos). Rebuild directly from the r
 4. Link the desktop configs you want, then rebuild:
 
    ```sh
-   stow bash starship ghostty herdr hypr quickshell matugen wallpapers nvim btop fastfetch gtk satty
+   stow zsh ghostty herdr hypr quickshell matugen wallpapers nvim btop fastfetch gtk satty
    sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
    ```
 
-5. Log out and back in to start a session with Bash as the login shell. Existing terminal panes keep running their current shell.
+5. Log out and back in to start a session with zsh as the login shell. Existing terminal panes keep running their current shell.
 
 Add applications to [`nixos/packages.nix`](nixos/packages.nix) and development tools to [`nixos/dev.nix`](nixos/dev.nix). The [NixOS notes](nixos/README.md) cover the other modules and maintenance commands.
 
@@ -62,13 +62,13 @@ Run Stow from `~/dotfiles`. It creates links in your home directory, so edits th
 ```sh
 cd ~/dotfiles
 stow ghostty herdr nvim       # link selected packages
-stow --simulate --verbose bash starship  # preview changes
+stow --simulate --verbose zsh  # preview changes
 stow -D zsh                  # remove links, keeping the repo files
 ```
 
 Back up conflicting files before stowing a package. Choose packages individually: `nixos`, `scripts`, and `assets` are not Stow packages.
 
-Most packages link into `~/.config`. Bash links `.bashrc` and `.bash_profile` into `~`, Starship links `~/.config/starship.toml`, and wallpapers links `~/Wallpapers`.
+Most packages link into `~/.config`. zsh links `.zshrc` and `.p10k.zsh` into `~`, and wallpapers links `~/Wallpapers`.
 
 Quickshell supplies the bar, launcher, notifications, clipboard, and power menu. The older `waybar`, `rofi`, `walker`, and `mako` configs are available for an alternative setup; choose which components to start in your compositor’s autostart config. Stowing a config alone does not start its application.
 
@@ -105,44 +105,21 @@ folders show inline. It's a Thunar custom action (Edit → Configure custom acti
 NixOS wraps Quickshell with QtMultimedia and the extra image formats, and installs
 poppler-utils for PDFs.
 
-## Bash and Starship
+## zsh and Powerlevel10k
 
-Bash replaces Zsh as the default shell. The original [`zsh/`](zsh) configuration is kept for reference, with its NixOS settings commented out.
+zsh is the login shell, with the [Powerlevel10k prompt](zsh/.p10k.zsh): one line with `->`, the directory, and `git:(branch)` plus changes. [`.zshrc`](zsh/.zshrc) adds grey history suggestions, syntax colouring, and Up/Down history search by prefix. Editing uses Emacs keys like Bash: `Ctrl+U` deletes to the start of the line, `Ctrl+K` to the end, and FZF searches history on `Ctrl+R`. Unmatched globs stay literal (`no_nomatch`), so commands written for Bash behave the same.
 
-To migrate an existing checkout:
+NixOS installs the plugins and links them into `/run/current-system/sw/share`; `.zshrc` also checks the Arch paths. Ghostty starts zsh, Herdr opens zsh in new panes, and tmux selects the zsh path for NixOS or Arch. After editing Herdr's config, `herdr server reload-config` applies it to new panes.
 
-```sh
-cd ~/dotfiles
-stow -D zsh
-stow bash starship
-sudo nixos-rebuild switch --flake ~/dotfiles/nixos#nixos
-```
-
-Starship keeps a single line with `->`, the current directory, and `git:(branch)` plus Git changes and ahead/behind counts. Inside `nix develop` or `nix-shell`, a blue `󱄅` (the same NixOS icon as Quickshell) marks the active environment. It uses the original prompt’s colours without blank lines or a right prompt. Bash uses native Readline editing, and FZF supplies fuzzy search.
-
-Starship truncates long branches at the end and uses its own Git counters and directory shortening. Language, cloud, and environment segments from the old p10k config are omitted.
-
-The [Bash settings](bash/.bashrc) keep input plain, with ordinary Tab completion and FZF history search on `Ctrl+R`. `Ctrl+U` deletes back to the start of the line, and `Ctrl+K` deletes to the end. Inline suggestions and syntax colouring are not enabled. Run `exec bash -l` to reload the setup in an existing pane.
-
-NixOS loads FZF's native Bash integration; `.bashrc` provides a fallback for Arch. The [prompt hook](bash/.config/bash/prompt.sh) renders Starship once per command, without command timers, job counting, or an empty right prompt. Ghostty's shell integration runs without prompt-marker patches.
-
-Ghostty explicitly starts Bash, Herdr opens Bash in new panes, and tmux selects the Bash path for NixOS or Arch. Keep both configs stowed if you still use both tools. After editing Herdr’s config, `herdr server reload-config` applies it to new panes without closing existing sessions.
-
-The Bash config preserves these NixOS shortcuts:
-
-| Command | Action |
-| --- | --- |
-| `nixconf` | Open the system configuration in Neovim |
-| `rebuild` | Apply the flake with nix-output-monitor |
-| `upgrade` | Update flake inputs, then rebuild |
-| `clean` | Delete old generations and garbage collect, then update the boot configuration |
+The unused [`bash/`](bash) and [`starship/`](starship) packages are kept for switching back.
 
 ## Packages
 
 | Package | Purpose |
 | --- | --- |
-| [`bash`](bash) | Shell startup, aliases, history search, and standard Bash editing |
-| [`starship`](starship) | Prompt adapted from the p10k configuration |
+| [`zsh`](zsh) | Login shell, Powerlevel10k prompt, suggestions, and syntax colouring |
+| [`bash`](bash) | Previous shell setup, kept for switching back |
+| [`starship`](starship) | Previous Bash prompt, adapted from the p10k configuration |
 | [`ghostty`](ghostty) | Daily terminal emulator |
 | [`herdr`](herdr) | Daily terminal multiplexer with Neovim-aware pane navigation |
 | [`tmux`](tmux) | Alternative terminal multiplexer |
@@ -169,4 +146,4 @@ The Bash config preserves these NixOS shortcuts:
 | [`zed`](zed) | Zed editor settings and keymaps |
 | [`zsh`](zsh) | Previous shell and p10k prompt, retained for reference |
 
-[`scripts/`](scripts) contains helpers that run directly from the repository. Bash adds it to `PATH`; desktop configs also refer to `~/dotfiles/scripts`. [`assets/`](assets) holds the README screenshots.
+[`scripts/`](scripts) contains helpers that run directly from the repository. zsh adds it to `PATH`; desktop configs also refer to `~/dotfiles/scripts`. [`assets/`](assets) holds the README screenshots.

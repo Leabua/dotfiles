@@ -97,7 +97,7 @@
   console.useXkbConfig = true;
   services.libinput.enable = true;
 
-  # User and shell: Bash with FZF completion and the Starship prompt.
+  # User and shell: zsh with Powerlevel10k; plugins are sourced by ~/.zshrc.
   users.users.leabua = {
     isNormalUser = true;
     extraGroups = [
@@ -106,12 +106,19 @@
       "kvm"
       "docker"
     ];
-    shell = pkgs.bashInteractive;
+    shell = pkgs.zsh;
   };
   programs.bash = {
     enable = true;
     blesh.enable = false;
   };
+  programs.zsh = {
+    enable = true;
+    # ~/.zshrc runs compinit and sets the prompt; skip the system copies.
+    enableGlobalCompInit = false;
+    promptInit = "";
+  };
+  environment.pathsToLink = [ "/share/zsh-syntax-highlighting" ];
   programs.fzf = {
     fuzzyCompletion = true;
     keybindings = true;

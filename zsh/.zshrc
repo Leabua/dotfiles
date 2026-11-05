@@ -1,5 +1,3 @@
-# Not the login shell any more (Bash is); kept working for Arch or switching back.
-
 # p10k instant prompt: must stay at the top.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -10,8 +8,11 @@ HISTFILE="$HOME/.histfile"
 HISTSIZE=1000
 SAVEHIST=1000
 
-# Input and completion: Vi keys.
-bindkey -v
+# Input: Emacs keys like Bash (Ctrl+U / Ctrl+K clear either side of the cursor).
+bindkey -e
+bindkey '^U' backward-kill-line
+# Unmatched globs stay literal as in Bash, so pasted or agent commands don't fail.
+setopt no_nomatch
 autoload -Uz compinit
 compinit
 
@@ -57,7 +58,11 @@ _src \
 
 _src \
   /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh \
-  /run/current-system/sw/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+  /run/current-system/sw/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+if (( $+widgets[history-substring-search-up] )); then
+  bindkey '^[[A' history-substring-search-up
+  bindkey '^[[B' history-substring-search-down
+fi
 
 # Aliases shared with bash.
 _src "$HOME/dotfiles/shell/aliases.sh"
