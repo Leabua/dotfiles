@@ -132,6 +132,8 @@
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+    # Matches the cached nixpkgs build; without it Hyprland compiles from source.
+    withUWSM = true;
   };
   systemd.packages = [ pkgs.hyprpolkitagent ];
   systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
