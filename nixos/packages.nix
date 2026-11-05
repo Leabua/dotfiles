@@ -21,7 +21,6 @@
     playerctl
 
     # minimalBar's file preview plays video / audio (QtMultimedia) and reads webp,
-    # tiff and avif (qtimageformats); the stock wrapper ships neither.
     (symlinkJoin {
       name = "quickshell-with-media";
       paths = [ quickshell ];
@@ -47,7 +46,6 @@
     google-chrome
     ghostty
     obsidian
-
 
     # Sidebar rows sit flush under Places / Devices: upstream pads them with a blank
     # 12px cell that the GTK theme can't reach.
@@ -75,6 +73,7 @@
     zoxide
 
     # External applications: packages supplied by pinned flake inputs.
+    inputs.blip.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default

@@ -2,6 +2,14 @@
   description = "Hyprland on Nixos";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    apple-fonts = {
+      url = "github:Lyndeno/apple-fonts.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+   blip = {
+      url = "github:blip-net/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     t3code = {
       url = "github:omarcresp/t3code-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -10,27 +18,20 @@
       url = "github:schembriaiden/helium-browser-nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     herdr = {
       url = "github:herdrdev/herdr/v0.8.2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-   blip = {
-      url = "github:blip-net/nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    apple-fonts = {
-      url = "github:Lyndeno/apple-fonts.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     penelope = {
       # Private repo: fetched over SSH
       url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=main";
     };
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
+    
   outputs =
     { nixpkgs, ... }@inputs:
     {

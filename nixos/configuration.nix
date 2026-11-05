@@ -8,8 +8,7 @@
     ./fonts.nix
     ./dev.nix
     ./penelope.nix
-    ./gaming.nix
-    inputs.blip.nixosModules.default
+    # ./gaming.nix
   ];
 
   # Packages: local application pins and temporary upstream build fixes.
