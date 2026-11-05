@@ -1,23 +1,24 @@
 { pkgs, inputs, ... }:
 
 {
-  # Modules: hardware, applications, development tools, and optional gaming.
   imports = [
     ./hardware-configuration.nix
     ./packages.nix
-    ./fonts.nix
     ./dev.nix
+    ./fonts.nix
     ./penelope.nix
     # ./gaming.nix
+    inputs.blip.nixosModules.default
   ];
 
-  # Packages: local application pins and temporary upstream build fixes.
+  # Overlays: local packages, flake packages, and temporary upstream fixes.
   nixpkgs.overlays = [
     (final: prev: {
       opencodeV2 = final.callPackage ./opencode-v2.nix { };
       t3code = inputs.t3code.packages.${final.stdenv.hostPlatform.system}.t3-code-nightly;
-      # Correct the pnpm dependency hash for the pinned language server.
-      # Stop overriding once Nixpkgs changes this version or dependency hash.
+
+      # Fixes nixpkgs' wrong pnpm dependency hash for 6.0.2. Switches itself
+      # off as soon as nixpkgs ships a different version or hash.
       typescript-language-server = prev.typescript-language-server.overrideAttrs (
         oldAttrs:
         prev.lib.optionalAttrs
@@ -33,16 +34,29 @@
       );
     })
   ];
+  nixpkgs.config.allowUnfree = true;
 
-  # Boot: UEFI bootloader and compressed RAM swap.
+  # Nix: flakes, bounded builds for this 8 GB laptop, and store deduplication.
+  nix = {
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      max-jobs = 2;
+      cores = 2;
+    };
+    optimise.automatic = true;
+  };
+
+  # Boot: systemd-boot with a Memtest86+ entry, and compressed RAM swap.
   boot.loader = {
     systemd-boot.enable = true;
-    # Boot menu entry for Memtest86+, to check RAM after random kernel crashes.
     systemd-boot.memtest86.enable = true;
     efi.canTouchEfiVariables = true;
   };
-  # RAM: quick pattern test of free memory at every boot (a few seconds). Bad
-  # cells are logged as "bad mem addr" in `journalctl -k -b` and kept unused.
+  # Quick RAM pattern test at every boot (a few seconds). Bad cells are logged
+  # as "bad mem addr" in `journalctl -k -b` and kept unused.
   boot.kernelParams = [ "memtest=4" ];
   zramSwap.enable = true;
 
@@ -56,7 +70,7 @@
     options snd_hda_intel model=hp-mute-led-mic3
   '';
 
-  # Storage: optional data drive; boot can continue when it is absent.
+  # Storage: optional data drive; boot continues when it is absent.
   fileSystems."/mnt/hdd" = {
     device = "/dev/disk/by-uuid/4fc12482-bbb3-4ced-a896-2b5f560c9f6b";
     fsType = "ext4";
@@ -66,18 +80,16 @@
     ];
   };
 
-# Networking: host identity, NetworkManager, SSH, and local development ports.
+  # Networking: NetworkManager, SSH, and local dev server ports (Vite, Tauri).
   networking = {
     hostName = "nixos";
     networkmanager.enable = true;
     firewall.allowedTCPPorts = [
       5173
-        1420
+      1420
     ];
   };
   services.openssh.enable = true;
-  programs.blip.enable = true;
-  programs.nix-ld.enable = true;
 
   # Locale and input: local time and system-wide Caps Lock / Escape swap.
   time.timeZone = "Africa/Johannesburg";
@@ -85,7 +97,7 @@
   console.useXkbConfig = true;
   services.libinput.enable = true;
 
-  # Users and shell: Bash with fuzzy completion and the Starship prompt.
+  # User and shell: Bash with FZF completion and the Starship prompt.
   users.users.leabua = {
     isNormalUser = true;
     extraGroups = [
@@ -95,34 +107,32 @@
       "docker"
     ];
     shell = pkgs.bashInteractive;
-    # shell = pkgs.zsh;
   };
-  programs.bash.enable = true;
-  # Use native Readline editing, with FZF for completion and history search.
-  programs.bash.blesh.enable = false;
-  programs.fzf.fuzzyCompletion = true;
-  programs.fzf.keybindings = true;
-  programs.starship.enable = true;
-  programs.starship.enableBashIntegration = true;
-  programs.starship.enableZshIntegration = false;
+  programs.bash = {
+    enable = true;
+    blesh.enable = false;
+  };
+  programs.fzf = {
+    fuzzyCompletion = true;
+    keybindings = true;
+  };
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+    enableZshIntegration = false;
+  };
 
-  # programs.zsh.enable = true;
-  # environment.pathsToLink = [
-  #   "/share/fzf"
-  #   "/share/zsh-powerlevel10k"
-  #   "/share/zsh-autosuggestions"
-  #   "/share/zsh-syntax-highlighting"
-  #   "/share/zsh-history-substring-search"
-  # ];
+  # Programs: Blip, and nix-ld for running unpatched binaries.
+  programs.blip.enable = true;
+  programs.nix-ld.enable = true;
 
-  # Desktop session: Ly greeter, Hyprland, and graphical privilege prompts.
+  # Desktop session: Ly greeter, Niri and Hyprland, and the polkit agent.
   services.displayManager.ly.enable = true;
+  programs.niri.enable = true;
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
-  programs.niri.enable = true;
-
   systemd.packages = [ pkgs.hyprpolkitagent ];
   systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
 
@@ -136,7 +146,7 @@
     pulse.enable = true;
   };
 
-  # Graphics: Intel acceleration and compatibility for 32-bit applications.
+  # Graphics: Intel video acceleration, including 32-bit applications.
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -146,7 +156,7 @@
     ];
   };
 
-  # Power and Bluetooth: backends for Quickshell widgets and the power menu.
+  # Power and Bluetooth: backends for the Quickshell widgets and power menu.
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
   hardware.bluetooth.enable = true;
@@ -158,12 +168,11 @@
   services.gvfs.enable = true;
   services.udisks2.enable = true;
 
-  # Thunar: xfconf keeps its preferences (hidden menubar, path bar); tumbler draws
-  # thumbnails for images, PDFs and video. Ctrl+Space previews through minimalBar.
+  # Thunar: xfconf stores its preferences; tumbler draws thumbnails.
   programs.xfconf.enable = true;
   services.tumbler.enable = true;
 
-  # Appearance and session defaults: dark GTK/Qt themes and preferred applications.
+  # Appearance and defaults: dark GTK/Qt themes and preferred applications.
   environment.sessionVariables = {
     GTK_THEME = "Adwaita:dark";
     QT_QPA_PLATFORM = "wayland;xcb";
@@ -189,7 +198,7 @@
     ];
   };
 
-  # Portals and file associations: desktop access and system-wide default handlers.
+  # Portals and file associations.
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
@@ -207,10 +216,10 @@
     "x-scheme-handler/https" = "zen-beta.desktop";
   };
 
-  # Containers: Docker daemon and its module-provided command-line tools.
+  # Containers: the Docker module also installs the docker CLI.
   virtualisation.docker.enable = true;
 
-  # Housekeeping: empty user trash entries older than 20 days, once per day.
+  # Housekeeping: daily removal of trash entries older than 20 days.
   systemd.user.services.trash-cleanup = {
     description = "Remove trash entries older than 20 days";
     serviceConfig = {
@@ -226,20 +235,6 @@
     };
   };
 
-  # Nix: reproducible inputs, bounded builds on this 8 GB laptop, and store deduplication.
-  nix = {
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      max-jobs = 2;
-      cores = 2;
-    };
-    optimise.automatic = true;
-  };
-  nixpkgs.config.allowUnfree = true;
-
-  # Compatibility: keep the original installation version when upgrading NixOS.
+  # Keep at the original install version; it is not the NixOS version.
   system.stateVersion = "26.05";
 }

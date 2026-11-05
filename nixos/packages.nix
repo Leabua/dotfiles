@@ -20,7 +20,8 @@
     pavucontrol
     playerctl
 
-    # minimalBar's file preview plays video / audio (QtMultimedia) and reads webp,
+    # Quickshell, plus QtMultimedia and extra image formats so minimalBar's
+    # file preview can play video / audio and show webp images.
     (symlinkJoin {
       name = "quickshell-with-media";
       paths = [ quickshell ];
@@ -42,13 +43,13 @@
     slurp
     wl-clipboard
 
-    # Everyday applications: terminal, file managers, productivity, and creative tools.
+    # Everyday applications: browser, terminal, notes, and file manager.
     google-chrome
     ghostty
     obsidian
 
-    # Sidebar rows sit flush under Places / Devices: upstream pads them with a blank
-    # 12px cell that the GTK theme can't reach.
+    # Thunar, patched so sidebar rows sit flush under Places / Devices: upstream
+    # pads them with a blank 12px cell that the GTK theme can't reach.
     (thunar.overrideAttrs (old: {
       postPatch = (old.postPatch or "") + ''
         substituteInPlace thunar/thunar-shortcuts-view.c \
@@ -72,8 +73,7 @@
     tmux
     zoxide
 
-    # External applications: packages supplied by pinned flake inputs.
-    inputs.blip.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # Browsers and apps from flake inputs.
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
