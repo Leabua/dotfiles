@@ -18,10 +18,6 @@
       url = "github:schembriaiden/helium-browser-nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    herdr = {
-      url = "github:herdrdev/herdr";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     penelope = {
       # Private repo: fetched over SSH
       url = "git+ssh://git@github.com/Leabua/Penelope.git?ref=main";

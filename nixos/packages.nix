@@ -72,10 +72,10 @@
     ripgrep
     tmux
     zoxide
+    herdr # from nixpkgs so it comes prebuilt; the herdr flake compiles Rust
 
     # Browsers and apps from flake inputs.
     inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default
-    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Desktop launcher: open associated text files in terminal Neovim.
