@@ -16,12 +16,12 @@ shopt -s histappend checkwinsize
 set -o emacs
 
 case ":$PATH:" in
-  *":$HOME/dotfiles/scripts:"*) ;;
-  *) export PATH="$HOME/dotfiles/scripts:$PATH" ;;
+*":$HOME/dotfiles/scripts:"*) ;;
+*) export PATH="$HOME/dotfiles/scripts:$PATH" ;;
 esac
 case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *) export PATH="$PATH:$HOME/.local/bin" ;;
+*":$HOME/.local/bin:"*) ;;
+*) export PATH="$PATH:$HOME/.local/bin" ;;
 esac
 # Multiplexers started before the login-shell change can inherit SHELL=zsh.
 export SHELL
@@ -60,9 +60,9 @@ if declare -F starship_precmd >/dev/null; then
 fi
 
 # NixOS maintenance.
-alias clean='sudo nix-collect-garbage -d && sudo nixos-rebuild boot --flake "$HOME/dotfiles/nixos#nixos"'
+alias clean='sudo nix-collect-garbage -d && nixos-rebuild boot --sudo --flake "$HOME/dotfiles/nixos#nixos"'
 alias nixconf='nvim "$HOME/dotfiles/nixos"'
-alias rebuild='sudo nixos-rebuild switch --flake "$HOME/dotfiles/nixos#nixos" --log-format internal-json -v |& nom --json'
+alias rebuild='nixos-rebuild switch --sudo --flake "$HOME/dotfiles/nixos#nixos" --log-format internal-json -v |& nom --json'
 alias search="nix search nixpkgs"
 alias upgrade='nix flake update --flake "$HOME/dotfiles/nixos" && rebuild'
 alias update-t3code='nix flake update t3code --flake "$HOME/dotfiles/nixos" && rebuild'
