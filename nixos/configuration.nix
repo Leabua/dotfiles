@@ -47,7 +47,30 @@
       cores = 2;
     };
     optimise.automatic = true;
+    # Builds, fetches and store writes yield the CPU and disk to the desktop.
+    # Best-effort/7 rather than "idle" I/O, which can starve the daemon while it
+    # holds filesystem locks and stall everything behind it.
+    daemonCPUSchedPolicy = "idle";
+    daemonIOSchedClass = "best-effort";
+    daemonIOSchedPriority = 7;
   };
+
+  # Disk responsiveness: the 128 GB SATA SSD is slow at sustained writes, and
+  # one big write burst (nix store, git, builds) used to freeze the whole desktop.
+  # BFQ schedules disk access per process so interactive apps stay responsive and
+  # honours the nix-daemon's low I/O priority.
+  boot.kernelModules = [ "bfq" ];
+  services.udev.extraRules = ''
+    ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="bfq"
+  '';
+  # Flush dirty pages early, in small batches. By default up to ~1.5 GB (20% of
+  # RAM) can pile up and then hit the disk at once, blocking every fsync on it.
+  boot.kernel.sysctl = {
+    "vm.dirty_bytes" = 268435456; # 256 MiB
+    "vm.dirty_background_bytes" = 67108864; # 64 MiB
+  };
+  # Skip access-time writes on every file read.
+  fileSystems."/".options = [ "noatime" ];
 
   # Boot: systemd-boot with a Memtest86+ entry, and compressed RAM swap.
   boot.loader = {
