@@ -1,5 +1,4 @@
-# Start Bash even when the desktop session still exports the previous shell.
-command = zsh
+command = command -v zsh >/dev/null && exec zsh || exec bash
 
 # theme = Aizen Dark
 # theme = Carbonfox
@@ -14,9 +13,9 @@ font-family = "Maple Mono NF"
  
 # font-style = Normal
 font-style = Normal
-font-size = 14 
+font-size = 14
 font-feature = calt
-# Center the asterisk: Iosevka's VSAB selector. 
+# Center the asterisk: Iosevka's VSAB selector. *
 font-feature = VSAB=3    
 
 # Plain-style italic glyphs -> rm the cursive letters
@@ -27,8 +26,8 @@ font-feature = cv36
 font-feature = cv37
 
 # window
-window-padding-y = 2
-window-padding-x = 4
+window-padding-y = 6
+window-padding-x = 6
 resize-overlay = never
 background-opacity = 1
 # background-opacity = 0.85

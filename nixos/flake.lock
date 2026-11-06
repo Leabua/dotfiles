@@ -191,11 +191,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793880042,
-        "narHash": "sha256-FzkVB6uq/DO1BDQ2Bol6+ChsOOPb7Nb6hc9dAqVG0bQ=",
+        "lastModified": 1793917544,
+        "narHash": "sha256-7ZtDuf0W+a+cwPhxR+U34rTFXXdiOvY0VYaIUMves28=",
         "ref": "main",
-        "rev": "94de6384c0431ffcc22b8aa603963c65b13bcd53",
-        "revCount": 1074,
+        "rev": "babdca4db972e69ec9ce153a66c1b21591b3b070",
+        "revCount": 1076,
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       },
@@ -322,11 +322,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793893882,
-        "narHash": "sha256-OeopwyUgTAZe6kAr3llXzq3QKE8t0jQxn6B72yS2/sc=",
+        "lastModified": 1793916821,
+        "narHash": "sha256-bP0TKcWFizE1qFy4LZ/ggyqXzQj10PSFYD6gNjOlfas=",
         "owner": "omarcresp",
         "repo": "t3code-flake",
-        "rev": "1ffebc07c95e99b5af331431af771fbb1c46c811",
+        "rev": "86e6efcf025939391d1df2f1245ea1108f279859",
         "type": "github"
       },
       "original": {
