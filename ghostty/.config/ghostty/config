@@ -49,3 +49,5 @@ window-decoration = false
 
 keybind = ctrl+shift+c=copy_to_clipboard
 keybind = ctrl+shift+v=paste_from_clipboard
+# default is toggle_fullscreen; free it so ctrl+enter reaches the app
+keybind = ctrl+enter=unbind
