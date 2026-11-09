@@ -190,6 +190,9 @@
 
   # Power and Bluetooth: backends for the Quickshell widgets and power menu.
   services.upower.enable = true;
+  # At critical battery, power off cleanly (like Arch did) instead of the default
+  # HybridSleep, which suspends at 2% and leaves the laptop stuck on the lock screen.
+  services.upower.criticalPowerAction = "PowerOff";
   services.power-profiles-daemon.enable = true;
   hardware.bluetooth.enable = true;
   services.logind.settings.Login.HandlePowerKey = "ignore";
@@ -218,6 +221,7 @@
     platformTheme = "gnome";
     style = "adwaita-dark";
   };
+
   programs.dconf = {
     enable = true;
     profiles.user.databases = [
@@ -235,6 +239,7 @@
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
+
   xdg.mime.defaultApplications = {
     "inode/directory" = "thunar.desktop";
     "text/plain" = "nvim-terminal.desktop";
@@ -248,8 +253,8 @@
     "x-scheme-handler/https" = "zen-beta.desktop";
   };
 
-  # Containers: the Docker module also installs the docker CLI.
-  virtualisation.docker.enable = true;
+  # # Containers: the Docker module also installs the docker CLI.
+  # virtualisation.docker.enable = true;
 
   # Housekeeping: daily removal of trash entries older than 20 days.
   systemd.user.services.trash-cleanup = {
