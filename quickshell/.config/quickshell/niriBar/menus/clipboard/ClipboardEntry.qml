@@ -7,17 +7,20 @@ Rectangle {
     property string title: ""
     property string detail: ""
     property bool selected: false
+    property bool marked: false
     signal hovered
-    signal clicked
+    signal clicked(int modifiers)
 
     implicitHeight: 54
     radius: 9
-    color: Qt.alpha(Globals.fgColor, selected ? 0.11 : mouse.containsMouse ? 0.04 : 0)
+    color: Qt.alpha(Globals.fgColor, selected ? 0.11 : marked ? 0.07 : mouse.containsMouse ? 0.04 : 0)
+    border.width: marked ? 1 : 0
+    border.color: Qt.alpha(Globals.fgColor, 0.18)
 
     Column {
         anchors.left: parent.left
         anchors.leftMargin: 10
-        anchors.right: parent.right
+        anchors.right: markBadge.visible ? markBadge.left : parent.right
         anchors.rightMargin: 10
         anchors.verticalCenter: parent.verticalCenter
         spacing: 5
@@ -44,12 +47,34 @@ Rectangle {
         }
     }
 
+    // shown while the entry is part of a multi-selection
+    Rectangle {
+        id: markBadge
+        visible: entry.marked
+        width: 20
+        height: 20
+        radius: 10
+        anchors.right: parent.right
+        anchors.rightMargin: 10
+        anchors.verticalCenter: parent.verticalCenter
+        color: Globals.fgColor
+
+        MenuIcon {
+            anchors.centerIn: parent
+            width: 14
+            height: 14
+            name: "check"
+            strokeWidth: 2.4
+            color: Globals.bgColor
+        }
+    }
+
     MouseArea {
         id: mouse
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onPositionChanged: entry.hovered()
-        onClicked: entry.clicked()
+        onClicked: event => entry.clicked(event.modifiers)
     }
 }

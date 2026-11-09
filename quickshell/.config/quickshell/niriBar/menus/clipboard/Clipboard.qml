@@ -14,6 +14,9 @@ import QtQuick.Layouts
 //   cliphist list           -> "<id>\t<preview>" per line ([[ binary data ... ]] for images)
 //   cliphist decode <id>    -> full text (stdout) or raw image bytes
 //   cliphist wipe           -> clear all
+// Multi-select (images only): Ctrl+click / Ctrl+Space toggles, Shift+click / Shift+Up/Down
+// extends, Ctrl+A marks every visible image. Enter (or the header button) then hands the
+// marked images to scripts/cliphist-copy-files, which puts them on the clipboard as files.
 // Window chrome and input handling come from PopupWindow.
 
 Scope {
@@ -42,6 +45,17 @@ Scope {
     }
     readonly property var selectedEntry: selectedIndex >= 0 && selectedIndex < filteredModel.count ? filteredModel.get(selectedIndex) : null
     property string errorText: ""
+
+    // ----- multi-select state -----
+    // cid -> true; reassigned (never mutated) so bindings on it re-evaluate
+    property var marked: ({})
+    readonly property int markedCount: Object.keys(marked).length
+    // filteredModel index that Shift extends from
+    property int markAnchor: -1
+
+    // true while a keyboard move is changing the selection, so the list pages
+    // instead of nudging (hover selection keeps the gentle Contain scroll)
+    property bool keyNav: false
 
     // ----- preview state -----
     property string hoveredId: ""
@@ -109,8 +123,101 @@ Scope {
         if (copyProc.running || !/^\d+$/.test(id))
             return;
         root.errorText = "";
+        copyProc.multi = false;
         copyProc.command = ["bash", "-o", "pipefail", "-c", "cliphist decode \"$1\" | wl-copy", "copy", id];
         copyProc.running = true;
+    }
+
+    // ----- multi-select -----
+    function isMarked(id: string): bool {
+        return root.marked[id] === true;
+    }
+
+    function setMarks(ids: var, on: bool): void {
+        const next = Object.assign({}, root.marked);
+        for (const id of ids) {
+            if (on)
+                next[id] = true;
+            else
+                delete next[id];
+        }
+        root.marked = next;
+    }
+
+    function clearMarks(): void {
+        root.marked = ({});
+        root.markAnchor = -1;
+    }
+
+    function toggleMark(index: int): void {
+        if (index < 0 || index >= filteredModel.count)
+            return;
+        const it = filteredModel.get(index);
+        if (!it.isImage)
+            return;
+        root.setMarks([it.cid], !root.isMarked(it.cid));
+        root.markAnchor = index;
+    }
+
+    // mark every image between the anchor (or the current row) and index
+    function markRange(index: int): void {
+        if (index < 0 || index >= filteredModel.count)
+            return;
+        const from = root.markAnchor >= 0 && root.markAnchor < filteredModel.count ? root.markAnchor : root.selectedIndex;
+        const ids = [];
+        for (let i = Math.min(from, index); i <= Math.max(from, index); i++) {
+            const it = filteredModel.get(i);
+            if (it.isImage)
+                ids.push(it.cid);
+        }
+        root.setMarks(ids, true);
+        if (root.markAnchor < 0)
+            root.markAnchor = from;
+    }
+
+    // Ctrl+A: mark every visible image, or unmark them if they are all marked already
+    function toggleAllVisible(): void {
+        const ids = [];
+        for (let i = 0; i < filteredModel.count; i++) {
+            const it = filteredModel.get(i);
+            if (it.isImage)
+                ids.push(it.cid);
+        }
+        root.setMarks(ids, !ids.every(id => root.isMarked(id)));
+    }
+
+    function copyMarked(): void {
+        if (copyProc.running || root.markedCount === 0)
+            return;
+        root.errorText = "";
+        copyProc.multi = true;
+        copyProc.command = [Quickshell.env("HOME") + "/dotfiles/scripts/cliphist-copy-files"].concat(Object.keys(root.marked));
+        copyProc.running = true;
+    }
+
+    // Enter / plain activation: the marked set wins over the highlighted row
+    function activate(index: int): void {
+        if (root.markedCount > 0)
+            root.copyMarked();
+        else
+            root.activateAt(index);
+    }
+
+    function entryClicked(index: int, modifiers: int): void {
+        if (modifiers & Qt.ShiftModifier) {
+            root.markRange(index);
+            return;
+        }
+        if (modifiers & Qt.ControlModifier) {
+            root.toggleMark(index);
+            return;
+        }
+        // while a selection exists, a plain click on an image keeps building it
+        if (root.markedCount > 0 && filteredModel.get(index).isImage) {
+            root.toggleMark(index);
+            return;
+        }
+        root.activateAt(index);
     }
 
     // ----- filtering (clipModel holds everything, filteredModel drives the list) -----
@@ -136,6 +243,7 @@ Scope {
                 });
         }
         root.selectedIndex = 0;
+        root.markAnchor = -1;
         if (filteredModel.count > 0)
             root.select(0);
         else
@@ -186,7 +294,28 @@ Scope {
         const n = filteredModel.count;
         if (n === 0)
             return;
-        root.select((root.selectedIndex + delta + n) % n);
+        root.selectByKey((root.selectedIndex + delta + n) % n);
+    }
+
+    function selectByKey(index: int): void {
+        root.keyNav = true;
+        root.select(index);
+        root.keyNav = false;
+    }
+
+    // keyboard moves past an edge flip a whole page: going down, the new row lands
+    // at the top; going up, at the bottom. ListView clamps both at the list's ends.
+    function scrollToCurrent(): void {
+        const index = listView.currentIndex;
+        const item = listView.itemAtIndex(index);
+        if (!root.keyNav || !item) {
+            listView.positionViewAtIndex(index, ListView.Contain);
+            return;
+        }
+        if (item.y + item.height > listView.contentY + listView.height)
+            listView.positionViewAtIndex(index, ListView.Beginning);
+        else if (item.y < listView.contentY)
+            listView.positionViewAtIndex(index, ListView.End);
     }
 
     function activateAt(index: int): void {
@@ -200,8 +329,36 @@ Scope {
     function handleKey(event): void {
         const k = event.key;
         const control = !!(event.modifiers & Qt.ControlModifier);
+        const shift = !!(event.modifiers & Qt.ShiftModifier);
         if (k === Qt.Key_Escape && root.searchQuery !== "") {
             root.searchQuery = "";
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_Escape && root.markedCount > 0) {
+            root.clearMarks();
+            event.accepted = true;
+            return;
+        }
+        if (control && k === Qt.Key_Space) {
+            root.toggleMark(root.selectedIndex);
+            event.accepted = true;
+            return;
+        }
+        if (control && k === Qt.Key_A) {
+            root.toggleAllVisible();
+            event.accepted = true;
+            return;
+        }
+        if (shift && (k === Qt.Key_Down || k === Qt.Key_Up)) {
+            const n = filteredModel.count;
+            if (n > 0) {
+                if (root.markAnchor < 0)
+                    root.markAnchor = root.selectedIndex;
+                const next = Math.max(0, Math.min(n - 1, root.selectedIndex + (k === Qt.Key_Down ? 1 : -1)));
+                root.selectByKey(next);
+                root.markRange(next);
+            }
             event.accepted = true;
             return;
         }
@@ -222,7 +379,7 @@ Scope {
             return;
         }
         if (k === Qt.Key_Return || k === Qt.Key_Enter) {
-            root.activateAt(root.selectedIndex);
+            root.activate(root.selectedIndex);
             event.accepted = true;
             return;
         }
@@ -274,6 +431,7 @@ Scope {
     onClipboardOpenChanged: {
         if (clipboardOpen) {
             errorText = "";
+            clearMarks();
             filterMode = "all";
             searchQuery = "";
             selectedIndex = 0;
@@ -367,6 +525,7 @@ Scope {
 
     Process {
         id: copyProc
+        property bool multi: false
         stderr: StdioCollector {
             onStreamFinished: {
                 if (text.trim() !== "")
@@ -377,7 +536,7 @@ Scope {
             if (exitCode === 0)
                 root.clipboardOpen = false;
             else
-                root.errorText = "Could not copy this entry";
+                root.errorText = copyProc.multi ? "Could not copy the selected images" : "Could not copy this entry";
         }
     }
 
@@ -386,6 +545,7 @@ Scope {
         command: ["cliphist", "wipe"]
         onExited: (exitCode, exitStatus) => {
             if (exitCode === 0) {
+                root.clearMarks();
                 root.clearPreview();
                 root.refresh();
             } else {
@@ -420,7 +580,7 @@ Scope {
             context: Qt.WindowShortcut
             enabled: root.clipboardOpen
             autoRepeat: false
-            onActivated: root.activateAt(root.selectedIndex)
+            onActivated: root.activate(root.selectedIndex)
         }
 
         Shortcut {
@@ -428,7 +588,7 @@ Scope {
             context: Qt.WindowShortcut
             enabled: root.clipboardOpen
             autoRepeat: false
-            onActivated: root.activateAt(root.selectedIndex)
+            onActivated: root.activate(root.selectedIndex)
         }
 
         margins {
@@ -444,11 +604,17 @@ Scope {
             MenuHeader {
                 title: "Clipboard"
                 icon: "clipboard"
-                actionText: "Clear history"
-                actionIcon: "trash"
-                actionDestructive: true
-                actionEnabled: clipModel.count > 0 && !wipeProc.running
-                onActionClicked: wipeProc.running = true
+                // while images are marked the header action becomes "Copy N images"
+                actionText: root.markedCount > 0 ? "Copy " + root.markedCount + (root.markedCount === 1 ? " image" : " images") : "Clear history"
+                actionIcon: root.markedCount > 0 ? "copy" : "trash"
+                actionDestructive: root.markedCount === 0
+                actionEnabled: root.markedCount > 0 ? !copyProc.running : clipModel.count > 0 && !wipeProc.running
+                onActionClicked: {
+                    if (root.markedCount > 0)
+                        root.copyMarked();
+                    else
+                        wipeProc.running = true;
+                }
                 onCloseRequested: root.clipboardOpen = false
             }
 
@@ -574,7 +740,7 @@ Scope {
                         cacheBuffer: 200
                         pixelAligned: true
                         spacing: 4
-                        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
+                        onCurrentIndexChanged: root.scrollToCurrent()
 
                         ScrollBar.vertical: ScrollBar {
                             policy: ScrollBar.AsNeeded
@@ -600,8 +766,9 @@ Scope {
                             title: root.entryTitle(entry.preview, entry.isImage)
                             detail: entry.isImage ? root.imageDetail(entry.preview) : root.textKind(entry.preview)
                             selected: root.selectedIndex === entry.index
+                            marked: root.isMarked(entry.cid)
                             onHovered: root.select(entry.index)
-                            onClicked: root.activateAt(entry.index)
+                            onClicked: modifiers => root.entryClicked(entry.index, modifiers)
                         }
                     }
 

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Put several cliphist image entries on the clipboard as files, so a single paste
+# drops all of them into a file manager, chat app or browser upload box.
+#
+# Usage: cliphist-copy-files <id>...
+# The images are exported to ~/copies (same names as cliphist-export) and offered
+# as a text/uri-list, oldest first.
+set -euo pipefail
+
+(($# > 0)) || { echo "usage: cliphist-copy-files <id>..." >&2; exit 2; }
+
+dest="$HOME/copies"
+# Idempotent: only decodes entries that are not on disk yet.
+"$HOME/dotfiles/scripts/cliphist-export" "$dest" >/dev/null
+
+uris=""
+missing=0
+for id in $(printf '%s\n' "$@" | sort -n -u); do
+	[[ $id =~ ^[0-9]+$ ]] || { missing=$((missing + 1)); continue; }
+	file=$(compgen -G "$(printf '%s/clip-%06d.*' "$dest" "$id")" | head -1 || true)
+	[[ -n $file ]] || { missing=$((missing + 1)); continue; }
+	uris+="file://$file"$'\r\n'
+done
+
+[[ -n $uris ]] || { echo "none of the selected images could be exported" >&2; exit 1; }
+printf '%s' "$uris" | wl-copy --type text/uri-list
+((missing == 0)) || echo "$missing image(s) could not be exported" >&2
