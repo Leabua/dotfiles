@@ -68,3 +68,7 @@ nvim/.config/nvim/nvim.log
 
 # Wallpaper-generated Thunar palette (Matugen writes it on every rotation).
 gtk/.config/gtk-3.0/quickshell-colors.css
+
+# nix build output symlinks
+result
+result-*
