@@ -15,6 +15,7 @@ return {
 			python = { "black" },
 			rust = { "rustfmt" },
 			sh = { "shfmt" },
+			nix = { "nixfmt" },
 		},
 		format_on_save = {
 			timeout_ms = 1500,

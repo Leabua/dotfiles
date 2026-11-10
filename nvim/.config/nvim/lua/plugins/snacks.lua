@@ -68,7 +68,7 @@ return {
 								require("telescope.builtin").find_files({ cwd = vim.fn.stdpath("config") })
 							end,
 						},
-						{ icon = "󰒲", key = "L", desc = "Lazy", action = ":Lazy" },
+						{ icon = "󰒲", key = "l", desc = "Lazy", action = ":Lazy" },
 						{ icon = "󰅚", key = "q", desc = "Quit", action = ":qa" },
 					},
 				},

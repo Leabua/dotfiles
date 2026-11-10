@@ -2,10 +2,11 @@ local keymap = vim.keymap.set
 
 keymap("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
 
--- Jump between diagnostics (uses jump.on_jump above to pop the float open)
+-- Jump between diagnostics
 keymap("n", "<leader>[", function()
 	vim.diagnostic.jump({ count = -1 })
 end, { desc = "Previous diagnostic" })
+
 keymap("n", "<leader>]", function()
 	vim.diagnostic.jump({ count = 1 })
 end, { desc = "Next diagnostic" })
@@ -19,7 +20,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- Toggle diagnostics entirely
+-- Toggle diagnostics on and off
 keymap("n", "<leader>ud", function()
 	local enabled = vim.diagnostic.is_enabled()
 	vim.diagnostic.enable(not enabled)
@@ -43,7 +44,7 @@ keymap("v", "K", ":m '<-2<CR>gv=gv", { silent = true, desc = "Move selected line
 keymap("n", "<C-d>", "<C-d>zz", { desc = "Half page down stays centered" })
 keymap("n", "<C-u>", "<C-u>zz", { desc = "Half page up stays centered" })
 
--- H/L cycle between buffers (overrides the default High/Low motions)
+-- H/L cycle between buffers
 keymap("n", "H", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
 keymap("n", "L", "<cmd>bnext<CR>", { desc = "Next buffer" })
 
@@ -64,18 +65,15 @@ keymap("n", "<leader>d", vim.diagnostic.open_float, { desc = "Line Diagnostics" 
 keymap("n", "q:", ":", { noremap = true })
 keymap("n", "q?", ":", { noremap = true })
 
--- Also disable the visual command-line window
+-- Disable the visual command-line window
 keymap("v", "q:", ":", { noremap = true })
 
 -- close all other buffers
 keymap("n", "<leader>ba", "<cmd>%bd|e#|bd#<cr>", { desc = "Close all other buffers" })
---
 -- close current  buffers
 keymap("n", "<leader>bd", "<cmd>bd<cr>", { desc = "Close current bugger" })
 
 -- Smart pane navigation: alt+h/j/k/l move between nvim splits and herdr panes.
--- When nvim is at the edge of a split layout, hand off to the neighbouring
--- herdr pane (herdr forwards the chord here when nvim is in the foreground).
 local herdr_dir = { h = "left", j = "down", k = "up", l = "right" }
 
 local function herdr_nav(dir)

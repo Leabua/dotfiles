@@ -2,9 +2,6 @@
 --  * strip the "canvas" backgrounds so the terminal shows through (transparency)
 --  * kill italics everywhere except comments
 --  * remember the last-picked scheme and restore it on the next launch
---
--- Registered from init.lua *before* lazy loads any plugin, so the very first
--- colorscheme of the session already goes through here.
 
 local M = {}
 
@@ -22,6 +19,7 @@ local transparent_groups = {
 	"WinBar",
 	"WinBarNC",
 	"WinSeparator",
+
 	-- floats / popups and their chrome
 	"NormalFloat",
 	"FloatBorder",
@@ -33,11 +31,13 @@ local transparent_groups = {
 	"PmenuKind",
 	"PmenuExtra",
 	"PmenuSbar",
+
 	-- number column / gutter (LineNrAbove/Below link to LineNr)
 	"SignColumn",
 	"LineNr",
 	"CursorLineNr",
 	"FoldColumn",
+
 	-- diagnostic + git signs (themes often tint these even with transparency on;
 	-- this is what bled into the noice borders)
 	"DiagnosticSignError",
@@ -118,11 +118,7 @@ function M.load()
 	return nil
 end
 
--- One place that normalises the active scheme. Each step is pcall-guarded and
--- independent, so a single un-settable highlight group can't abort the rest
--- (that was leaving code italic when a scheme loaded in a fully-populated
--- session with lots of plugin/LSP highlight groups).
-
+-- One place that normalises the active scheme.
 local function apply_fixes()
 	pcall(strip_backgrounds)
 	pcall(fix_italics)

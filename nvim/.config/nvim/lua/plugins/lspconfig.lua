@@ -51,6 +51,21 @@ return {
 			},
 		})
 
+		vim.lsp.config("nixd", {
+			settings = {
+				nixd = {
+					-- Tell nixd where nixpkgs is so option/completion lookups work.
+					nixpkgs = {
+						expr = 'import (builtins.getFlake "/home/leabua/dotfiles/nixos").inputs.nixpkgs {}',
+					},
+					-- Delegate formatting to nixfmt instead of an external call.
+					formatting = {
+						command = { "nixfmt" },
+					},
+				},
+			},
+		})
+
 		vim.lsp.enable({
 			"basedpyright",
 			"clangd",
@@ -59,6 +74,7 @@ return {
 			"html",
 			"jdtls",
 			"lua_ls",
+			"nixd",
 			"rust_analyzer",
 			"tailwindcss",
 			"ts_ls",
@@ -80,9 +96,8 @@ return {
 				map("<leader>ca", vim.lsp.buf.code_action, "Code action")
 
 				-- K shows BOTH the diagnostic (error/warning) and hover docs in one
-				-- popup. On a diagnostic: diagnostics on top, docs below. Off one:
-				-- just hover docs. Press K again to enter the float; q or <Esc>
-				-- closes it.
+				-- popup. Press K again to enter the float; q or <Esc> closes it.
+
 				map("K", function()
 					if
 						k_float_win

@@ -1,7 +1,6 @@
 return {
 	-- Transparency + "no italics except comments" + last-scheme persistence for
 	-- every colorscheme below live in lua/config/theme.lua, wired up in init.lua.
-	-- Switch live with <leader>uc (Telescope preview, <CR> applies + persists).
 	{
 		"EdenEast/nightfox.nvim",
 		lazy = false,
@@ -136,7 +135,7 @@ return {
 				end
 			end
 
-			-- show macro recording status in the statusline (cmdheight=0 hides neovim's default "recording @q" message).
+			-- show macro recording status in the statusline: (cmdheight=0 hides neovim's default "recording @q" message).
 			local function macro_recording()
 				local reg = vim.fn.reg_recording()
 				if reg == "" then
@@ -152,6 +151,7 @@ return {
 					require("lualine").refresh()
 				end,
 			})
+
 			vim.api.nvim_create_autocmd("RecordingLeave", {
 				group = macro_group,
 				callback = function()
@@ -172,7 +172,7 @@ return {
 					lualine_a = { "mode" },
 					lualine_c = {
 						"filename",
-						{ macro_recording, color = { fg = "#ff5555", gui = "bold" } },
+						{ macro_recording, color = { gui = "bold" } },
 					},
 					lualine_z = { "location" },
 				},
