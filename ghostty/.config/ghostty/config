@@ -5,10 +5,11 @@ command = command -v zsh >/dev/null && exec zsh || exec bash
 # theme = Ayu 
 # theme = TokyoNight Night
 # theme = Sunset Drive 
-theme = cyberdream
+# theme = cyberdream
+theme = Terafox
 
-# font-family = "Iosevka Nerd Font"
 font-family = "Maple Mono NF"
+# font-family = "Iosevka Nerd Font"
 # font-family = "SF Mono"
  
 # font-style = Normal
@@ -29,16 +30,14 @@ font-feature = cv37
 window-padding-y = 6
 window-padding-x = 6
 resize-overlay = never
-background-opacity = 1
-# background-opacity = 0.85
+# background-opacity = 1
+background-opacity = 0.92
 window-inherit-working-directory = true
 
 # cursor
 cursor-style = "block"
 cursor-style-blink = false
 
-# Cursor styling + SSH session terminfo
-# (all shell integration options must be passed together)
 shell-integration-features = no-cursor,ssh-env
 
 # Slowdown mouse scrolling
@@ -49,5 +48,6 @@ window-decoration = false
 
 keybind = ctrl+shift+c=copy_to_clipboard
 keybind = ctrl+shift+v=paste_from_clipboard
+#
 # default is toggle_fullscreen; free it so ctrl+enter reaches the app
 keybind = ctrl+enter=unbind
