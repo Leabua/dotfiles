@@ -1,14 +1,3 @@
-// Zed keymap - ports the Neovim bindings from ~/dotfiles/nvim to Zed's vim mode.
-//
-// The Neovim leader is `<space>`, which in Zed is expressed by binding
-// `"space ..."` key sequences. These only fire while an editor is focused and
-// vim mode is in normal mode, so bare `space` (move right) and motions like
-// `df <space>` keep their default behavior.
-//
-// Reference:
-//   - Key binding syntax:  https://zed.dev/docs/key-bindings
-//   - Vim mode & contexts: https://zed.dev/docs/vim
-//   - Default Linux keymap: assets/keymaps/default-linux.json
 [
   {
     "context": "Editor && vim_mode == normal && !menu",
@@ -49,6 +38,10 @@
       "space u c": "theme_selector::Toggle", // <leader>uc theme picker
       "space u d": "editor::ToggleDiagnostics", // <leader>ud toggle diagnostics
       "space t t": "editor::ToggleInlineDiagnostics", // <leader>tt toggle inline diagnostics
+
+      // ---- Buffers ----
+      "space b d": "pane::CloseActiveItem", // <leader>bd close current buffer
+      "space b a": "pane::CloseOtherItems", // <leader>ba close all other buffers
 
       // ---- Pane navigation (vim-tmux-navigator analog) ----
       "alt-h": "workspace::ActivatePaneLeft",
@@ -96,6 +89,18 @@
     "context": "GitPanel",
     "bindings": {
       "space g g": "git_panel::Close"
+    }
+  },
+  {
+    // vim-tmux-navigator style: alt-hjkl works from docks too, so the file
+    // tree, terminal and git panel behave like panes. alt-l from a left dock
+    // focuses the editor, and from the editor alt-h focuses the tree again.
+    "context": "ProjectPanel || Terminal || GitPanel",
+    "bindings": {
+      "alt-h": "workspace::ActivatePaneLeft",
+      "alt-j": "workspace::ActivatePaneDown",
+      "alt-k": "workspace::ActivatePaneUp",
+      "alt-l": "workspace::ActivatePaneRight"
     }
   }
 ]
