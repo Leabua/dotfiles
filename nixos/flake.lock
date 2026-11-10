@@ -193,14 +193,14 @@
       "locked": {
         "lastModified": 1794185797,
         "narHash": "sha256-WEYrP/+3XYUtGgCPNBNHecNIyL7trZ+Ck2nGz6GPv+0=",
-        "ref": "main",
+        "ref": "beta",
         "rev": "5e122438426018785f57cc287a178884f7503032",
         "revCount": 1109,
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       },
       "original": {
-        "ref": "main",
+        "ref": "beta",
         "type": "git",
         "url": "ssh://git@github.com/Leabua/Penelope.git"
       }
