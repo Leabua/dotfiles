@@ -62,6 +62,7 @@
     btop
     fastfetch
     nix-output-monitor
+    nixd # Nix language server for Zed and Neovim
     stow
     trash-cli
     wget

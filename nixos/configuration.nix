@@ -6,7 +6,6 @@
     ./packages.nix
     ./dev.nix
     ./fonts.nix
-    ./penelope.nix
     # ./gaming.nix
     inputs.blip.nixosModules.default
   ];

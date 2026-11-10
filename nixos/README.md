@@ -59,10 +59,3 @@ sudo nixos-rebuild switch --flake .#nixos   # build and activate
 - Leave `system.stateVersion = "26.05"` alone during upgrades. It sets
   compatibility defaults, not the NixOS version.
 
-## Mute-key LED
-
-`configuration.nix` sets `snd_hda_intel model=hp-mute-led-mic3`, the kernel's
-[HP mute LED via Mic3 quirk](https://docs.kernel.org/sound/hd-audio/models.html)
-for the Realtek ALC295. It routes the speaker mute LED through codec pin `0x1b`.
-It's specific to this laptop, so remove it when moving the config to other
-hardware.

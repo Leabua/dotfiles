@@ -27,7 +27,7 @@ in
     appleFonts.sf-mono
     pixelify-sans
     maple-mono.NF
-    nerd-fonts.iosevka
-    roboto-flex
+    # nerd-fonts.iosevka
+    # roboto-flex
   ];
 }
