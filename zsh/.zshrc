@@ -34,13 +34,11 @@ if [[ ${HERDR_ENV:-} == 1 ]]; then
   fi
 fi
 
-# Source the first readable file of each group: Arch path, then NixOS path.
-_src() { local f; for f in "$@"; do [[ -r $f ]] && { source "$f"; return 0; }; done; return 1 }
+# Source a file only if it exists, so a missing plugin doesn't break the shell.
+_src() { [[ -r $1 ]] && source "$1" }
 
 # Prompt: Powerlevel10k.
-_src \
-  /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
-  /run/current-system/sw/share/zsh/themes/powerlevel10k/powerlevel10k.zsh-theme
+_src /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 _src ~/.p10k.zsh
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
@@ -49,16 +47,12 @@ if (( $+commands[zoxide] )); then
   eval "$(zoxide init zsh)"
 fi
 
-_src /usr/share/fzf/completion.zsh   /run/current-system/sw/share/fzf/completion.zsh
-_src /usr/share/fzf/key-bindings.zsh /run/current-system/sw/share/fzf/key-bindings.zsh
+_src /usr/share/fzf/completion.zsh
+_src /usr/share/fzf/key-bindings.zsh
 
-_src \
-  /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh \
-  /run/current-system/sw/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+_src /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-_src \
-  /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh \
-  /run/current-system/sw/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+_src /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 if (( $+widgets[history-substring-search-up] )); then
   bindkey '^[[A' history-substring-search-up
   bindkey '^[[B' history-substring-search-down
@@ -66,13 +60,10 @@ fi
 
 # Aliases.
 
-# NixOS maintenance.
-alias rebuild='nixos-rebuild switch --sudo --flake "$HOME/dotfiles/nixos#nixos" --log-format internal-json -v |& nom --json'
-alias upgrade='nix flake update --flake "$HOME/dotfiles/nixos" && "$HOME/dotfiles/nixos/update-opencode.sh" && rebuild'
-alias update-t3code='nix flake update t3code --flake "$HOME/dotfiles/nixos" && rebuild'
-alias clean='sudo nix-collect-garbage -d && nixos-rebuild boot --sudo --flake "$HOME/dotfiles/nixos#nixos"'
-alias nixconf='nvim "$HOME/dotfiles/nixos"'
-alias search='nix search nixpkgs'
+# Arch maintenance (yay wraps pacman and covers the AUR).
+alias upgrade='yay -Syu'
+alias clean='yay -Yc && yay -Sc'
+alias search='yay -Ss'
 
 # Everyday shortcuts.
 alias catall='fd -t f -X tail -n +1 | nvim'
@@ -96,8 +87,6 @@ alias gs='git status'
 alias trackpad='sudo modprobe -r psmouse && sudo modprobe psmouse'
 
 # zsh-syntax-highlighting must be sourced last.
-_src \
-  /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
-  /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+_src /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 unfunction _src

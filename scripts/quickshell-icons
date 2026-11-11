@@ -18,7 +18,7 @@ from pathlib import Path
 HOME = Path.home()
 COLORS = HOME / ".config/gtk-3.0/quickshell-colors.css"
 THEME = HOME / ".local/share/icons/Quickshell"
-PAPIRUS = Path("/run/current-system/sw/share/icons/Papirus-Dark")
+PAPIRUS = Path("/usr/share/icons/Papirus-Dark")
 
 # ------- strokes --------
 # small matches MenuIcon.qml (1.7 on a 24 grid); large thins out so 64px grid icons stay light
