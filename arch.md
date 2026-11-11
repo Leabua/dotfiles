@@ -1,180 +1,93 @@
 # Arch
 
-The Arch counterpart to [`nixos/`](https://github.com/Leabua/dotfiles/tree/master/nixos). Nixos declares all of this in `configuration.nix` and `packages.nix`; on Arch you do it by hand. Work top to bottom and you land on the same system.
+Quick notes for going from a fresh `archinstall` to a working Niri/Hyprland session with these dots. Everything after that is done by hand.
 
-Assumes Arch is installed from the ISO, you have networking, and you're in the `wheel` group.
+## 1. pacman
 
-## 1. Packages
-
-```
-# base
-sudo pacman -S base-devel git stow
-
-# compositors + display manager
-sudo pacman -S hyprland xorg-xwayland niri uwsm ly
-sudo pacman -S hypridle hyprlock hyprpaper hyprsunset hyprshot hyprpolkitagent
-sudo pacman -S xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
-
-# bar / shell / launchers / notifications  (walker + wlogout are AUR, below)
-sudo pacman -S quickshell waybar rofi fuzzel mako
-
-# wayland utilities
-sudo pacman -S cliphist grim slurp satty wl-clipboard playerctl brightnessctl libnotify awww
-
-# terminals
-sudo pacman -S ghostty kitty alacritty
-
-# shell
-sudo pacman -S bash bash-completion starship fzf zoxide
-
-# terminal tools
-sudo pacman -S tmux btop fastfetch yazi neovim lazygit ripgrep fd jq wget trash-cli tree-sitter
-
-# audio
-sudo pacman -S pipewire pipewire-pulse pipewire-alsa wireplumber pavucontrol rtkit wiremix
-
-# network + bluetooth
-sudo pacman -S networkmanager impala bluez bluez-utils bluetui
-
-# power + graphics (intel; swap the driver if you're on amd/nvidia)
-sudo pacman -S upower power-profiles-daemon intel-media-driver libvdpau-va-gl
-
-# files + auth
-sudo pacman -S nautilus gvfs udisks2 gnome-keyring
-
-# theming
-sudo pacman -S matugen gnome-themes-extra papirus-icon-theme nwg-look dconf
-
-# fonts
-sudo pacman -S ttf-iosevka-nerd ttf-nerd-fonts-symbols noto-fonts noto-fonts-emoji ttf-roboto
-
-# dev + runtimes
-sudo pacman -S python nodejs npm pnpm jdk-openjdk maven make cmake meson ninja rust
-
-# lsp + formatters (matches packages.nix)
-sudo pacman -S lua-language-server typescript-language-server tailwindcss-language-server qt6-declarative
-sudo pacman -S stylua prettier python-black shfmt
-
-# apps
-sudo pacman -S firefox obs-studio obsidian
-
-# misc
-sudo pacman -S zram-generator
-```
-
-Then the AUR bits (install `yay` first if you haven't):
+Edit `/etc/pacman.conf` under `[options]`:
 
 ```
-yay -S walker wlogout \
-       otf-departure-mono otf-departure-mono-nerd \
-       bibata-cursor-theme adwaita-qt5 adwaita-qt6 \
-       zen-browser-bin claude-code pacseek \
-       basedpyright jdtls vscode-langservers-extracted
+Color
+ParallelDownloads = 5
+ILoveCandy
 ```
 
-`otf-departure-mono-nerd` is not optional if you use the Quickshell bar — the bar's glyphs are Nerd Font codepoints in DepartureMono. Note the bar wants the **non-Mono** `DepartureMono Nerd Font` family; the `Mono` variant squashes the wide icons.
-
-`qt6-declarative` is what ships `qmlls`, the QML language server, which you want if you're editing the Quickshell configs in nvim.
-
-## 2. Services
-
-Nixos enables these with `services.<x>.enable = true`. On Arch:
+Then uncomment the multilib block at the bottom so 32-bit packages work:
 
 ```
-sudo systemctl enable --now NetworkManager bluetooth
-sudo systemctl enable --now power-profiles-daemon upower
-sudo systemctl enable --now udisks2 sshd
-sudo systemctl enable ly
+[multilib]
+Include = /etc/pacman.d/mirrorlist
 ```
 
-Pipewire and wireplumber run as user services and start themselves — nothing to enable.
-
-## 3. What Nixos does declaratively that Arch won't
-
-These are the bits that live in `configuration.nix` and have no Arch equivalent, so they're easy to forget.
-
-**Caps ↔ Escape, system wide** (`services.xserver.xkb.options`):
 ```
-localectl set-x11-keymap us "" "" caps:swapescape
-echo 'KEYMAP=us' | sudo tee /etc/vconsole.conf
+sudo pacman -Syu
 ```
 
-**Power key opens the Quickshell power menu instead of shutting the machine down** (`services.logind.powerKey = "ignore"`) — in `/etc/systemd/logind.conf`:
+## 2. Base + yay
+
 ```
-HandlePowerKey=ignore
+sudo pacman -S --needed base-devel git stow
+git clone https://aur.archlinux.org/yay-bin.git /tmp/yay-bin
+cd /tmp/yay-bin && makepkg -si
 ```
 
-**zram swap** (`zramSwap.enable`) — in `/etc/systemd/zram-generator.conf`:
+## 3. Enough to reach a graphical WM
+
 ```
-[zram0]
-zram-size = ram / 2
+# session
+sudo pacman -S niri hyprland xorg-xwayland uwsm ly hyprlock hypridle hyprpolkitagent \
+  xdg-desktop-portal-gtk xdg-desktop-portal-hyprland
+
+# bar + its runtime bits
+sudo pacman -S quickshell qt6-multimedia qt6-imageformats poppler matugen \
+  cliphist wl-clipboard grim slurp satty brightnessctl playerctl libnotify awww
+
+# audio / network / power / bluetooth
+sudo pacman -S pipewire pipewire-pulse pipewire-alsa wireplumber \
+  networkmanager network-manager-applet bluez bluez-utils upower power-profiles-daemon
+
+# terminal + shell
+sudo pacman -S ghostty tmux neovim zsh zsh-autosuggestions zsh-syntax-highlighting \
+  zsh-history-substring-search fzf zoxide
+
+# keyring / ssh agent / files
+sudo pacman -S gnome-keyring gcr thunar gvfs udisks2 papirus-icon-theme
 ```
 
-**Session variables** (`environment.sessionVariables`) — in `/etc/environment`:
 ```
-GTK_THEME=Adwaita:dark
-QT_QPA_PLATFORM=wayland;xcb
-LIBVA_DRIVER_NAME=iHD
-EDITOR=nvim
-VISUAL=nvim
-BROWSER=zen-browser
+yay -S zsh-theme-powerlevel10k-git zen-browser-bin apple-fonts
 ```
 
-**Shell** (`users.users.leabua.shell`):
+Also grab Maple Mono NF and Pixelify Sans (hyprlock); check the AUR for both.
+
+## 4. Services
+
 ```
-chsh -s "$(command -v bash)"
+sudo systemctl enable NetworkManager bluetooth upower power-profiles-daemon
+sudo systemctl enable ly        # newer ly: ly@tty2 (and disable getty@tty2)
+systemctl --user enable hyprpolkitagent gcr-ssh-agent.socket
+chsh -s /usr/bin/zsh
 ```
 
-**Dark mode + icon theme** (the `dconf` block):
-```
-gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark
-```
+Add `HandlePowerKey=ignore` to `/etc/systemd/logind.conf` so the power key opens the Quickshell menu.
 
-**Trash cleanup timer** (the `trash-cleanup` systemd unit) — purges trashed files older than 20 days. Create `~/.config/systemd/user/trash-cleanup.service`:
-```
-[Service]
-ExecStart=/usr/bin/trash-empty 20
-```
-and `~/.config/systemd/user/trash-cleanup.timer`:
-```
-[Timer]
-OnCalendar=daily
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-```
-then `systemctl --user enable --now trash-cleanup.timer`.
-
-**Opening text files in nvim inside ghostty** (the `nvim-terminal` desktop item) — the stock `nvim.desktop` is `Terminal=true` and won't launch under Hyprland. Create `~/.local/share/applications/nvim-terminal.desktop`:
-```
-[Desktop Entry]
-Type=Application
-Name=Neovim (Terminal)
-Exec=ghostty -e nvim %F
-Terminal=false
-Icon=nvim
-Categories=Utility;TextEditor;
-MimeType=text/plain;text/markdown;text/x-python;text/x-lua;text/javascript;application/json;
-```
-then set it as the default:
-```
-xdg-mime default nvim-terminal.desktop text/plain text/markdown text/x-python text/x-lua text/javascript application/json
-```
-
-## 4. Dots
+## 5. Dots
 
 ```
 git clone https://github.com/Leabua/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-stow bash starship ghostty herdr hypr quickshell matugen wallpapers nvim btop fastfetch gtk satty
+stow zsh ghostty tmux nvim niri hypr quickshell matugen gtk btop fastfetch herdr satty starship zed wallpapers
+~/dotfiles/scripts/quickshell-icons   # builds the "Quickshell" icon theme
 ```
 
-See the table in the [README](https://github.com/Leabua/dotfiles/blob/master/README.md) for what each one is.
+Reboot, pick a session in ly, done.
 
-## Notes
+## Nix leftovers to fix once you're in
 
-The dots are tuned for Nixos paths, so expect the odd hardcoded path to need fixing on Arch. Nothing structural.
-
-`nix-output-monitor` is in `packages.nix` but has no Arch counterpart — it only exists to prettify `nixos-rebuild`, so there's nothing to install.
+- `scripts/quickshell-icons`: Papirus path → `/usr/share/icons/Papirus-Dark` (fix this before running it)
+- `btop.conf`: `color_theme` is a `/nix/store` path
+- `hypr/.luarc.json`: stubs path is `/run/current-system/...`
+- `hypr/modules/autostart.lua`: `hyprland-session.target` doesn't exist on Arch
+- `shell/aliases.sh`: rebuild/upgrade/clean/search are nix commands
+- `.zshrc`: check the zsh-syntax-highlighting path against `pacman -Ql zsh-syntax-highlighting`
+- nvim: LSPs aren't managed by Mason, so install the servers yourself with pacman/yay
