@@ -69,3 +69,10 @@ nvim/.config/nvim/nvim.log
 # nix build output symlinks
 result
 result-*
+
+# herdr runtime state (logs, agent socket, sessions) written into its stowed config dir
+herdr/.config/herdr/*.log
+herdr/.config/herdr/*.sock*
+herdr/.config/herdr/session.json
+herdr/.config/herdr/session-snapshots/
+herdr/.config/herdr/.plugins.lock
