@@ -184,34 +184,12 @@
         "url": "https://devimages-cdn.apple.com/design/resources/download/NY.dmg"
       }
     },
-    "penelope": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1794185797,
-        "narHash": "sha256-WEYrP/+3XYUtGgCPNBNHecNIyL7trZ+Ck2nGz6GPv+0=",
-        "ref": "beta",
-        "rev": "5e122438426018785f57cc287a178884f7503032",
-        "revCount": 1109,
-        "type": "git",
-        "url": "ssh://git@github.com/Leabua/Penelope.git"
-      },
-      "original": {
-        "ref": "beta",
-        "type": "git",
-        "url": "ssh://git@github.com/Leabua/Penelope.git"
-      }
-    },
     "root": {
       "inputs": {
         "apple-fonts": "apple-fonts",
         "blip": "blip",
         "helium": "helium",
         "nixpkgs": "nixpkgs",
-        "penelope": "penelope",
         "t3code": "t3code",
         "zen-browser": "zen-browser"
       }
