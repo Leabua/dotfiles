@@ -6,7 +6,7 @@
 -- and if they dont load hyprland will feel broken
 
 BROWSER = "zen-beta"
-FILEMANAGER = "thunar"
+FILEMANAGER = "nautilus"
 TERMINAL = "ghostty"
 
 ---------------------

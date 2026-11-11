@@ -1,5 +1,7 @@
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"
 spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET"
+// dark mode for every app (portal-aware apps read color-scheme) + no min/max/close buttons on GTK headerbars
+spawn-sh-at-startup "gsettings set org.gnome.desktop.interface color-scheme prefer-dark && gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark && gsettings set org.gnome.desktop.wm.preferences button-layout ''"
 spawn-sh-at-startup "qs -p $HOME/.config/quickshell/niriBar"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "nm-applet"
