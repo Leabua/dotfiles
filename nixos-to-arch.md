@@ -57,7 +57,11 @@ About 2 minutes. Nothing gets deleted.
   ```sh
   lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINTS
   ```
-  The HDD shows as mounted at `/run/archiso/img_dev`. The SSD is the ~100 GB one with the `nixos` label.
+  - SSD: ~100 GB, partitions labelled `boot`, `swap`, `nixos`. **This is the one to wipe.**
+  - HDD: ~900 GB, one ext4 partition, no label. **Leave it alone.**
+
+  With 8 GB RAM the live system copies itself into RAM and unmounts the HDD, so the HDD
+  will *not* show as mounted. Go by size and labels only.
 
 ## Phase 3: Install with archinstall
 
