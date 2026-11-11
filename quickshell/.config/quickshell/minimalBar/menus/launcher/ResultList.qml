@@ -16,19 +16,38 @@ Item {
     signal hovered(int index)
     signal activated(int index)
 
+    // last real pointer position (global). Scrolling the list under a resting
+    // cursor makes Qt send synthetic hover moves; without this guard they'd
+    // snap the selection to whatever row slid under the mouse -> e.g. wrapping
+    // from the last row back to the first landed on the hovered row instead
+    property point lastPointer: Qt.point(-1, -1)
+
+    // the selection is owned by Launcher; scroll explicitly instead of binding
+    // ListView.currentIndex (model resets rewrite that internally and break the binding)
+    function reveal(): void {
+        if (view.count === 0)
+            return;
+        if (rl.selectedIndex <= 0)
+            view.positionViewAtBeginning();
+        else if (rl.selectedIndex >= view.count - 1)
+            view.positionViewAtEnd();
+        else
+            view.positionViewAtIndex(rl.selectedIndex, ListView.Contain);
+    }
+
+    onSelectedIndexChanged: reveal()
+    onResultsChanged: Qt.callLater(reveal)
+
     ListView {
         id: view
         anchors.fill: parent
         model: rl.results
-        currentIndex: rl.selectedIndex
         highlightFollowsCurrentItem: false
+        keyNavigationEnabled: false
         boundsBehavior: Flickable.StopAtBounds
         clip: true
         cacheBuffer: 200
         pixelAligned: true
-
-        // keep the keyboard-selected row scrolled into view
-        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
 
         // the default wheel step is tiny on a touchpad; scale it up and drive
         // contentY directly so scrolling feels responsive (bump scrollSpeed to taste)
@@ -124,7 +143,14 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onPositionChanged: rl.hovered(row.index)
+                onPositionChanged: mouse => {
+                    const g = mapToGlobal(mouse.x, mouse.y);
+                    if (g.x === rl.lastPointer.x && g.y === rl.lastPointer.y)
+                        return; // content moved, the pointer didn't
+                    rl.lastPointer = g;
+                    if (rl.selectedIndex !== row.index)
+                        rl.hovered(row.index);
+                }
                 onClicked: rl.activated(row.index)
             }
         }

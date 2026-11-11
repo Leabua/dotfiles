@@ -21,6 +21,14 @@ Scope {
     // cached, pre-lowercased index of installed apps (rebuilt when the set changes)
     property var appIndex: []
 
+    // launch history shared by both bars: { apps: {id: {count, last}}, queries: {q: {id: hits}} }
+    readonly property string usageDir: (Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")) + "/quickshell"
+    readonly property string usagePath: usageDir + "/launcher-usage.json"
+    property var usage: ({
+            apps: {},
+            queries: {}
+        })
+
     readonly property int cardWidth: Math.min(480, popup.availableWidth)
     readonly property int listHeight: Math.min(380, Math.max(120, popup.availableHeight - 120))
 
@@ -36,6 +44,9 @@ Scope {
                 continue;
             const cats = e.categories || [];
             const kws = e.keywords || [];
+            const t = (e.name || "").toLowerCase();
+            const words = t.split(/[\s\-_.:()]+/).filter(w => w.length);
+            const kwText = (kws.join(" ") + " " + (e.genericName || "")).toLowerCase();
             out.push({
                 kind: "app",
                 entry: e,
@@ -43,8 +54,12 @@ Scope {
                 category: cats.length ? cats[0] : "App",
                 glyph: "󰣆",
                 iconUrl: Quickshell.iconPath(e.icon, ""),
-                _t: (e.name || "").toLowerCase(),
-                _k: (kws.join(" ") + " " + (e.genericName || "") + " " + (e.comment || "")).toLowerCase(),
+                id: e.id || e.name,
+                _t: t,
+                _w: words,
+                _a: words.map(w => w[0]).join(""),
+                _k: (kwText + " " + (e.comment || "")).toLowerCase(),
+                _kw: kwText.split(/[\s;,\-]+/).filter(w => w.length),
                 _c: cats.join(" ").toLowerCase()
             });
         }
@@ -53,14 +68,15 @@ Scope {
     }
 
     // score the cached index against the current query; an empty query lists
-    // every app alphabetically
+    // every app, most used first
 
     function rebuild(): void {
         const q = root.query.trim().toLowerCase();
         const tokens = q.length ? q.split(/\s+/) : [];
+        const now = Date.now();
         let scored = [];
         for (const it of root.appIndex) {
-            const score = tokens.length ? Score.scoreItem(it, tokens) : 1;
+            const score = Score.scoreItem(it, q, tokens, root.usage, now);
             if (score === 0)
                 continue;
             scored.push({
@@ -68,18 +84,28 @@ Scope {
                 score: score
             });
         }
-        scored.sort(Score.compare);
+        scored.sort(tokens.length ? Score.compare : Score.compareBrowse);
         root.results = scored.map(s => s.item);
         root.selectedIndex = 0;
     }
 
     // ----- selection + activation -----
 
+    // single steps wrap around both ends; page jumps clamp, then wrap once
+    // you're already sitting on the edge
     function moveSel(delta: int): void {
         const n = root.results.length;
         if (n === 0)
             return;
-        root.selectedIndex = (root.selectedIndex + delta + n) % n;
+        const cur = root.selectedIndex;
+        if (Math.abs(delta) === 1) {
+            root.selectedIndex = ((cur + delta) % n + n) % n;
+            return;
+        }
+        if (delta > 0)
+            root.selectedIndex = cur === n - 1 ? 0 : Math.min(n - 1, cur + delta);
+        else
+            root.selectedIndex = cur === 0 ? n - 1 : Math.max(0, cur + delta);
     }
 
     function activate(item): void {
@@ -87,11 +113,49 @@ Scope {
             return;
         if (item.entry)
             item.entry.execute();
+        root.recordLaunch(item);
         root.open = false;
     }
 
     function activateAt(index: int): void {
         root.activate(root.results[index]);
+    }
+
+    // ----- usage persistence -----
+
+    function recordLaunch(item): void {
+        const q = root.query.trim().toLowerCase();
+        root.usage = Score.record(root.usage, item.id, q, Date.now());
+        usageFile.setText(JSON.stringify(root.usage));
+    }
+
+    function loadUsage(text: string): void {
+        try {
+            const u = JSON.parse(text);
+            root.usage = {
+                apps: u.apps || {},
+                queries: u.queries || {}
+            };
+        } catch (e) {
+            // missing / corrupt file -> start fresh
+        }
+    }
+
+    Process {
+        id: usageDirProc
+        command: ["mkdir", "-p", root.usageDir]
+        running: true
+    }
+
+    FileView {
+        id: usageFile
+        path: root.usagePath
+        atomicWrites: true
+        printErrors: false
+        // the other bar (or a previous session) may have written newer history
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: root.loadUsage(text())
     }
 
     // ----- keyboard: build query + navigate (PopupWindow forwards via keyDown) -----
@@ -107,12 +171,23 @@ Scope {
             }
             return;
         }
-        if (k === Qt.Key_Down || (k === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier))) {
+        const ctrl = event.modifiers & Qt.ControlModifier;
+        if (k === Qt.Key_PageDown || k === Qt.Key_PageUp) {
+            root.moveSel(k === Qt.Key_PageDown ? 8 : -8);
+            event.accepted = true;
+            return;
+        }
+        if (ctrl && (k === Qt.Key_Home || k === Qt.Key_End)) {
+            root.selectedIndex = k === Qt.Key_Home ? 0 : Math.max(0, root.results.length - 1);
+            event.accepted = true;
+            return;
+        }
+        if (k === Qt.Key_Down || (ctrl && (k === Qt.Key_N || k === Qt.Key_J)) || (k === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier))) {
             root.moveSel(1);
             event.accepted = true;
             return;
         }
-        if (k === Qt.Key_Up || k === Qt.Key_Backtab || (k === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+        if (k === Qt.Key_Up || (ctrl && (k === Qt.Key_P || k === Qt.Key_K)) || k === Qt.Key_Backtab || (k === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
             root.moveSel(-1);
             event.accepted = true;
             return;
