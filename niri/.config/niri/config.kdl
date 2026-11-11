@@ -16,7 +16,6 @@ hotkey-overlay {
 environment {
     XCURSOR_SIZE "20"
     XCURSOR_THEME "Bibata-Modern-Classic"
-    GTK_THEME "Adwaita:dark"
 }
 
 // --------------------
