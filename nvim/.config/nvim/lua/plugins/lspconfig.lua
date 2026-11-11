@@ -2,6 +2,11 @@ return {
 	"neovim/nvim-lspconfig",
 	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
+		-- mason first: its setup puts ~/.local/share/nvim/mason/bin on nvim's PATH,
+		-- which is where vim.lsp.enable and conform look for binaries
+		{ "mason-org/mason.nvim", cmd = "Mason", opts = {} },
+		"mason-org/mason-lspconfig.nvim",
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		"saghen/blink.cmp",
 	},
 	config = function()
@@ -37,11 +42,32 @@ return {
 			},
 		})
 
-		-- Servers come from Nix (environment.systemPackages), NOT Mason:
-		-- Mason ships generic-linux binaries that NixOS can't exec. vim.lsp.enable
-		-- just turns on lspconfig's built-in defaults; each starts only if its
-		-- binary is on PATH, so installing it in configuration.nix is what wires
-		-- it up. Add/remove a name here to match what you install via Nix.
+		local servers = {
+			"basedpyright",
+			"clangd",
+			"cssls",
+			"gopls",
+			"html",
+			"lua_ls",
+			"rust_analyzer",
+			"tailwindcss",
+			"ts_ls",
+		}
+
+		-- formatters conform.lua calls; rustfmt comes from rustup, not Mason
+		local tools = { "prettier", "stylua", "black", "shfmt" }
+
+		-- Mason installs anything missing in the background (:Mason to watch / manage).
+		-- automatic_enable is off because the vim.lsp.enable call below owns that list.
+		require("mason-lspconfig").setup({ automatic_enable = false })
+		require("mason-tool-installer").setup({
+			ensure_installed = vim.list_extend(vim.deepcopy(servers), tools),
+		})
+		-- it only checks on VimEnter; this plugin loads on the first buffer read,
+		-- which can come after that (opening nvim empty, then a file), so kick it here
+		if vim.v.vim_did_enter == 1 then
+			require("mason-tool-installer").run_on_start()
+		end
 
 		vim.lsp.config("rust_analyzer", {
 			settings = {
@@ -51,34 +77,7 @@ return {
 			},
 		})
 
-		vim.lsp.config("nixd", {
-			settings = {
-				nixd = {
-					-- Tell nixd where nixpkgs is so option/completion lookups work.
-					nixpkgs = {
-						expr = 'import (builtins.getFlake "/home/leabua/dotfiles/nixos").inputs.nixpkgs {}',
-					},
-					-- Delegate formatting to nixfmt instead of an external call.
-					formatting = {
-						command = { "nixfmt" },
-					},
-				},
-			},
-		})
-
-		vim.lsp.enable({
-			"basedpyright",
-			"clangd",
-			"cssls",
-			"gopls",
-			"html",
-			"jdtls",
-			"lua_ls",
-			"nixd",
-			"rust_analyzer",
-			"tailwindcss",
-			"ts_ls",
-		})
+		vim.lsp.enable(servers)
 
 		-- Window id of the last combined K float, so a second K enters it.
 		local k_float_win = nil

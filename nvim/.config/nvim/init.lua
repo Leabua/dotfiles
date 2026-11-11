@@ -1,3 +1,5 @@
+vim.loader.enable() -- first, so every later require is cached
+
 require("config.options")
 require("config.theme").setup()
 require("config.lazy")

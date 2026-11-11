@@ -5,7 +5,8 @@ return {
 	lazy = false,
 	config = function()
 		-- Install the parsers we use (async; a no-op if already installed).
-		require("nvim-treesitter").install({
+		-- Deferred: the installed-check isn't needed to draw the first frame.
+		vim.schedule(function() require("nvim-treesitter").install({
 			"lua",
 			"luadoc",
 			"vim",
@@ -17,7 +18,6 @@ return {
 			"python",
 			"go",
 			"rust",
-			"java",
 			"c",
 			"cpp",
 			"bash",
@@ -25,7 +25,7 @@ return {
 			"html",
 			"markdown",
 			"markdown_inline",
-		})
+		}) end)
 
 		-- On the `main` branch highlighting/indent are no longer auto-enabled, so
 		-- start them ourselves for any buffer whose filetype has a parser installed.

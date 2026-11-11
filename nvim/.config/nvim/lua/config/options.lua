@@ -1,4 +1,3 @@
-vim.loader.enable()
 
 -- leader keys - must be first thing thats loaded in
 vim.g.mapleader = " "

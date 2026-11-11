@@ -123,6 +123,10 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
+		event = "VeryLazy", -- after the first frame; it's only chrome
+		init = function()
+			vim.o.statusline = " " -- blank until lualine takes over, so the default bar doesn't flash
+		end,
 		opts = function()
 			local theme = require("lualine.themes.seoul256")
 			-- local theme = require("lualine.themes.palenight")

@@ -160,7 +160,10 @@ function M.setup()
 			M.save(vim.g.colors_name)
 			-- ...and re-assert once the picker's async churn settles, so a scheme
 			-- applied in a racy context is still normalised + persisted correctly.
-			schedule_reassert()
+			-- Startup has no picker racing it, so skip the second full sweep there.
+			if vim.v.vim_did_enter == 1 then
+				schedule_reassert()
+			end
 		end,
 	})
 
