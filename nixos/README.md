@@ -28,7 +28,7 @@ rebuild   # nixos-rebuild switch with this flake
 upgrade   # update every flake input, bump OpenCode, then rebuild
 ```
 
-Both aliases live in `shell/aliases.sh`, which bash and zsh both source. No input is pinned to a
+Both aliases live in `zsh/.zshrc` (and `bash/.bashrc`). No input is pinned to a
 tag or commit, and every input follows the system `nixpkgs`, so `upgrade`
 always moves everything forward. Keep it that way when adding inputs:
 

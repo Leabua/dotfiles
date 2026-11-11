@@ -88,6 +88,6 @@ Reboot, pick a session in ly, done.
 - `btop.conf`: `color_theme` is a `/nix/store` path
 - `hypr/.luarc.json`: stubs path is `/run/current-system/...`
 - `hypr/modules/autostart.lua`: `hyprland-session.target` doesn't exist on Arch
-- `shell/aliases.sh`: rebuild/upgrade/clean/search are nix commands
+- `.zshrc` / `.bashrc` aliases: rebuild/upgrade/clean/search are nix commands
 - `.zshrc`: check the zsh-syntax-highlighting path against `pacman -Ql zsh-syntax-highlighting`
 - nvim: LSPs aren't managed by Mason, so install the servers yourself with pacman/yay
