@@ -17,5 +17,25 @@
     "mode": "dark",
     "light": "Rosé Pine",
     "dark": "Terafox - blurred"
+  },
+  "languages": {
+    "Nix": {
+      "formatter": "language_server",
+      "format_on_save": "on"
+    }
+  },
+  "lsp": {
+    "nixd": {
+      "settings": {
+        "nixd": {
+          "nixpkgs": {
+            "expr": "import (builtins.getFlake \"/home/leabua/dotfiles/nixos\").inputs.nixpkgs {}"
+          },
+          "formatting": {
+            "command": ["nixfmt"]
+          }
+        }
+      }
+    }
   }
 }
