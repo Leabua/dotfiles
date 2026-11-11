@@ -1,23 +1,14 @@
 command = command -v zsh >/dev/null && exec zsh || exec bash
 
-# theme = Aizen Dark
-# theme = Carbonfox
-# theme = Ayu 
-# theme = TokyoNight Night
-# theme = Sunset Drive 
 # theme = cyberdream
 theme = Terafox
 
-font-family = "Maple Mono NF"
-# font-family = "Iosevka Nerd Font"
-# font-family = "SF Mono"
  
+font-family = "Maple Mono NF"
 # font-style = Normal
 font-style = Normal
 font-size = 14
 font-feature = calt
-# Center the asterisk: Iosevka's VSAB selector. *
-font-feature = VSAB=3    
 
 # Plain-style italic glyphs -> rm the cursive letters
 font-feature = cv33
@@ -30,7 +21,6 @@ font-feature = cv37
 window-padding-y = 6
 window-padding-x = 6
 resize-overlay = never
-# background-opacity = 1
 background-opacity = 0.92
 window-inherit-working-directory = true
 
@@ -40,14 +30,6 @@ cursor-style-blink = false
 
 shell-integration-features = no-cursor,ssh-env
 
-# Slowdown mouse scrolling
-mouse-scroll-multiplier = 1
-confirm-close-surface = false
-
 window-decoration = false
-
-keybind = ctrl+shift+c=copy_to_clipboard
-keybind = ctrl+shift+v=paste_from_clipboard
-#
-# default is toggle_fullscreen; free it so ctrl+enter reaches the app
+confirm-close-surface = false
 keybind = ctrl+enter=unbind

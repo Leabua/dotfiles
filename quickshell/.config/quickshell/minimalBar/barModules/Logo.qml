@@ -38,7 +38,7 @@ BarButton {
             anchors.centerIn: parent
             text: root.glyphs[root.distroId] ?? "󰻀"
             color: value.iconColor
-            font.family: Globals.textFont.family
+            font.family: Globals.glyphFamily
             font.pixelSize: Globals.barIconSize
         }
     }

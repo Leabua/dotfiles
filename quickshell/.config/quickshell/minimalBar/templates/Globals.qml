@@ -49,6 +49,10 @@ Singleton {
         weight: 700
     })
 
+    // nerd-font glyphs (distro mark) need a face that actually has them; the text font doesn't,
+    // and Qt's fallback won't reliably find one, so name it outright
+    readonly property string glyphFamily: "Maple Mono NF"
+
     // ------- bar --------
     // the bar speaks the menus' language: semibold values, line icons dimmed one tier below them
     readonly property font barFont: Qt.font({
