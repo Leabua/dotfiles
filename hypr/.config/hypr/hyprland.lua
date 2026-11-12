@@ -15,7 +15,7 @@ TERMINAL = "ghostty"
 
 hl.env("XCURSOR_SIZE", "20")
 hl.env("HYPRCURSOR_SIZE", "20")
-hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
+-- hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 
 --------------------
 --- Source Files ---

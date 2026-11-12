@@ -23,8 +23,8 @@ input {
 }
 
 cursor {
-    xcursor-theme "Bibata-Modern-Classic"
-    xcursor-size 20
+    // xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 14
     hide-when-typing
     hide-after-inactive-ms 10000
 }

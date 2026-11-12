@@ -1,10 +1,6 @@
 // ---------------------------
 // --- My Default Programs ---
 // ---------------------------
-// Split into modules like hypr/.config/hypr; window management follows niri conventions.
-// KDL has no variables, so the programs are inlined in bindings.kdl:
-// BROWSER = zen-beta, FILEMANAGER = thunar, TERMINAL = ghostty
-
 hotkey-overlay {
     skip-at-startup
 }
