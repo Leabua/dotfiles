@@ -1,7 +1,7 @@
 command = command -v zsh >/dev/null && exec zsh || exec bash
 
-# theme = cyberdream
-theme = Terafox
+theme = cyberdream
+# theme = Terafox
 
  
 font-family = "Maple Mono NF"
