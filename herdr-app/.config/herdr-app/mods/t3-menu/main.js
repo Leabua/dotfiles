@@ -191,7 +191,7 @@ function menuIcon(command, label, args) {
 function shortcut(name, args) {
   // `pane.split:right` binds pane.split with { direction: "right" }.
   const value = args && Object.values(args)[0];
-  // A layout's own keys too: Settle's is the herdr-t3 layout's.
+  // A layout's own keys too: Settle's is the mine layout's.
   const k = keys().find((b) => (b.section === "global" || b.section?.startsWith("layout:")) && (b.action === name || b.action === `${name}:${value}`));
   return k ? k.keys : "";
 }

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Enable once per clone: git config core.hooksPath .githooks
+# Check the Herdr app config when a commit touches it (skip once with: git commit --no-verify).
+if git diff --cached --name-only | grep -q '^herdr-app/'; then
+  exec "$(git rev-parse --show-toplevel)/scripts/herdr-check"
+fi
