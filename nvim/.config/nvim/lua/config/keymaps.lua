@@ -80,7 +80,12 @@ local function herdr_nav(dir)
 	local before = vim.fn.winnr()
 	vim.cmd("wincmd " .. dir)
 	if vim.fn.winnr() == before then
-		vim.fn.system({ "herdr", "pane", "focus", "--direction", herdr_dir[dir], "--current" })
+		if vim.env.HC_TERMINAL_ID then
+			-- herdr desktop (herdr-app): its vimnav mod sent us this key
+			vim.fn.jobstart({ "herdr-app", "do", "pane.go", "--direction", herdr_dir[dir] })
+		else
+			vim.fn.system({ "herdr", "pane", "focus", "--direction", herdr_dir[dir], "--current" })
+		end
 	end
 end
 
