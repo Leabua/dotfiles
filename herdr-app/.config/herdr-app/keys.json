@@ -143,7 +143,8 @@
     "ctrl-shift-tab": "t3-tabs.tab-prev",
     "cmd-shift-[": "t3-tabs.tab-prev",
     "ctrl-alt-[": "t3-tabs.tab-prev",
-    "cmd-shift-,": "t3-tabs.settings"
+    "cmd-shift-,": "t3-tabs.settings",
+    "ctrl-shift-t": "t3-tabs.new"
   },
   "mod:t3-picker": {
     "cmd-w": "overlay.close",
