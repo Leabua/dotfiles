@@ -53,7 +53,12 @@ export default class WorkspaceChrome extends View {
     cx.spawn(async (cx) => {
       const open = new Set(this.harnessesOpen().map((h) => h.key)), raw = { ...(this.raw ?? {}) };
       const mine = `${appHome()}/mods/t3-chrome`;
-      if (open.has("claude")) {
+      // Pi on pi-claude-bridge runs through Claude Code, so it shares Claude's 5-hour window.
+      let piBridged = false;
+      if (open.has("pi")) {
+        try { piBridged = JSON.parse((await readTextFile(`${home()}/.pi/agent/settings.json`)) ?? "{}").defaultProvider === "claude-bridge"; } catch { /* keep tokens */ }
+      }
+      if (open.has("claude") || piBridged) {
         try {
           // ~/.claude/scripts/usage-statusline.sh saves Claude Code's rate limits here.
           const u = JSON.parse((await readTextFile(`${home()}/.cache/claude-usage/usage.json`)) ?? "null")?.rate_limits?.five_hour;
@@ -81,7 +86,8 @@ export default class WorkspaceChrome extends View {
           raw.opencode = r.code === 0 ? { tokens: Number(r.stdout.trim()) || 0 } : null;
         } catch { raw.opencode = null; }
       }
-      if (open.has("pi")) {
+      if (piBridged) raw.pi = raw.claude;
+      else if (open.has("pi")) {
         // Pi on an Anthropic login is billed per token as extra usage, not against the Claude plan: its tokens over 5 hours.
         try { const r = await exec(`${mine}/pi-tokens.sh`, [], { timeout: 10000 }); raw.pi = { tokens: Number(r.stdout.trim()) || 0 }; }
         catch { raw.pi = null; }

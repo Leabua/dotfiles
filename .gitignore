@@ -81,3 +81,7 @@ herdr/.config/herdr/*.sock*
 herdr/.config/herdr/session.json
 herdr/.config/herdr/session-snapshots/
 herdr/.config/herdr/.plugins.lock
+
+# pi stow package: only its settings, never auth.json, sessions or installed packages.
+pi/.pi/agent/*
+!pi/.pi/agent/settings.json
