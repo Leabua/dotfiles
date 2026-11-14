@@ -1,0 +1,11 @@
+{
+  "zoom": 1.1,
+  "sounds": {
+    "enabled": false
+  },
+  "font": "Maple Mono NF",
+  "font_size": 16,
+  "font_ligatures": true,
+  "minimum_contrast": 1,
+  "theme": "terafox"
+}

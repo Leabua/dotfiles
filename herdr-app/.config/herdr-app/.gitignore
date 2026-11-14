@@ -1,0 +1,21 @@
+# Herdr writes a lot of state here; commit only the personal config.
+/*
+!/.gitignore
+!/settings.json
+!/keys.json
+!/themes/
+/themes/*
+!/themes/terafox.json
+!/themes/cyberdream.json
+!/layouts/
+/layouts/*
+!/layouts/herdr-t3.json
+!/layouts/herdr-t3.svg
+!/layouts/mine.json
+!/mods/
+/mods/*
+!/mods/vimnav/
+!/mods/t3-*/
+# written by the app into every mod folder on start
+/mods/*/jsconfig.json
+/mods/*/*.d.ts

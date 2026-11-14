@@ -58,6 +58,11 @@ Desktop.ini
 *password*
 *.token
 .claude/
+# ...except the claude stow package: only its settings and scripts, never Claude's runtime state.
+!claude/.claude/
+claude/.claude/*
+!claude/.claude/settings.json
+!claude/.claude/scripts/
 
 # Neovim runtime output.
 nvim/.config/nvim/nvim.log

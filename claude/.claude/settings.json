@@ -1,0 +1,11 @@
+{
+  "enabledPlugins": {
+    "lua-lsp@claude-plugins-official": true,
+    "render@anthropic-plugin-directory": true
+  },
+  "theme": "auto",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/usage-statusline.sh"
+  }
+}
