@@ -19,7 +19,7 @@ import { panelState, togglePanel, syncPanel, restorePanel } from "./panel.js";
 import { button as drawButton, radiusOf } from "./button.js";
 
 const inboxShown = () => sidebarParts(layout()).stack?.active === "inbox";
-// The tab bar's row, as layouts/herdr-t3.json has it.
+// The tab bar's row, as layouts/mine.json has it.
 const ROW_PX = 40;
 // A Review bar with `toggle` in its props draws the panel's toggle as its last part, beside its counts: one control, not two.
 const reviewToggle = (node) => Boolean(node?.content?.mod === "pulls-review" && node.content.props?.toggle) || (node?.children ?? []).some(reviewToggle);

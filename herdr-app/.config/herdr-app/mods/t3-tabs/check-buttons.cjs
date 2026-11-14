@@ -80,7 +80,7 @@ for (const id of ["settings", "t3-settings"]) assert.equal(click(root, id).style
 assert.deepEqual(calls.splice(0).map(c => c[0]), ["app.settings", "t3-tabs.settings"]);
 part = {};
 root = chrome.render();
-for (const id of ["sidebar-mode", "sidebar-toggle"]) assert.equal(click(root, id).style.h, 28);
+for (const id of ["sidebar-toggle"]) assert.equal(click(root, id).style.h, 28);
 assert.deepEqual(calls.splice(0).map(c => c[0]), ["t3-tabs.sidebar", "layout.toggle"]);
 part = { part: "panel" };
 root = chrome.render();

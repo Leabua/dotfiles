@@ -3,7 +3,6 @@ import { h_flex, v_flex } from "gpui-base";
 import { theme, run, props, updates, layout, shared, spaces, window, settings, appHome, home, exec, panes, agents, readTextFile, writeTextFile, notify } from "herdr";
 import { tip, glow } from "./tip.js";
 import { stopsInit, stopsEnd, stop, focusRoot } from "./focus.js";
-import { sidebarParts } from "./sidebar.js";
 import { initSettings, settingsView } from "./settings.js";
 import { KEY } from "./store.js";
 
@@ -23,8 +22,6 @@ import { button as drawButton, radiusOf } from "./button.js";
 // Review wears pulls.review's own mark, as the Review bar does: a review, not a git command. In its colors, so an image.
 const PAGES = { files: ["Files", "folder-tree"], review: ["Review", "pulls-review", true] };
 
-// The sidebar shows either Lists (Spaces and Agents) or the Inbox (t3-inbox): a stack in the layout.
-const inboxShown = () => sidebarParts(layout()).stack?.active === "inbox";
 export default class WorkspaceChrome extends View {
   async close() { stopsEnd(this); }
 
@@ -128,7 +125,7 @@ export default class WorkspaceChrome extends View {
   }
 
   alignLights(cx) {
-    if (shared("layout") !== "herdr-t3") return;
+    if (shared("layout") !== "mine") return;
     const root = /** @type {any} */ (layout()), w = window(), zoom = Number(settings().zoom) || 1;
     if (w?.platform !== "macos" || w.fullscreen || root?.titlebar !== "none" || !root.traffic_lights || this.lightsWriting) return;
     // Once per zoom and layout value: an update that rewrites the layout is aligned again, a failure isn't retried.
@@ -141,7 +138,7 @@ export default class WorkspaceChrome extends View {
     this.lightsWriting = true;
     cx.spawn(async () => {
       try {
-        const file = `${appHome()}/layouts/herdr-t3.json`, before = await readTextFile(file);
+        const file = `${appHome()}/layouts/mine.json`, before = await readTextFile(file);
         if (before === null) throw new Error("Couldn't read the layout file.");
         const saved = JSON.parse(before);
         if (saved.titlebar !== "none" || !saved.traffic_lights || saved.traffic_lights[1] === y) return;
@@ -186,7 +183,7 @@ export default class WorkspaceChrome extends View {
     }
     // Room for the macOS window buttons (layout traffic_lights), a place to drag the window, and the
     // sidebar toggle at its right edge; while the sidebar is hidden, t3-tabs shows it after the buttons.
-    const inbox = inboxShown(), w = window();
+    const w = window();
     // Herdr's mark and name where its own layout has them, past the macOS window buttons; a click goes Home, which has no
     // button of its own. Its colours are louder than anything else here, so it waits at 70% and its name is muted, both lit
     // on hover, with no background behind them. As T3's, no tooltip. The window buttons are screen points, unzoomed: the last ends at 68
@@ -195,8 +192,8 @@ export default class WorkspaceChrome extends View {
     const zoom = settings().zoom || 1, left = w?.platform === "macos" && !w?.fullscreen ? (68 + 16 - 2) / zoom - 6 : 8, on = this.hot === "home"
       // Lit at Home too: its tab bar is empty and its panes may be anyone's, so this says where you are.
       || spaces().some((s) => s.active && s.id === shared(KEY.home));
-    // What the name has past the left inset: less the 8 at the right, two 28px buttons, this button's 6 each side, the 20px logo and 8 gap.
-    const named = !this.brandW || this.brandW - left - 8 - 56 - 12 - 20 - 8 >= (this.nameW || 0);
+    // What the name has past the left inset: less the 8 at the right, one 28px button, this button's 6 each side, the 20px logo and 8 gap.
+    const named = !this.brandW || this.brandW - left - 8 - 28 - 12 - 20 - 8 >= (this.nameW || 0);
     return focusRoot(this, h_flex().id("brand").size_full().bg(t.chrome).pl(left).pr(8).items_center()
       .on_size_change((size, cx) => { this.brandW = size.width / zoom; cx.notify(); })
       .child(stop(this, t, "home", h_flex().id("home").h(28).min_w(0).px(6).gap(8).items_center().rounded(8)
@@ -208,13 +205,7 @@ export default class WorkspaceChrome extends View {
         .when(named, el => el.child(div().id("home-name").flex_none().child("Herdr")
           .on_size_change((size, cx) => { this.nameW = size.width / zoom; cx.notify(); }))), 8))
       .child(div().flex_1())
-      // T3's 28px title bar buttons, side by side instead of its 12 apart, so each stands over a button of the list's top row below.
-      // The mode a click shows: a tray for the Inbox, rows with their marks for the lists.
-      .child(tip(this, t, "sidebar-mode", inbox ? "Show lists" : "Show inbox", stop(this, t, "sidebar-mode", drawButton(t, "sidebar-mode", {
-        size: "sm", icon: `mods/t3-chrome/icons/${inbox ? "layout-list" : "inbox"}.svg`, label: inbox ? "Show lists" : "Show inbox", hot: this.hot === "sidebar-mode" })
-        .on_hover(glow(this, "sidebar-mode"))
-        .on_mouse_down("left", (_e, cx) => cx.stop_propagation())
-        .on_click(() => run("t3-tabs.sidebar")), radiusOf("sm")), { action: "t3-tabs.sidebar", below: true }))
+      // T3's 28px title bar button; the Inbox has no button here (cmd-shift-b still switches to it).
       .child(tip(this, t, "sidebar-toggle", "Hide sidebar", stop(this, t, "sidebar-toggle", drawButton(t, "sidebar-toggle", {
         size: "sm", icon: "mods/t3-chrome/icons/panel-left.svg", label: "Hide sidebar", hot: this.hot === "sidebar-toggle" })
         .on_hover(glow(this, "sidebar-toggle"))

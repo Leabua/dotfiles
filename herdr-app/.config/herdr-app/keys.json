@@ -82,7 +82,7 @@
     "ctrl-insert": "terminal.copy",
     "shift-insert": "terminal.paste"
   },
-  "layout:herdr-t3": {
+  "layout:mine": {
     "cmd-shift-b": "t3-tabs.sidebar",
     "cmd-shift-g": "t3-tabs.review",
     "cmd-alt-b": "t3-tabs.panel",

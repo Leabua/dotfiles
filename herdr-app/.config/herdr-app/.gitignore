@@ -9,9 +9,9 @@
 !/themes/cyberdream.json
 !/layouts/
 /layouts/*
-!/layouts/herdr-t3.json
-!/layouts/herdr-t3.svg
 !/layouts/mine.json
+!/layouts/mine.svg
+!/layouts/terminals-mine.json
 !/mods/
 /mods/*
 !/mods/vimnav/

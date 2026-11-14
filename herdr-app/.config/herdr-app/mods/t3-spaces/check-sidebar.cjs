@@ -96,7 +96,7 @@ function fixture(width) {
     },
     openOverlay: spec => overlays.push(spec), closeOverlay: id => closed.push(id), updates: () => ui.updates,
     nextCommand: () => commands.length ? Promise.resolve(commands.shift()) : new Promise(() => {}),
-    keys: () => [{ section: "layout:herdr-t3", keys: "cmd-t", action: "t3-tabs.new" }, { section: "global", keys: "cmd-n", action: "space.new" }],
+    keys: () => [{ section: "layout:mine", keys: "cmd-t", action: "t3-tabs.new" }, { section: "global", keys: "cmd-n", action: "space.new" }],
   };
   function load(name, props = {}) {
     const storage = stores.get(name) ?? new Map();
@@ -371,19 +371,19 @@ for (const width of [208, 240, 256, 320, 480]) {
   fire(find(ag.render(cx), "pin-vps/t2"), "on_click", {}, cx);
   assert.deepEqual([...f.state["t3.pins"]], ["vps/t2"], "pin acts on the selected remote button");
   const header = f.load("t3-chrome").render(cx);
-  assert.deepEqual(header.items.map(n => n.key).filter(k => typeof k === "string"), ["home", "tip-sidebar-mode", "tip-sidebar-toggle"], "the header holds Herdr's mark (Home, no tooltip), the sidebar switch and toggle; search is a shortcut");
+  assert.deepEqual(header.items.map(n => n.key).filter(k => typeof k === "string"), ["home", "tip-sidebar-toggle"], "the header holds Herdr's mark (Home, no tooltip) and the sidebar toggle; no Inbox button, search is a shortcut");
   assert.ok(walk(find(header, "home")).some(n => n.kind === "image") && strings(find(header, "home")).includes("Herdr"), "Herdr's mark and name, as its own layout has them");
-  assert.deepEqual([header.style.pl, header.style.pr, find(header, "sidebar-mode").style.h, find(header, "sidebar-mode").style.w, find(header, "sidebar-mode").style.rounded], [76, 8, 28, 28, 8], "past the window buttons; T3's 28px buttons, side by side so they stand over the list's top row");
+  assert.deepEqual([header.style.pl, header.style.pr, find(header, "sidebar-toggle").style.h, find(header, "sidebar-toggle").style.w, find(header, "sidebar-toggle").style.rounded], [76, 8, 28, 28, 8], "past the window buttons; T3's 28px button");
   fire(find(header, "sidebar-toggle"), "on_click", {}, cx);
   assert.deepEqual(f.calls.pop(), ["layout.toggle", { id: "sidebar" }]);
   {
-    // Short of room the name goes whole, never cut to "Her…": 76 in, 8 + 56 at the right, 12 + 20 + 8 of the button, 40 of name.
+    // Short of room the name goes whole, never cut to "Her…": 76 in, 8 + 28 at the right, 12 + 20 + 8 of the button, 40 of name.
     const brand = f.load("t3-chrome"), named = () => strings(find(brand.render(cx), "home")).includes("Herdr");
     fire(find(brand.render(cx), "home-name"), "on_size_change", { width: 40 }, cx);
-    fire(brand.render(cx), "on_size_change", { width: 219 }, cx);
+    fire(brand.render(cx), "on_size_change", { width: 191 }, cx);
     assert.ok(!named(), "no room, no name");
     assert.ok(find(brand.render(cx), "home"), "the mark still goes Home");
-    fire(brand.render(cx), "on_size_change", { width: 220 }, cx);
+    fire(brand.render(cx), "on_size_change", { width: 192 }, cx);
     assert.ok(named(), "room for it whole, the name");
   }
   const footer = f.load("t3-chrome", { footer: true });
@@ -662,12 +662,9 @@ for (const width of [208, 240, 256, 320, 480]) {
   assert.ok(find(inbox.render(run), "card-vps/t2") && !find(inbox.render(run), "working-header"), "only the chosen space's agents");
   scope("all");
   assert.ok(find(inbox.render(run), "working-header"), "all spaces again");
-  // The brand bar switches the sidebar, its icon the mode a click shows; with the inbox showing, a settled agent's done is no news.
-  assert.equal((walk(find(f.load("t3-chrome").render(cx), "sidebar-mode")).find(n => n.kind === "svg")?.source), "mods/t3-chrome/icons/inbox.svg", "in Lists it offers the Inbox");
-  fire(find(f.load("t3-chrome").render(cx), "sidebar-mode"), "on_click", {}, cx);
-  assert.deepEqual(f.calls.pop(), ["t3-tabs.sidebar", {}]);
+  // The brand bar has no Inbox button (cmd-shift-b switches); with the inbox showing, a settled agent's done is no news.
+  assert.equal(find(f.load("t3-chrome").render(cx), "sidebar-mode"), undefined, "no Inbox button in the header");
   f.slots["sidebar-lists"] = { id: "sidebar-lists", active: "inbox" };
-  assert.equal((walk(find(f.load("t3-chrome").render(cx), "sidebar-mode")).find(n => n.kind === "svg")?.source), "mods/t3-chrome/icons/layout-list.svg", "in the Inbox it offers the lists");
   f.spaces()[0].tabs[0].status = "done"; f.agents()[0].status = "done";
   for (const k of f.terminals()) if (k.parent) k.status = "idle";
   f.terminals().find(c => c.address === "t0").labels = { settled: "1:0" };
@@ -1760,7 +1757,7 @@ for (const width of [208, 240, 256, 320, 480]) {
     fire(views[3].render(cx), "on_hover", true, cx); // A pane's buttons show while its header is hovered.
     for (const view of views) for (const n of walk(view.render(cx))) if (n.hoverStyle.text_color) assert.ok(!walk(n).some(c => c.kind === "svg"), `${n.key}: a hover style can't brighten its icon`);
     const rest = f.theme().dim, bright = f.theme().foreground;
-    for (const [view, id] of [[views[0], "sidebar-mode"], [views[1], "t3-settings"], [views[7], "tab-new"], [views[4], "space-new"], [views[5], "ag-sort"]]) {
+    for (const [view, id] of [[views[0], "sidebar-toggle"], [views[1], "t3-settings"], [views[7], "tab-new"], [views[4], "space-new"], [views[5], "ag-sort"]]) {
       const color = () => find(view.render(cx), id).style.text_color;
       assert.equal(color(), rest, `${id} at rest`);
       fire(find(view.render(cx), id), "on_hover", true, cx);
@@ -2124,7 +2121,7 @@ for (const width of [208, 240, 256, 320, 480]) {
     f.load("t3-tabs", { part: "keys" }); f.also("t3-tabs", { part: "end" }); f.also("t3-tabs", { part: "measure" }); f.load("t3-chrome"); f.load("t3-chrome", { footer: true });
     cx.spawn = spawn;
     assert.equal(jobs.length, 1, "only the keys copy listens");
-    assert.deepEqual(Object.values(JSON.parse(fs.readFileSync(path.join(modRoot, "..", "keys.json"), "utf8"))["layout:herdr-t3"]).filter(a => /^t3-(chrome|inbox)\./.test(a)), [], "a key's command goes to the mod that always shows: another's would miss it, or toast");
+    assert.deepEqual(Object.values(JSON.parse(fs.readFileSync(path.join(modRoot, "..", "keys.json"), "utf8"))["layout:mine"]).filter(a => /^t3-(chrome|inbox)\./.test(a)), [], "a key's command goes to the mod that always shows: another's would miss it, or toast");
     f.slots.lists = { id: "sidebar-lists", active: "inbox" };
     const press = async (command, rows) => {
       f.state["t3-inbox.rows"] = rows; f.state["t3-agents.rows"] = rows; f.calls.length = 0; f.commands.push(command);
@@ -2209,12 +2206,12 @@ for (const width of [208, 240, 256, 320, 480]) {
     // shows with the keyboard on it what it shows hovered, and Enter does what the pointer does.
     const f = fixture(256), tabs = f.load("t3-tabs"), ag = f.load("t3-agents"), sp = f.load("t3-spaces"), footer = f.load("t3-chrome", { footer: true }), brand = f.load("t3-chrome");
     const on = (mod, id) => { mod.fs.keyboard = true; mod.fs.handles.set(id, { focus() {}, is_focused: () => true }); };
-    for (const [view, id] of [[tabs, "tab-b0"], [tabs, "sidebar-toggle"], [ag, "ag-t0"], [ag, "ag-sort"], [sp, "space-s0"], [sp, "space-new"], [footer, "settings"], [brand, "sidebar-mode"]]) {
+    for (const [view, id] of [[tabs, "tab-b0"], [tabs, "sidebar-toggle"], [ag, "ag-t0"], [ag, "ag-sort"], [sp, "space-s0"], [sp, "space-new"], [footer, "settings"], [brand, "sidebar-toggle"]]) {
       const node = find(view.render(cx), id);
       if (node) assert.equal(node.style.tab_index, undefined, `${id} takes no keyboard from a terminal when pressed`);
     }
     f.state["t3.focus"] = "on";
-    for (const [view, id] of [[ag, "ag-t0"], [ag, "ag-sort"], [ag, "fold-t0"], [sp, "space-s0"], [sp, "space-new"], [footer, "settings"], [footer, "t3-settings"], [brand, "sidebar-mode"], [brand, "sidebar-toggle"], [tabs, "tab-b0"]])
+    for (const [view, id] of [[ag, "ag-t0"], [ag, "ag-sort"], [ag, "fold-t0"], [sp, "space-s0"], [sp, "space-new"], [footer, "settings"], [footer, "t3-settings"], [brand, "sidebar-toggle"], [tabs, "tab-b0"]])
       assert.equal(find(view.render(cx), id).style.tab_index, 0, `${id} is a stop`);
     assert.equal(find(f.load("t3-tabs", { part: "end" }).render(cx), "tab-new").style.tab_index, 0);
     // Tab's × and the pin come with the keyboard, as with the pointer.
@@ -2843,12 +2840,12 @@ for (const width of [208, 240, 256, 320, 480]) {
     const run = { ...cx, spawn: fn => jobs.push(fn) };
     let zoom = 1.25;
     Object.assign(f.ui.root, { titlebar: "none", traffic_lights: [16, 12] });
-    f.state.layout = "herdr-t3";
+    f.state.layout = "mine";
     const original = JSON.stringify({ ...f.ui.root, theme: "mine", children: [{ id: "sidebar", size: { px: 300 } }] });
     scope.settings = () => ({ zoom });
     scope.appHome = () => "/fake-app";
     scope.exec = async () => assert.fail("the layout name comes from shared state without starting a subprocess");
-    scope.readTextFile = async file => { assert.equal(file, "/fake-app/layouts/herdr-t3.json"); return original; };
+    scope.readTextFile = async file => { assert.equal(file, "/fake-app/layouts/mine.json"); return original; };
     scope.writeTextFile = async (file, text, expected) => { writes.push({ file, text, expected }); };
     cx.watches.slice(firstWatch).find(t => t.ms === 250).fn(run);
     chrome.alignLights(run);
