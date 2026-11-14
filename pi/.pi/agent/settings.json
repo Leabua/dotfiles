@@ -4,5 +4,7 @@
   "defaultModel": "claude-opus-5-5",
   "packages": [
     "npm:pi-claude-bridge"
-  ]
+  ],
+  "enableInstallTelemetry": false,
+  "theme": "system"
 }
